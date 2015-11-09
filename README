@@ -1,9 +1,13 @@
 cubify - Data Cubes On Steroids
-
+-------------------------------
 cubify is a tool that allows you to ingest a csv file to quickly create a data cube.
-From there, you can create additional cubes by performing binning and aggregation to quickly perform analysis (using your favorite machine learning algorithm) or to gather quick insights about your data. 
+A data cube organizes your data into dimensions and measures.
+
+From there, you can easily create additional cubes by performing binning and aggregation on the source cube. 
+This enables you to very quickly perform analysis, using your favorite machine learning algorithm, or to gather quick insights about your data. 
 
 Installation
+------------
 
 After downloading and uncompressing the cubify.tar.gz or cloning from: https://github.com/rtansf/cubify.git,
 cd to the cubify root directory. Then execute:
@@ -13,5 +17,5 @@ cd to the cubify root directory. Then execute:
 Then follow the following tutorial/quickstart.
 
 Tutorial / Quickstart 
-
+---------------------
 
