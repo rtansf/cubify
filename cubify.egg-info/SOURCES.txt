@@ -1,0 +1,10 @@
+setup.py
+cubify/__init__.py
+cubify/cubeservice.py
+cubify/cubesetservice.py
+cubify.egg-info/PKG-INFO
+cubify.egg-info/SOURCES.txt
+cubify.egg-info/dependency_links.txt
+cubify.egg-info/not-zip-safe
+cubify.egg-info/requires.txt
+cubify.egg-info/top_level.txt
