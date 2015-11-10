@@ -1,3 +1,4 @@
+README
 setup.py
 cubify/__init__.py
 cubify/cubeservice.py

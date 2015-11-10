@@ -10,7 +10,11 @@ class cubeServiceTests(unittest.TestCase):
 
     def testCreateCubeCellsFromCsv(self):
         cubeName = 'test-' + str(uuid.uuid4())
-        shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeName + '.csv')
+
         cs = CubeService('testdb')
         result = cs.createCubeCellsFromCsv(cubeName + '.csv')
         cubeCells = result['cubeCells']
@@ -18,18 +22,25 @@ class cubeServiceTests(unittest.TestCase):
 
         self.assertTrue(len(cubeCells) == 14)
         self.assertTrue(len(distincts) == 4)
+
         os.remove(cubeName + '.csv')
 
     def testCreateCubeFromCsv(self):
         cubeName = 'test-' + str(uuid.uuid4())
-        shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
         cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
         os.remove(cubeName + '.csv')
 
     def testDeleteCube(self):
         cubeName = 'test-' + str(uuid.uuid4())
-        shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
         cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
         cs.deleteCube(cubeName)
@@ -37,7 +48,10 @@ class cubeServiceTests(unittest.TestCase):
 
     def testUpdateCubeDisplayName(self):
         cubeName = 'test-' + str(uuid.uuid4())
-        shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
         cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
         cs.updateCubeDisplayName(cubeName, 'newName')
@@ -47,7 +61,10 @@ class cubeServiceTests(unittest.TestCase):
 
     def testGetStats(self):
         cubeName = 'test-' + str(uuid.uuid4())
-        shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
         cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
         cubeCells = cs.getCubeCells(cubeName)
@@ -73,10 +90,16 @@ class cubeServiceTests(unittest.TestCase):
 
     def testBinning(self):
         cubeName = 'test-' + str(uuid.uuid4())
-        shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
         cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
-        with open('cubify/tests/test_binnings.json') as binnings_file:
+        binningFileName = 'cubify/tests/test_binnings.json'
+        if (os.path.isfile(binningFileName) == False):
+            binningFileName = './test_binnings.json'
+        with open(binningFileName) as binnings_file:
             binnings = json.load(binnings_file)
         cs.binCube(binnings, cubeName, cubeName + '_b', cubeName + '_b')
 
@@ -105,10 +128,16 @@ class cubeServiceTests(unittest.TestCase):
 
     def testReBinning(self):
         cubeName = 'test-' + str(uuid.uuid4())
-        shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
         cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
-        with open('cubify/tests/test_binnings.json') as binnings_file:
+        binningFileName = 'cubify/tests/test_binnings.json'
+        if (os.path.isfile(binningFileName) == False):
+            binningFileName = './test_binnings.json'
+        with open(binningFileName) as binnings_file:
             binnings = json.load(binnings_file)
         cs.binCube(binnings, cubeName, cubeName + '_b', cubeName + '_b')
 
@@ -147,15 +176,23 @@ class cubeServiceTests(unittest.TestCase):
 
     def testAggregation(self):
         cubeName = 'test-' + str(uuid.uuid4())
-        shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
         cs.createCubeFromCsv(cubeName + '.csv',cubeName, cubeName)
-        with open('cubify/tests/test_binnings.json') as binnings_file:
+        binningFileName = 'cubify/tests/test_binnings.json'
+        if (os.path.isfile(binningFileName) == False):
+            binningFileName = './test_binnings.json'
+        with open(binningFileName) as binnings_file:
             binnings = json.load(binnings_file)
         cs.binCube(binnings, cubeName, cubeName + '_b', cubeName + '_b')
 
-        aggs = []
-        with open('cubify/tests/test_agg.json') as agg_file:
+        aggFileName = 'cubify/tests/test_agg.json'
+        if os.path.isfile(aggFileName) == False:
+            aggFileName = './test_agg.json'
+        with open(aggFileName) as agg_file:
             aggs = json.load(agg_file)
 
         cs.aggregateCube(cubeName + '_b', aggs)

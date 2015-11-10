@@ -11,10 +11,20 @@ class cubeSetServiceTests(unittest.TestCase):
     def testCreateCubeSet(self):
         cubeSetName = 'test-' + str(uuid.uuid4())
         csvFileName =  cubeSetName + '.csv'
-        shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
-        with open('cubify/tests/test_binnings.json') as binnings_file:
+
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeSetName + '.csv')
+        binningFileName = 'cubify/tests/test_binnings.json'
+        if (os.path.isfile(binningFileName) == False):
+            binningFileName = './test_binnings.json'
+        with open(binningFileName) as binnings_file:
             binnings = json.load(binnings_file)
-        with open('cubify/tests/test_agg.json') as agg_file:
+        aggFileName = 'cubify/tests/test_agg.json'
+        if os.path.isfile(aggFileName) == False:
+            aggFileName = './test_agg.json'
+        with open(aggFileName) as agg_file:
             aggs = json.load(agg_file)
 
         cs = CubeSetService('testdb')
@@ -39,7 +49,12 @@ class cubeSetServiceTests(unittest.TestCase):
     def testUpdateCubeSetDisplayName(self):
         cubeSetName = 'test-' + str(uuid.uuid4())
         csvFileName =  cubeSetName + '.csv'
-        shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
+
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeSetName + '.csv')
+
         cs = CubeSetService('testdb')
         cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFileName, None, None)
         cs.updateCubeSetDisplayName(cubeSetName, 'new name')
@@ -57,7 +72,10 @@ class cubeSetServiceTests(unittest.TestCase):
     def testDeleteCubeSet(self):
         cubeSetName = 'test-' + str(uuid.uuid4())
         csvFileName =  cubeSetName + '.csv'
-        shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeSetName + '.csv')
         cs = CubeSetService('testdb')
         cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFileName, None, None)
         cs.deleteCubeSet(cubeSetName)
@@ -69,10 +87,19 @@ class cubeSetServiceTests(unittest.TestCase):
     def testDeleteCubeSet2(self):
         cubeSetName = 'test-' + str(uuid.uuid4())
         csvFileName =  cubeSetName + '.csv'
-        shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
-        with open('cubify/tests/test_binnings.json') as binnings_file:
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeSetName + '.csv')
+        binningFileName = 'cubify/tests/test_binnings.json'
+        if (os.path.isfile(binningFileName) == False):
+            binningFileName = './test_binnings.json'
+        with open(binningFileName) as binnings_file:
             binnings = json.load(binnings_file)
-        with open('cubify/tests/test_agg.json') as agg_file:
+        aggFileName = 'cubify/tests/test_agg.json'
+        if os.path.isfile(aggFileName) == False:
+            aggFileName = './test_agg.json'
+        with open(aggFileName) as agg_file:
             aggs = json.load(agg_file)
 
         cs = CubeSetService('testdb')
@@ -86,10 +113,19 @@ class cubeSetServiceTests(unittest.TestCase):
     def testGetSourceCubeCells(self):
         cubeSetName = 'test-' + str(uuid.uuid4())
         csvFileName =  cubeSetName + '.csv'
-        shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
-        with open('cubify/tests/test_binnings.json') as binnings_file:
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeSetName + '.csv')
+        binningFileName = 'cubify/tests/test_binnings.json'
+        if (os.path.isfile(binningFileName) == False):
+            binningFileName = './test_binnings.json'
+        with open(binningFileName) as binnings_file:
             binnings = json.load(binnings_file)
-        with open('cubify/tests/test_agg.json') as agg_file:
+        aggFileName = 'cubify/tests/test_agg.json'
+        if os.path.isfile(aggFileName) == False:
+            aggFileName = './test_agg.json'
+        with open(aggFileName) as agg_file:
             aggs = json.load(agg_file)
 
         cs = CubeSetService('testdb')
@@ -102,10 +138,19 @@ class cubeSetServiceTests(unittest.TestCase):
     def testGetBinnedCubeCells(self):
         cubeSetName = 'test-' + str(uuid.uuid4())
         csvFileName =  cubeSetName + '.csv'
-        shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
-        with open('cubify/tests/test_binnings.json') as binnings_file:
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeSetName + '.csv')
+        binningFileName = 'cubify/tests/test_binnings.json'
+        if (os.path.isfile(binningFileName) == False):
+            binningFileName = './test_binnings.json'
+        with open(binningFileName) as binnings_file:
             binnings = json.load(binnings_file)
-        with open('cubify/tests/test_agg.json') as agg_file:
+        aggFileName = 'cubify/tests/test_agg.json'
+        if os.path.isfile(aggFileName) == False:
+            aggFileName = './test_agg.json'
+        with open(aggFileName) as agg_file:
             aggs = json.load(agg_file)
 
         cs = CubeSetService('testdb')
@@ -137,10 +182,19 @@ class cubeSetServiceTests(unittest.TestCase):
     def testGetAggregatedCubeCells(self):
         cubeSetName = 'test-' + str(uuid.uuid4())
         csvFileName =  cubeSetName + '.csv'
-        shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
-        with open('cubify/tests/test_binnings.json') as binnings_file:
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeSetName + '.csv')
+        binningFileName = 'cubify/tests/test_binnings.json'
+        if (os.path.isfile(binningFileName) == False):
+            binningFileName = './test_binnings.json'
+        with open(binningFileName) as binnings_file:
             binnings = json.load(binnings_file)
-        with open('cubify/tests/test_agg.json') as agg_file:
+        aggFileName = 'cubify/tests/test_agg.json'
+        if os.path.isfile(aggFileName) == False:
+            aggFileName = './test_agg.json'
+        with open(aggFileName) as agg_file:
             aggs = json.load(agg_file)
 
         cs = CubeSetService('testdb')
@@ -178,8 +232,14 @@ class cubeSetServiceTests(unittest.TestCase):
     def testPerformBinning(self):
         cubeSetName = 'test-' + str(uuid.uuid4())
         csvFileName =  cubeSetName + '.csv'
-        shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
-        with open('cubify/tests/test_binnings.json') as binnings_file:
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeSetName + '.csv')
+        binningFileName = 'cubify/tests/test_binnings.json'
+        if (os.path.isfile(binningFileName) == False):
+            binningFileName = './test_binnings.json'
+        with open(binningFileName) as binnings_file:
             binnings = json.load(binnings_file)
 
         cs = CubeSetService('testdb')
@@ -222,10 +282,19 @@ class cubeSetServiceTests(unittest.TestCase):
 
         cubeSetName = 'test-' + str(uuid.uuid4())
         csvFileName =  cubeSetName + '.csv'
-        shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
-        with open('cubify/tests/test_binnings.json') as binnings_file:
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeSetName + '.csv')
+        binningFileName = 'cubify/tests/test_binnings.json'
+        if (os.path.isfile(binningFileName) == False):
+            binningFileName = './test_binnings.json'
+        with open(binningFileName) as binnings_file:
             binnings = json.load(binnings_file)
-        with open('cubify/tests/test_agg.json') as agg_file:
+        aggFileName = 'cubify/tests/test_agg.json'
+        if os.path.isfile(aggFileName) == False:
+            aggFileName = './test_agg.json'
+        with open(aggFileName) as agg_file:
             aggs = json.load(agg_file)
 
         cs = CubeSetService('testdb')
@@ -265,16 +334,28 @@ class cubeSetServiceTests(unittest.TestCase):
 
         cubeSetName = 'test-' + str(uuid.uuid4())
         csvFileName =  cubeSetName + '.csv'
-        shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
-        with open('cubify/tests/test_binnings.json') as binnings_file:
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeSetName + '.csv')
+        binningFileName = 'cubify/tests/test_binnings.json'
+        if (os.path.isfile(binningFileName) == False):
+            binningFileName = './test_binnings.json'
+        with open(binningFileName) as binnings_file:
             binnings = json.load(binnings_file)
-        with open('cubify/tests/test_agg.json') as agg_file:
+        aggFileName = 'cubify/tests/test_agg.json'
+        if os.path.isfile(aggFileName) == False:
+            aggFileName = './test_agg.json'
+        with open(aggFileName) as agg_file:
             aggs = json.load(agg_file)
 
         cs = CubeSetService('testdb')
         cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFileName, binnings, aggs)
 
-        cs.addCellsToSourceCube(cubeSetName, 'cubify/tests/testdataIncremental.csv')
+        incFileName = 'cubify/tests/testdataIncremental.csv'
+        if (os.path.isfile(incFileName) == False):
+            incFileName = './testdataIncremental.csv'
+        cs.addCellsToSourceCube(cubeSetName, incFileName)
 
         sourceCubeCells = cs.getSourceCubeCells(cubeSetName)
         self.assertTrue(sourceCubeCells.count() == 21)
@@ -340,10 +421,19 @@ class cubeSetServiceTests(unittest.TestCase):
     def testRemoveCellsFromSourceCube(self):
         cubeSetName = 'test-' + str(uuid.uuid4())
         csvFileName =  cubeSetName + '.csv'
-        shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
-        with open('cubify/tests/test_binnings.json') as binnings_file:
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeSetName + '.csv')
+        binningFileName = 'cubify/tests/test_binnings.json'
+        if (os.path.isfile(binningFileName) == False):
+            binningFileName = './test_binnings.json'
+        with open(binningFileName) as binnings_file:
             binnings = json.load(binnings_file)
-        with open('cubify/tests/test_agg.json') as agg_file:
+        aggFileName = 'cubify/tests/test_agg.json'
+        if os.path.isfile(aggFileName) == False:
+            aggFileName = './test_agg.json'
+        with open(aggFileName) as agg_file:
             aggs = json.load(agg_file)
 
         cs = CubeSetService('testdb')
