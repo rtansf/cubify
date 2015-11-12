@@ -45,13 +45,13 @@ class CubeService:
     #
     #  Create cube cells from csv
     #
-    def createCubeCellsFromCsv(self, csvFileName):
+    def createCubeCellsFromCsv(self, csvFilePath):
 
         cubeCells = []
         fieldTypes = {}
         distincts = {}
 
-        with open(csvFileName) as csvfile:
+        with open(csvFilePath) as csvfile:
             reader = csv.DictReader(csvfile)
             fieldNames = reader.fieldnames
             numFields = len(fieldNames)
@@ -133,19 +133,19 @@ class CubeService:
     #
     # Create a cube from csv file
     #
-    def createCubeFromCsv(self, csvFileName, cubeName, cubeDisplayName):
-        result = self.createCubeCellsFromCsv(csvFileName)
+    def createCubeFromCsv(self, csvFilePath, cubeName, cubeDisplayName):
+        result = self.createCubeCellsFromCsv(csvFilePath)
         self.createCube('source', cubeName, cubeDisplayName, result['cubeCells'], result['distincts'], result['stats'], None, None)
 
     #
     # Append to cube from csv file
     #
-    def appendToCubeFromCsv(self, csvFileName, cubeName):
+    def appendToCubeFromCsv(self, csvFilePath, cubeName):
         cube = self.getCube(cubeName)
         if (cube == None):
             raise ValueError("Cube does not exist:" + cubeName)
 
-        result = self.createCubeCellsFromCsv(csvFileName)
+        result = self.createCubeCellsFromCsv(csvFilePath)
 
         # Adjust ids # TODO use max(id) from cube instead of numCurrentCubeCells
         currentCubeCells = self.getCubeCells(cubeName)
@@ -480,13 +480,13 @@ class CubeService:
     #
     # Export cube cells to csv
     #
-    def exportCubeToCsv(self, cubeName,csvFileName):
+    def exportCubeToCsv(self, cubeName,csvFilePath):
 
         cube = self.getCube(cubeName)
         if (cube == None):
             raise ValueError("Cube does not exist:" + cubeName)
 
-        csvfile = open(csvFileName, 'w')
+        csvfile = open(csvFilePath, 'w')
         cubeCells = self.getCubeCells(cubeName)
         fieldNames = []
         for cubeCell in cubeCells:

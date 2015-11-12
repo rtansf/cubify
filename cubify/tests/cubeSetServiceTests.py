@@ -11,7 +11,7 @@ class cubeSetServiceTests(unittest.TestCase):
 
     def testCreateCubeSet(self):
         cubeSetName = 'test-' + str(uuid.uuid4())
-        csvFileName =  cubeSetName + '.csv'
+        csvFilePath =  cubeSetName + '.csv'
 
         try:
             shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
@@ -29,14 +29,14 @@ class cubeSetServiceTests(unittest.TestCase):
             aggs = json.load(agg_file)
 
         cs = CubeSetService('testdb')
-        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFileName, binnings, aggs)
+        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFilePath, binnings, aggs)
 
         cubeSet = cs.getCubeSet(cubeSetName)
         self.assertTrue(cubeSet != None)
         self.assertTrue(cubeSet['name'] == cubeSetName)
         self.assertTrue(cubeSet['displayName'] == cubeSetName)
         self.assertTrue(cubeSet['owner'] == 'testOwner')
-        self.assertTrue(cubeSet['csvFileName'] == csvFileName)
+        self.assertTrue(cubeSet['csvFilePath'] == csvFilePath)
         self.assertTrue(cubeSet['sourceCube'] == cubeSetName + '_source')
         self.assertTrue(cubeSet['binnedCube'] == cubeSetName + '_binned')
         binnedCubeName = cubeSet['binnedCube']
@@ -45,11 +45,11 @@ class cubeSetServiceTests(unittest.TestCase):
         self.assertTrue(binnedCubeName + '_' + aggs[1]['name'] in cubeSet['aggCubes'])
         self.assertTrue(binnedCubeName + '_' + aggs[2]['name'] in cubeSet['aggCubes'])
 
-        os.remove(csvFileName)
+        os.remove(csvFilePath)
 
     def testUpdateCubeSetDisplayName(self):
         cubeSetName = 'test-' + str(uuid.uuid4())
-        csvFileName =  cubeSetName + '.csv'
+        csvFilePath =  cubeSetName + '.csv'
 
         try:
             shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
@@ -57,7 +57,7 @@ class cubeSetServiceTests(unittest.TestCase):
             shutil.copyfile('./testdata.csv', cubeSetName + '.csv')
 
         cs = CubeSetService('testdb')
-        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFileName, None, None)
+        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFilePath, None, None)
         cs.updateCubeSetDisplayName(cubeSetName, 'new name')
 
         cubeSet = cs.getCubeSet(cubeSetName)
@@ -65,29 +65,29 @@ class cubeSetServiceTests(unittest.TestCase):
         self.assertTrue(cubeSet['name'] == cubeSetName)
         self.assertTrue(cubeSet['displayName'] == 'new name')
         self.assertTrue(cubeSet['owner'] == 'testOwner')
-        self.assertTrue(cubeSet['csvFileName'] == csvFileName)
+        self.assertTrue(cubeSet['csvFilePath'] == csvFilePath)
         self.assertTrue(cubeSet['sourceCube'] == cubeSetName + '_source')
 
-        os.remove(csvFileName)
+        os.remove(csvFilePath)
 
     def testDeleteCubeSet(self):
         cubeSetName = 'test-' + str(uuid.uuid4())
-        csvFileName =  cubeSetName + '.csv'
+        csvFilePath =  cubeSetName + '.csv'
         try:
             shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
         except Exception:
             shutil.copyfile('./testdata.csv', cubeSetName + '.csv')
         cs = CubeSetService('testdb')
-        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFileName, None, None)
+        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFilePath, None, None)
         cs.deleteCubeSet(cubeSetName)
         cubeSet = cs.getCubeSet(cubeSetName)
         self.assertTrue(cubeSet == None)
 
-        os.remove(csvFileName)
+        os.remove(csvFilePath)
 
     def testDeleteCubeSet2(self):
         cubeSetName = 'test-' + str(uuid.uuid4())
-        csvFileName =  cubeSetName + '.csv'
+        csvFilePath =  cubeSetName + '.csv'
         try:
             shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
         except Exception:
@@ -104,16 +104,16 @@ class cubeSetServiceTests(unittest.TestCase):
             aggs = json.load(agg_file)
 
         cs = CubeSetService('testdb')
-        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFileName, binnings, aggs)
+        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFilePath, binnings, aggs)
         cs.deleteCubeSet(cubeSetName)
         cubeSet = cs.getCubeSet(cubeSetName)
         self.assertTrue(cubeSet == None)
 
-        os.remove(csvFileName)
+        os.remove(csvFilePath)
 
     def testGetSourceCubeCells(self):
         cubeSetName = 'test-' + str(uuid.uuid4())
-        csvFileName =  cubeSetName + '.csv'
+        csvFilePath =  cubeSetName + '.csv'
         try:
             shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
         except Exception:
@@ -130,15 +130,15 @@ class cubeSetServiceTests(unittest.TestCase):
             aggs = json.load(agg_file)
 
         cs = CubeSetService('testdb')
-        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFileName, binnings, aggs)
+        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFilePath, binnings, aggs)
         cubeCells = cs.getSourceCubeCells(cubeSetName)
         self.assertTrue(cubeCells.count() == 14)
 
-        os.remove(csvFileName)
+        os.remove(csvFilePath)
 
     def testGetBinnedCubeCells(self):
         cubeSetName = 'test-' + str(uuid.uuid4())
-        csvFileName =  cubeSetName + '.csv'
+        csvFilePath =  cubeSetName + '.csv'
         try:
             shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
         except Exception:
@@ -155,7 +155,7 @@ class cubeSetServiceTests(unittest.TestCase):
             aggs = json.load(agg_file)
 
         cs = CubeSetService('testdb')
-        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFileName, binnings, aggs)
+        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFilePath, binnings, aggs)
         binnedCubeCells = cs.getBinnedCubeCells(cubeSetName)
 
         dimkeys = []
@@ -178,11 +178,11 @@ class cubeSetServiceTests(unittest.TestCase):
         self.assertTrue(dimkeys[12] == '#CustomerId:C3#PriceBin:10+#ProductId:P1#QtyBin:5+#Region:NorthEast#State:MA#Year:Year2014#Date:2014-10-11')
         self.assertTrue(dimkeys[13] == '#CustomerId:C3#PriceBin:10+#ProductId:P1#QtyBin:5+#Region:NorthEast#State:MA#Year:Year2015#Date:2015-10-11')
 
-        os.remove(csvFileName)
+        os.remove(csvFilePath)
 
     def testGetAggregatedCubeCells(self):
         cubeSetName = 'test-' + str(uuid.uuid4())
-        csvFileName =  cubeSetName + '.csv'
+        csvFilePath =  cubeSetName + '.csv'
         try:
             shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
         except Exception:
@@ -199,7 +199,7 @@ class cubeSetServiceTests(unittest.TestCase):
             aggs = json.load(agg_file)
 
         cs = CubeSetService('testdb')
-        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFileName, binnings, aggs)
+        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFilePath, binnings, aggs)
 
         agg = aggs[0]
         aggCubeCells = cs.getAggregatedCubeCells(cubeSetName, agg['name'])
@@ -228,11 +228,11 @@ class cubeSetServiceTests(unittest.TestCase):
 
         print '---------'
 
-        os.remove(csvFileName)
+        os.remove(csvFilePath)
 
     def testPerformBinning(self):
         cubeSetName = 'test-' + str(uuid.uuid4())
-        csvFileName =  cubeSetName + '.csv'
+        csvFilePath =  cubeSetName + '.csv'
         try:
             shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
         except Exception:
@@ -244,7 +244,7 @@ class cubeSetServiceTests(unittest.TestCase):
             binnings = json.load(binnings_file)
 
         cs = CubeSetService('testdb')
-        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFileName, binnings, None)
+        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFilePath, binnings, None)
 
         # Change the binning
         for binning in binnings:
@@ -282,7 +282,7 @@ class cubeSetServiceTests(unittest.TestCase):
     def testPerformAggregation(self):
 
         cubeSetName = 'test-' + str(uuid.uuid4())
-        csvFileName =  cubeSetName + '.csv'
+        csvFilePath =  cubeSetName + '.csv'
         try:
             shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
         except Exception:
@@ -299,7 +299,7 @@ class cubeSetServiceTests(unittest.TestCase):
             aggs = json.load(agg_file)
 
         cs = CubeSetService('testdb')
-        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFileName, binnings, None)
+        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFilePath, binnings, None)
         cs.performAggregation(cubeSetName, aggs)
 
         agg = aggs[0]
@@ -334,7 +334,7 @@ class cubeSetServiceTests(unittest.TestCase):
     def testAddCellsToSourceCube(self):
 
         cubeSetName = 'test-' + str(uuid.uuid4())
-        csvFileName =  cubeSetName + '.csv'
+        csvFilePath =  cubeSetName + '.csv'
         try:
             shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
         except Exception:
@@ -351,7 +351,7 @@ class cubeSetServiceTests(unittest.TestCase):
             aggs = json.load(agg_file)
 
         cs = CubeSetService('testdb')
-        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFileName, binnings, aggs)
+        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFilePath, binnings, aggs)
 
         incFileName = 'cubify/tests/testdataIncremental.csv'
         if (os.path.isfile(incFileName) == False):
@@ -421,7 +421,7 @@ class cubeSetServiceTests(unittest.TestCase):
 
     def testRemoveCellsFromSourceCube(self):
         cubeSetName = 'test-' + str(uuid.uuid4())
-        csvFileName =  cubeSetName + '.csv'
+        csvFilePath =  cubeSetName + '.csv'
         try:
             shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
         except Exception:
@@ -438,7 +438,7 @@ class cubeSetServiceTests(unittest.TestCase):
             aggs = json.load(agg_file)
 
         cs = CubeSetService('testdb')
-        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFileName, binnings, aggs)
+        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFilePath, binnings, aggs)
         cs.removeCellsFromSourceCube(cubeSetName, { "dimensions.State" : "CA"})
 
         cubeCells = cs.getSourceCubeCells(cubeSetName)
@@ -462,7 +462,7 @@ class cubeSetServiceTests(unittest.TestCase):
 
     def testExportSourceCubeCsv(self):
         cubeSetName = 'test-' + str(uuid.uuid4())
-        csvFileName =  cubeSetName + '.csv'
+        csvFilePath =  cubeSetName + '.csv'
 
         try:
             shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
@@ -480,7 +480,7 @@ class cubeSetServiceTests(unittest.TestCase):
             aggs = json.load(agg_file)
 
         cs = CubeSetService('testdb')
-        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFileName, binnings, aggs)
+        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFilePath, binnings, aggs)
 
         cs.exportSourceCubeToCsv(cubeSetName, "cubeSetSourceExported.csv")
 
@@ -498,7 +498,7 @@ class cubeSetServiceTests(unittest.TestCase):
 
     def testExportBinnedCubeCsv(self):
         cubeSetName = 'test-' + str(uuid.uuid4())
-        csvFileName =  cubeSetName + '.csv'
+        csvFilePath =  cubeSetName + '.csv'
 
         try:
             shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
@@ -516,7 +516,7 @@ class cubeSetServiceTests(unittest.TestCase):
             aggs = json.load(agg_file)
 
         cs = CubeSetService('testdb')
-        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFileName, binnings, aggs)
+        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFilePath, binnings, aggs)
 
         cs.exportBinnedCubeToCsv(cubeSetName, "cubeSetBinnedExported.csv")
 
@@ -534,7 +534,7 @@ class cubeSetServiceTests(unittest.TestCase):
 
     def testExportAggCubesCsv(self):
         cubeSetName = 'test-' + str(uuid.uuid4())
-        csvFileName =  cubeSetName + '.csv'
+        csvFilePath =  cubeSetName + '.csv'
 
         try:
             shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
@@ -552,7 +552,7 @@ class cubeSetServiceTests(unittest.TestCase):
             aggs = json.load(agg_file)
 
         cs = CubeSetService('testdb')
-        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFileName, binnings, aggs)
+        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFilePath, binnings, aggs)
 
         cs.exportAggCubeToCsv(cubeSetName, "cubeSetAgg" + aggs[0]['name'] + "Exported.csv", aggs[0]['name'])
         with open("cubeSetAgg" + aggs[0]['name'] + "Exported.csv") as csvfile:

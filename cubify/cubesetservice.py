@@ -33,7 +33,7 @@ class CubeSetService:
     #
     # Create a cube set including optionally performing binning and aggregation
     #
-    def createCubeSet(self, owner, cubeSetName, cubeSetDisplayName, csvFileName, binnings, aggs):
+    def createCubeSet(self, owner, cubeSetName, cubeSetDisplayName, csvFilePath, binnings, aggs):
 
         # Make sure cubeSetName is unique
         existing = self.getCubeSet(cubeSetName)
@@ -41,7 +41,7 @@ class CubeSetService:
             raise ValueError('Cube Set with ' + cubeSetName + ' already exists')
 
         sourceCubeName = cubeSetName + "_source"
-        self.cubeService.createCubeFromCsv(csvFileName, sourceCubeName, sourceCubeName)
+        self.cubeService.createCubeFromCsv(csvFilePath, sourceCubeName, sourceCubeName)
         if binnings != None:
             binnedCubeName = cubeSetName + "_binned"
             self.cubeService.binCube(binnings, sourceCubeName, binnedCubeName, binnedCubeName)
@@ -53,7 +53,7 @@ class CubeSetService:
         cubeSet['name'] = cubeSetName
         cubeSet['displayName'] = cubeSetDisplayName
         cubeSet['owner'] = owner
-        cubeSet['csvFileName'] = csvFileName
+        cubeSet['csvFilePath'] = csvFilePath
         cubeSet['createdOn'] = datetime.utcnow()
         cubeSet['sourceCube'] = sourceCubeName
         if binnings != None:
@@ -69,12 +69,12 @@ class CubeSetService:
     #
     # Add cells to source cube
     #
-    def addCellsToSourceCube(self, cubeSetName, csvFileName):
+    def addCellsToSourceCube(self, cubeSetName, csvFilePath):
         existing = self.getCubeSet(cubeSetName)
         if existing == None:
             raise ValueError('Cube Set with ' + cubeSetName + ' does not exist')
 
-        self.cubeService.appendToCubeFromCsv(csvFileName, existing['sourceCube'])
+        self.cubeService.appendToCubeFromCsv(csvFilePath, existing['sourceCube'])
 
         #re-bin
         if 'binnedCube' in existing:
@@ -181,27 +181,27 @@ class CubeSetService:
     #
     # Export source cube to csv.
     #
-    def exportSourceCubeToCsv(self, cubeSetName, csvFileName):
+    def exportSourceCubeToCsv(self, cubeSetName, csvFilePath):
         existing = self.getCubeSet(cubeSetName)
         if existing == None:
             raise ValueError('Cube Set with ' + cubeSetName + ' does not exist')
 
-        self.cubeService.exportCubeToCsv(existing['sourceCube'], csvFileName)
+        self.cubeService.exportCubeToCsv(existing['sourceCube'], csvFilePath)
 
     #
     # Export binned cube to csv.
     #
-    def exportBinnedCubeToCsv(self, cubeSetName, csvFileName):
+    def exportBinnedCubeToCsv(self, cubeSetName, csvFilePath):
         existing = self.getCubeSet(cubeSetName)
         if existing == None:
             raise ValueError('Cube Set with ' + cubeSetName + ' does not exist')
 
-        self.cubeService.exportCubeToCsv(existing['binnedCube'], csvFileName)
+        self.cubeService.exportCubeToCsv(existing['binnedCube'], csvFilePath)
         
     #
     # Export agg cube to csv.
     #
-    def exportAggCubeToCsv(self, cubeSetName, csvFileName, aggName):
+    def exportAggCubeToCsv(self, cubeSetName, csvFilePath, aggName):
         existing = self.getCubeSet(cubeSetName)
         if existing == None:
             raise ValueError('Cube Set with ' + cubeSetName + ' does not exist')
@@ -209,7 +209,7 @@ class CubeSetService:
         if 'aggCubes' in existing:
             for aggCube in existing['aggCubes']:
                if existing['binnedCube'] + "_" + aggName == aggCube:
-                   self.cubeService.exportCubeToCsv(aggCube, csvFileName)
+                   self.cubeService.exportCubeToCsv(aggCube, csvFilePath)
 
     #
     # Perform binning on source cube
