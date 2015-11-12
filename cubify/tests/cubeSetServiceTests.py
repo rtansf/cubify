@@ -4,6 +4,7 @@ import shutil
 import uuid
 import math
 import json
+import csv
 from cubify import CubeSetService
 
 class cubeSetServiceTests(unittest.TestCase):
@@ -459,3 +460,132 @@ class cubeSetServiceTests(unittest.TestCase):
 
         os.remove(cubeSetName + '.csv')
 
+    def testExportSourceCubeCsv(self):
+        cubeSetName = 'test-' + str(uuid.uuid4())
+        csvFileName =  cubeSetName + '.csv'
+
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeSetName + '.csv')
+        binningFileName = 'cubify/tests/test_binnings.json'
+        if (os.path.isfile(binningFileName) == False):
+            binningFileName = './test_binnings.json'
+        with open(binningFileName) as binnings_file:
+            binnings = json.load(binnings_file)
+        aggFileName = 'cubify/tests/test_agg.json'
+        if os.path.isfile(aggFileName) == False:
+            aggFileName = './test_agg.json'
+        with open(aggFileName) as agg_file:
+            aggs = json.load(agg_file)
+
+        cs = CubeSetService('testdb')
+        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFileName, binnings, aggs)
+
+        cs.exportSourceCubeToCsv(cubeSetName, "cubeSetSourceExported.csv")
+
+        with open('cubeSetSourceExported.csv') as csvfile:
+            reader = csv.DictReader(csvfile)
+            fieldNames = reader.fieldnames
+            self.assertTrue(fieldNames == ['CustomerId', 'ProductId', 'State', 'Date', 'Price', 'Qty'])
+            rowNum = 0
+            for row in reader:
+                rowNum += 1
+            self.assertTrue (rowNum == 14)
+
+        os.remove(cubeSetName + '.csv')
+        os.remove('cubeSetSourceExported.csv')
+
+    def testExportBinnedCubeCsv(self):
+        cubeSetName = 'test-' + str(uuid.uuid4())
+        csvFileName =  cubeSetName + '.csv'
+
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeSetName + '.csv')
+        binningFileName = 'cubify/tests/test_binnings.json'
+        if (os.path.isfile(binningFileName) == False):
+            binningFileName = './test_binnings.json'
+        with open(binningFileName) as binnings_file:
+            binnings = json.load(binnings_file)
+        aggFileName = 'cubify/tests/test_agg.json'
+        if os.path.isfile(aggFileName) == False:
+            aggFileName = './test_agg.json'
+        with open(aggFileName) as agg_file:
+            aggs = json.load(agg_file)
+
+        cs = CubeSetService('testdb')
+        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFileName, binnings, aggs)
+
+        cs.exportBinnedCubeToCsv(cubeSetName, "cubeSetBinnedExported.csv")
+
+        with open('cubeSetBinnedExported.csv') as csvfile:
+            reader = csv.DictReader(csvfile)
+            fieldNames = reader.fieldnames
+            self.assertTrue(fieldNames == ['CustomerId', 'PriceBin', 'ProductId', 'QtyBin', 'Region', 'State', 'Year', 'Date', 'Price', 'Qty'])
+            rowNum = 0
+            for row in reader:
+                rowNum += 1
+            self.assertTrue (rowNum == 14)
+
+        os.remove(cubeSetName + '.csv')
+        os.remove('cubeSetBinnedExported.csv')
+
+    def testExportAggCubesCsv(self):
+        cubeSetName = 'test-' + str(uuid.uuid4())
+        csvFileName =  cubeSetName + '.csv'
+
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeSetName + '.csv')
+        binningFileName = 'cubify/tests/test_binnings.json'
+        if (os.path.isfile(binningFileName) == False):
+            binningFileName = './test_binnings.json'
+        with open(binningFileName) as binnings_file:
+            binnings = json.load(binnings_file)
+        aggFileName = 'cubify/tests/test_agg.json'
+        if os.path.isfile(aggFileName) == False:
+            aggFileName = './test_agg.json'
+        with open(aggFileName) as agg_file:
+            aggs = json.load(agg_file)
+
+        cs = CubeSetService('testdb')
+        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFileName, binnings, aggs)
+
+        cs.exportAggCubeToCsv(cubeSetName, "cubeSetAgg" + aggs[0]['name'] + "Exported.csv", aggs[0]['name'])
+        with open("cubeSetAgg" + aggs[0]['name'] + "Exported.csv") as csvfile:
+            reader = csv.DictReader(csvfile)
+            fieldNames = reader.fieldnames
+            self.assertTrue(fieldNames == ['ProductId', 'Region', 'AveragePrice', 'AverageQty'])
+            rowNum = 0
+            for row in reader:
+                rowNum += 1
+            self.assertTrue (rowNum == 4)
+
+
+        cs.exportAggCubeToCsv(cubeSetName, "cubeSetAgg" + aggs[1]['name'] + "Exported.csv", aggs[1]['name'])
+        with open("cubeSetAgg" + aggs[1]['name'] + "Exported.csv") as csvfile:
+            reader = csv.DictReader(csvfile)
+            fieldNames = reader.fieldnames
+            self.assertTrue(fieldNames == ['ProductId', 'TotalQty'])
+            rowNum = 0
+            for row in reader:
+                rowNum += 1
+            self.assertTrue (rowNum == 2)
+
+        cs.exportAggCubeToCsv(cubeSetName, "cubeSetAgg" + aggs[2]['name'] + "Exported.csv", aggs[2]['name'])
+        with open("cubeSetAgg" + aggs[2]['name'] + "Exported.csv") as csvfile:
+            reader = csv.DictReader(csvfile)
+            fieldNames = reader.fieldnames
+            self.assertTrue(fieldNames == ['ProductId', 'AverageRevenue'])
+            rowNum = 0
+            for row in reader:
+                rowNum += 1
+            self.assertTrue (rowNum == 2)
+
+        os.remove(cubeSetName + '.csv')
+        os.remove("cubeSetAgg" + aggs[0]['name'] + "Exported.csv")
+        os.remove("cubeSetAgg" + aggs[1]['name'] + "Exported.csv")
+        os.remove("cubeSetAgg" + aggs[2]['name'] + "Exported.csv")

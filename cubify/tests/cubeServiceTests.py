@@ -4,6 +4,7 @@ import shutil
 import uuid
 import math
 import json
+import csv
 from cubify import CubeService
 
 class cubeServiceTests(unittest.TestCase):
@@ -225,3 +226,29 @@ class cubeServiceTests(unittest.TestCase):
 
         os.remove(cubeName + '.csv')
 
+
+    def testExportCubeToCsv(self):
+
+        cubeName = 'test-' + str(uuid.uuid4())
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeName + '.csv')
+        cs = CubeService('testdb')
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+        cs.exportCubeToCsv(cubeName, "testExported.csv")
+
+        with open('testExported.csv') as csvfile:
+            reader = csv.DictReader(csvfile)
+            fieldNames = reader.fieldnames
+            self.assertTrue(fieldNames == ['CustomerId', 'ProductId', 'State', 'Date', 'Price', 'Qty'])
+            rowNum = 0
+            for row in reader:
+                rowNum += 1
+            self.assertTrue (rowNum == 14)
+
+        os.remove(cubeName + '.csv')
+        os.remove('testExported.csv')
+
+
+        
