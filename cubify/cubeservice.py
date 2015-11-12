@@ -477,3 +477,39 @@ class CubeService:
 
                                 
 
+    #
+    # Export cube cells to csv
+    #
+    def exportCubeToCsv(self, cubeName,csvFileName):
+
+        cube = self.getCube(cubeName)
+        if (cube == None):
+            raise ValueError("Cube does not exist:" + cubeName)
+
+        csvfile = open(csvFileName, 'w')
+        cubeCells = self.getCubeCells(cubeName)
+        fieldNames = []
+        for cubeCell in cubeCells:
+            if len(fieldNames) == 0:
+                for dimName in sorted(cubeCell['dimensions']):
+                   fieldNames.append(dimName)
+                for dateName in sorted(cubeCell['dates']):
+                   fieldNames.append(dateName)
+                for measure in sorted(cubeCell['measures']):
+                   fieldNames.append(measure)
+
+                writer = csv.DictWriter(csvfile, fieldnames=fieldNames)
+                writer.writeheader()
+             
+            row = {}
+            for dimName in cubeCell['dimensions']:
+                value = cubeCell['dimensions'][dimName]
+                row[dimName] = value
+            for dateName in cubeCell['dates']:
+                value = cubeCell['dates'][dateName]
+                row[dateName] = value
+            for measure in cubeCell['measures']:
+                value = cubeCell['measures'][measure]
+                row[measure] = value
+
+            writer.writerow(row)

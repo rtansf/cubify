@@ -23,10 +23,16 @@ class CubeSetService:
         self.db['cubeset'].update_one({ "name" : cubeSetName}, update)
 
 
+    #
+    # Get a cube set
+    #
     def getCubeSet(self, cubeSetName):
         return self.db['cubeset'].find_one({ "name": cubeSetName})
 
 
+    #
+    # Create a cube set including optionally performing binning and aggregation
+    #
     def createCubeSet(self, owner, cubeSetName, cubeSetDisplayName, csvFileName, binnings, aggs):
 
         # Make sure cubeSetName is unique
@@ -114,6 +120,9 @@ class CubeSetService:
         self.__updateCubeSetProperty__(cubeSetName, { "$set": {"displayName" : displayName}})
 
 
+    #
+    # Delete a cube set
+    #
     def deleteCubeSet(self, cubeSetName):
 
         existing = self.getCubeSet(cubeSetName)
@@ -131,7 +140,9 @@ class CubeSetService:
         # Delete cubeset
         self.db['cubeset'].remove({ "name": cubeSetName })
 
-
+    # 
+    # Get source cube cells. Iterator to cube cells is returned.
+    # 
     def getSourceCubeCells(self, cubeSetName):
         existing = self.getCubeSet(cubeSetName)
         if existing == None:
@@ -139,6 +150,9 @@ class CubeSetService:
 
         return self.cubeService.getCubeCells(existing['sourceCube'])
 
+    # 
+    # Get binned cube cells. Iterator to cube cells is returned.
+    # 
     def getBinnedCubeCells(self, cubeSetName):
         existing = self.getCubeSet(cubeSetName)
         if existing == None:
@@ -149,6 +163,9 @@ class CubeSetService:
         else:
             return None
 
+    # 
+    # Get aggregated cube cells. Iterator to cube cells is returned.
+    # 
     def getAggregatedCubeCells(self, cubeSetName, aggName):
         existing = self.getCubeSet(cubeSetName)
         if existing == None:
@@ -161,6 +178,42 @@ class CubeSetService:
 
         return None
 
+    #
+    # Export source cube to csv.
+    #
+    def exportSourceCubeToCsv(self, cubeSetName, csvFileName):
+        existing = self.getCubeSet(cubeSetName)
+        if existing == None:
+            raise ValueError('Cube Set with ' + cubeSetName + ' does not exist')
+
+        self.cubeService.exportCubeToCsv(existing['sourceCube'], csvFileName)
+
+    #
+    # Export binned cube to csv.
+    #
+    def exportBinnedCubeToCsv(self, cubeSetName, csvFileName):
+        existing = self.getCubeSet(cubeSetName)
+        if existing == None:
+            raise ValueError('Cube Set with ' + cubeSetName + ' does not exist')
+
+        self.cubeService.exportCubeToCsv(existing['binnedCube'], csvFileName)
+        
+    #
+    # Export agg cube to csv.
+    #
+    def exportAggCubeToCsv(self, cubeSetName, csvFileName, aggName):
+        existing = self.getCubeSet(cubeSetName)
+        if existing == None:
+            raise ValueError('Cube Set with ' + cubeSetName + ' does not exist')
+
+        if 'aggCubes' in existing:
+            for aggCube in existing['aggCubes']:
+               if existing['binnedCube'] + "_" + aggName == aggCube:
+                   self.cubeService.exportCubeToCsv(aggCube, csvFileName)
+
+    #
+    # Perform binning on source cube
+    #
     def performBinning(self, cubeSetName, binnings):
         existing = self.getCubeSet(cubeSetName)
         if existing == None:
@@ -174,6 +227,9 @@ class CubeSetService:
             self.cubeService.binCube(binnings, binnedCubeName, binnedCubeName)
             self.__updateCubeSetProperty__(cubeSetName, { "$set": {"binnedCube" : binnedCubeName}})
 
+    #
+    # Perform one or more aggregations on binned cube. The aggregated cubes are automatically saved and identified by aggName
+    #
     def performAggregation(self, cubeSetName, aggs):
         existing = self.getCubeSet(cubeSetName)
         if existing == None:
