@@ -5,7 +5,6 @@ import sys
 import numpy as np
 from copy import deepcopy
 from pymongo import MongoClient
-from pprint import pprint
 from datetime import datetime, date
 from timestring import Date, TimestringInvalid
 
@@ -42,20 +41,54 @@ class CubeService:
             else:
                 field[value] += 1
 
+    def __getFields__(self, csvFilePath):
+        result = {}
+        fieldTypes = {}
+
+        with open(csvFilePath) as csvfile:
+            reader = csv.DictReader(csvfile)
+            result['fieldNames'] = reader.fieldnames
+            fieldNames = result['fieldNames']
+            for fieldName in result['fieldNames']:
+               if fieldName.startswith('S:'):
+                  fieldTypes[fieldName] = 'string'
+               elif fieldName.startswith('N:'):                   
+                  fieldTypes[fieldName] = 'number'
+               elif fieldName.startswith('D:'):
+                  fieldTypes[fieldName] = 'date'
+               else:
+                  fieldTypes[fieldName] = 'unknown'
+
+            for row in reader:
+                for fieldName in fieldNames:
+                    value = row[fieldName]
+                    if fieldTypes[fieldName] == 'unknown':
+                        if self.__is_number__(value):
+                            fieldTypes[fieldName] = 'number'
+                        elif self.__is_date__(value):
+                            fieldTypes[fieldName] = 'date'
+                        else: 
+                            fieldTypes[fieldName] = 'string'
+                break
+
+        result['fieldTypes'] = fieldTypes
+        return result;
+
     #
     #  Create cube cells from csv
     #
     def createCubeCellsFromCsv(self, csvFilePath):
 
         cubeCells = []
-        fieldTypes = {}
         distincts = {}
+
+        fields = self.__getFields__(csvFilePath);
+        fieldTypes = fields['fieldTypes'];
+        fieldNames = fields['fieldNames'];
+        numFields = len(fieldNames)
 
         with open(csvFilePath) as csvfile:
             reader = csv.DictReader(csvfile)
-            fieldNames = reader.fieldnames
-            numFields = len(fieldNames)
-
             num = 1
             for row in reader:
                 if len(row) != numFields:
@@ -67,42 +100,29 @@ class CubeService:
 
                 for fieldName in fieldNames:
                     value = row[fieldName]
+                    fieldType = fieldTypes[fieldName]
 
                     # Check for null or empty value and handle appropriately
-                    noValue = False
                     if value == None or value == '':
-                        noValue = True
-                    fieldType = None
-                    if fieldName in fieldTypes:
-                        fieldType = fieldTypes[fieldName]
-                    if noValue:
                         if fieldType == 'string':
                             value = ''
                         elif fieldType == 'number':
                             value = 0
                         elif fieldType == 'date':
-                            value = '0000-00-00'
+                            value = '1970-01-01'
                         else:
                             value = ''
 
-                    if self.__is_number__(value):
-                        # Treat value as measure
-                        if fieldType == None:
-                            fieldTypes[fieldName] = 'number'
+                    if fieldType == 'number':
+                        if self.__is_number__(value):
                             cubeCell['measures'][fieldName] = float(value)
-                        elif fieldType == 'number':
-                            cubeCell['measures'][fieldName] = float(value)
-                        else:
-                            print 'Guessed wrong number type'
-                            # TODO We guessed wrong type - convert measure to dimension instead. Need to backtrack
-                            # For now make this a measure vith value 0
+                        else: 
                             cubeCell['measures'][fieldName] = 0.0
 
-                    elif self.__is_date__(value):
+                    elif fieldType == 'date':
                         # Treat date value as dimension
                         d = Date(value)
                         date = datetime(d.year, d.month, d.day)
-                        fieldTypes[fieldName] = 'date'
                         cubeCell['dates'][fieldName] = date
 
                         # Process distincts
@@ -110,7 +130,6 @@ class CubeService:
 
                     else:  # This is a string value
                         # Treat value as dimension
-                        fieldTypes[fieldName] = 'string'
                         cubeCell['dimensions'][fieldName] = value
 
                         # Process distincts
