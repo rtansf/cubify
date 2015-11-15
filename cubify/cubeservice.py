@@ -5,7 +5,8 @@ import sys
 import numpy as np
 from copy import deepcopy
 from pymongo import MongoClient
-from datetime import datetime, date
+from datetime import datetime
+from time import strptime
 from timestring import Date, TimestringInvalid
 
 class CubeService:
@@ -21,13 +22,36 @@ class CubeService:
             return False
         return True
 
+    def __getDateFormat__(self, s):
+
+        formats = ['%Y-%m-%d %H:%M:%S',
+                   '%Y-%m-%dT%H:%M:%S',
+                   '%Y-%m-%d',
+                   '%y-%m-%d',
+                   '%Y/%m/%d',
+                   '%y/%m/%d'
+                   ]
+
+        for format in formats:
+            try:
+               d = strptime(s, format )
+               return format
+            except ValueError:
+               pass # Try next format
+
+        return None
+
     def __is_date__(self, s):
-        # Use timestring library to parse date
-        try:
-            d = Date(s)
+        if self.__getDateFormat__(s) != None:
             return True
-        except TimestringInvalid:
+        else:
             return False
+
+    def __cleanFieldName(self, s):
+        if s.startswith('S:') or s.startswith('N:') or s.startswith('D:'):
+            return s[2:]
+        else:
+            return s
 
     def __addToDistincts__(self, distincts, fieldName, value):
         if fieldName not in distincts:
@@ -43,36 +67,44 @@ class CubeService:
 
     def __getFields__(self, csvFilePath):
         result = {}
+        result['rawFieldNames'] = []
+        result['fieldNames'] = []
         fieldTypes = {}
+        dateFormats = {}
 
         with open(csvFilePath) as csvfile:
             reader = csv.DictReader(csvfile)
-            result['fieldNames'] = reader.fieldnames
-            fieldNames = result['fieldNames']
-            for fieldName in result['fieldNames']:
-               if fieldName.startswith('S:'):
-                  fieldTypes[fieldName] = 'string'
-               elif fieldName.startswith('N:'):                   
-                  fieldTypes[fieldName] = 'number'
-               elif fieldName.startswith('D:'):
-                  fieldTypes[fieldName] = 'date'
+            rawFieldNames = reader.fieldnames
+            for rawFieldName in rawFieldNames:
+               result['rawFieldNames'].append(rawFieldName)
+               cleanedFieldName = self.__cleanFieldName(rawFieldName)
+               result['fieldNames'].append(cleanedFieldName)
+               if rawFieldName.startswith('S:'):
+                  fieldTypes[cleanedFieldName] = 'string'
+               elif rawFieldName.startswith('N:'):
+                  fieldTypes[cleanedFieldName] = 'number'
+               elif rawFieldName.startswith('D:'):
+                  fieldTypes[cleanedFieldName] = 'date'
                else:
-                  fieldTypes[fieldName] = 'unknown'
+                  fieldTypes[cleanedFieldName] = 'unknown'
 
             for row in reader:
-                for fieldName in fieldNames:
-                    value = row[fieldName]
-                    if fieldTypes[fieldName] == 'unknown':
+                for rawFieldName in rawFieldNames:
+                    cleanedFieldName = self.__cleanFieldName(rawFieldName)
+                    value = row[rawFieldName]
+                    if fieldTypes[cleanedFieldName] == 'unknown':
                         if self.__is_number__(value):
-                            fieldTypes[fieldName] = 'number'
+                            fieldTypes[cleanedFieldName] = 'number'
                         elif self.__is_date__(value):
-                            fieldTypes[fieldName] = 'date'
+                            fieldTypes[cleanedFieldName] = 'date'
+                            dateFormats[cleanedFieldName] = self.__getDateFormat__(value)
                         else: 
-                            fieldTypes[fieldName] = 'string'
+                            fieldTypes[cleanedFieldName] = 'string'
                 break
 
         result['fieldTypes'] = fieldTypes
-        return result;
+        result['dateFormats'] = dateFormats
+        return result
 
     #
     #  Create cube cells from csv
@@ -82,9 +114,11 @@ class CubeService:
         cubeCells = []
         distincts = {}
 
-        fields = self.__getFields__(csvFilePath);
-        fieldTypes = fields['fieldTypes'];
-        fieldNames = fields['fieldNames'];
+        fields = self.__getFields__(csvFilePath)
+        fieldTypes = fields['fieldTypes']
+        fieldNames = fields['fieldNames']
+        rawFieldNames = fields['rawFieldNames']
+
         numFields = len(fieldNames)
 
         with open(csvFilePath) as csvfile:
@@ -98,8 +132,8 @@ class CubeService:
                 cubeCell = {"id": num, "dimensionKey": "", "dimensions": {}, "measures": {}, "dates": {}}
                 num += 1
 
-                for fieldName in fieldNames:
-                    value = row[fieldName]
+                for rawFieldName, fieldName in map(None, rawFieldNames, fieldNames):
+                    value = row[rawFieldName]
                     fieldType = fieldTypes[fieldName]
 
                     # Check for null or empty value and handle appropriately
@@ -511,11 +545,11 @@ class CubeService:
         for cubeCell in cubeCells:
             if len(fieldNames) == 0:
                 for dimName in sorted(cubeCell['dimensions']):
-                   fieldNames.append(dimName)
+                   fieldNames.append('S:'+dimName)
                 for dateName in sorted(cubeCell['dates']):
-                   fieldNames.append(dateName)
+                   fieldNames.append('D:'+dateName)
                 for measure in sorted(cubeCell['measures']):
-                   fieldNames.append(measure)
+                   fieldNames.append('N:'+measure)
 
                 writer = csv.DictWriter(csvfile, fieldnames=fieldNames)
                 writer.writeheader()
@@ -523,12 +557,15 @@ class CubeService:
             row = {}
             for dimName in cubeCell['dimensions']:
                 value = cubeCell['dimensions'][dimName]
-                row[dimName] = value
+                rawDimName = 'S:'+dimName
+                row[rawDimName] = value
             for dateName in cubeCell['dates']:
                 value = cubeCell['dates'][dateName]
-                row[dateName] = value
+                rawDateName = 'D:'+dateName
+                row[rawDateName] = value
             for measure in cubeCell['measures']:
                 value = cubeCell['measures'][measure]
-                row[measure] = value
+                rawMeasureName = 'N:'+measure
+                row[rawMeasureName] = value
 
             writer.writerow(row)

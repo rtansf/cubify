@@ -487,7 +487,7 @@ class cubeSetServiceTests(unittest.TestCase):
         with open('cubeSetSourceExported.csv') as csvfile:
             reader = csv.DictReader(csvfile)
             fieldNames = reader.fieldnames
-            self.assertTrue(fieldNames == ['CustomerId', 'ProductId', 'State', 'Date', 'Price', 'Qty'])
+            self.assertTrue(fieldNames == ['S:CustomerId', 'S:ProductId', 'S:State', 'D:Date', 'N:Price', 'N:Qty'])
             rowNum = 0
             for row in reader:
                 rowNum += 1
@@ -523,7 +523,7 @@ class cubeSetServiceTests(unittest.TestCase):
         with open('cubeSetBinnedExported.csv') as csvfile:
             reader = csv.DictReader(csvfile)
             fieldNames = reader.fieldnames
-            self.assertTrue(fieldNames == ['CustomerId', 'PriceBin', 'ProductId', 'QtyBin', 'Region', 'State', 'Year', 'Date', 'Price', 'Qty'])
+            self.assertTrue(fieldNames == ['S:CustomerId', 'S:PriceBin', 'S:ProductId', 'S:QtyBin', 'S:Region', 'S:State', 'S:Year', 'D:Date', 'N:Price', 'N:Qty'])
             rowNum = 0
             for row in reader:
                 rowNum += 1
@@ -558,7 +558,7 @@ class cubeSetServiceTests(unittest.TestCase):
         with open("cubeSetAgg" + aggs[0]['name'] + "Exported.csv") as csvfile:
             reader = csv.DictReader(csvfile)
             fieldNames = reader.fieldnames
-            self.assertTrue(fieldNames == ['ProductId', 'Region', 'AveragePrice', 'AverageQty'])
+            self.assertTrue(fieldNames == ['S:ProductId', 'S:Region', 'N:AveragePrice', 'N:AverageQty'])
             rowNum = 0
             for row in reader:
                 rowNum += 1
@@ -569,7 +569,7 @@ class cubeSetServiceTests(unittest.TestCase):
         with open("cubeSetAgg" + aggs[1]['name'] + "Exported.csv") as csvfile:
             reader = csv.DictReader(csvfile)
             fieldNames = reader.fieldnames
-            self.assertTrue(fieldNames == ['ProductId', 'TotalQty'])
+            self.assertTrue(fieldNames == ['S:ProductId', 'N:TotalQty'])
             rowNum = 0
             for row in reader:
                 rowNum += 1
@@ -579,7 +579,7 @@ class cubeSetServiceTests(unittest.TestCase):
         with open("cubeSetAgg" + aggs[2]['name'] + "Exported.csv") as csvfile:
             reader = csv.DictReader(csvfile)
             fieldNames = reader.fieldnames
-            self.assertTrue(fieldNames == ['ProductId', 'AverageRevenue'])
+            self.assertTrue(fieldNames == ['S:ProductId', 'N:AverageRevenue'])
             rowNum = 0
             for row in reader:
                 rowNum += 1

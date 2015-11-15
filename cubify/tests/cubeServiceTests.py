@@ -241,7 +241,7 @@ class cubeServiceTests(unittest.TestCase):
         with open('testExported.csv') as csvfile:
             reader = csv.DictReader(csvfile)
             fieldNames = reader.fieldnames
-            self.assertTrue(fieldNames == ['CustomerId', 'ProductId', 'State', 'Date', 'Price', 'Qty'])
+            self.assertTrue(fieldNames == ['S:CustomerId', 'S:ProductId', 'S:State', 'D:Date', 'N:Price', 'N:Qty'])
             rowNum = 0
             for row in reader:
                 rowNum += 1
