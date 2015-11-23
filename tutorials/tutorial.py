@@ -1,3 +1,15 @@
+#
+# Cubify Tutorial Part 1
+#
+# This tutorial shows you how to use Cubify to:
+#
+#   1. Create a cube 
+#   2. Query cube cells
+#   3. Export a cube 
+#   4. Bin a cube
+#   5. Aggregate a cube
+#
+
 from cubify import Cubify
 import json
 

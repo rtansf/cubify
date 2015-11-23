@@ -1,22 +1,23 @@
-cubify - "Data Cubes On Steroids" 
+Cubify - "Data Cubes On Steroids" 
 ---------------------------------
-cubify is a tool written in python for data analysts who require "data agility". If you need to experiment with different ways of binning data, and viewing data at various levels of granularity cubify is the tool for you. cubify allows you to easily create a data cube from a CSV file and then to transform the cube into other cubes by binning and aggregation.  So what is a data cube? It is simply a structure that organizes your data into the data warehouse concepts of dimensions and measures.
+Cubify is a tool written in python for data analysts who require "data agility". If you need to experiment with different ways of binning data, and viewing data at various levels of granularity Cubify is the tool for you! Cubify allows you to easily create a data cube from CSV and then to transform the cube into other cubes by binning and aggregation.  So what is a data cube? It is simply a structure that organizes data into dimensions and measures, concepts used in data warehouse systems.
 
 Installation
 ------------
 
 Manual Installation:
 
-After downloading and uncompressing the cubify.tar.gz or cloning from: https://github.com/rtansf/cubify.git,
+   git clone https://github.com/rtansf/cubify.git,
 
    cd to the cubify root directory. Then execute:
    python setup.py install
+ 
+   If you have MongoDB installed and running, skip the next step and proceed to the Tutorial.
+   Install and run MongoDB by following the instructions at: https://docs.mongodb.org/manual/installation/
+   Next proceed to the Tutorial.
 
-If you have MongoDB installed and running, skip the next step and proceed to the Tutorial.
-Install and run MongoDB by following the instructions at: https://docs.mongodb.org/manual/installation/
-Next follow this tutorial.
-
-Install from docker:  TBD
+Install from docker:  
+   TBD
 
 Tutorial 
 --------
