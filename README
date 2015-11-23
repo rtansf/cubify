@@ -7,7 +7,7 @@ Installation
 
 Manual Installation:
 
-   git clone https://github.com/rtansf/cubify.git,
+   git clone https://github.com/rtansf/cubify.git
 
    cd to the cubify root directory. Then execute:
    python setup.py install
