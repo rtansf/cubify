@@ -1,0 +1,9 @@
+[{ "binningName" : "QtyBinning",
+   "outputField" : { "name": "QtyBin", "displayName": "Qty Bin" },
+   "sourceField" : "Qty",
+   "type" : "range",
+   "bins" : [
+        { "label" : "0-5",         "min": 0,       "max": 5 },
+        { "label" : "5+",          "min": 6,       "max": 999999999 }
+   ],
+   "fallbackLabel" : "None" }]

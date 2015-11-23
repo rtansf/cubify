@@ -1,0 +1,11 @@
+[
+    {
+       "name" : "agg1",
+       "dimensions": ["ProductId", "Region"],
+       "measures" : [
+           { "outputField" : {"name":"AveragePrice", "displayName": "Average Price"},
+             "formula" : { "numerator" : "{ '$avg': '$measures.Price' }", "denominator" : "" }
+           }
+       ]
+    }
+]

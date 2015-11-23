@@ -31,7 +31,7 @@
    "fallbackLabel" : "Other"
  },
 
- { "binningName" : "RegionBinning",
+ { "binningName" : "CustomerStateBinning",
    "outputField" : { "name": "Region", "displayName": "Region" },
    "sourceField" : "State",
    "type" : "enum",

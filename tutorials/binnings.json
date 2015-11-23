@@ -1,0 +1,52 @@
+[{ "binningName" : "QtyBinning",
+   "outputField" : { "name": "QtyBin", "displayName": "Qty Bin" },
+   "sourceField" : "Qty",
+   "type" : "range",
+   "bins" : [
+        { "label" : "0-5",         "min": 0,       "max": 5 },
+        { "label" : "5+",          "min": 6,       "max": 999999999 }
+   ],
+   "fallbackLabel" : "None"
+ },
+ { "binningName" : "PriceBinning",
+   "outputField" : { "name": "PriceBin", "displayName": "Price Bin" },
+   "sourceField" : "Price",
+   "type" : "range",
+   "bins" : [
+        { "label" : "0-5",      "min": 0.00,       "max": 5.00   },
+        { "label" : "5-10",     "min": 5.01,       "max": 10.00  },
+        { "label" : "10+",      "min": 10.01,      "max": 999999999.99  }
+   ],
+   "fallbackLabel" : "None"
+ },
+ { "binningName" : "TransctionDateBinning",
+   "outputField" : { "name": "YearMonth", "displayName": "YearMonth" },
+   "sourceField" : "TransactionDate",
+   "type" : "date",
+   "bins" : [
+        { "label" : "Sep-2015", "min" : "2015-09-01", "max" : "2015-09-30" },
+        { "label" : "Oct-2015", "min" : "2015-10-01", "max" : "2015-10-31" },
+        { "label" : "Nov-2015", "min" : "2015-11-01", "max" : "2015-11-30" },
+        { "label" : "Dec-2015", "min" : "2015-12-01", "max" : "2015-12-31" }
+   ],
+   "fallbackLabel" : "Other"
+ },
+ { "binningName" : "RegionBinning",
+   "outputField" : { "name": "Region", "displayName": "Region" },
+   "sourceField" : "CustomerState",
+   "type" : "enum",
+   "bins" : [
+        { "label" : "West",   "value" : "CA" },
+        { "label" : "West",   "value" : "WA" },
+        { "label" : "Mountain",  "value" : "ID" },
+        { "label" : "SouthWest", "value" : "NM" },
+        { "label" : "MidWest", "value" : "ND" },
+        { "label" : "MidWest", "value" : "SD" },
+        { "label" : "NorthEast", "value" : "ME" },
+        { "label" : "NorthEast", "value" : "NY" },
+        { "label" : "South", "value" : "GA" },
+        { "label" : "South", "value" : "LA" }
+   ],
+   "fallbackLabel" : "Other"
+ }
+]

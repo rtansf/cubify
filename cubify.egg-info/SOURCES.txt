@@ -1,8 +1,10 @@
 README
 setup.py
+cubify/Cubify.py
 cubify/__init__.py
 cubify/cubeservice.py
 cubify/cubesetservice.py
+cubify/cubify.py
 cubify.egg-info/PKG-INFO
 cubify.egg-info/SOURCES.txt
 cubify.egg-info/dependency_links.txt

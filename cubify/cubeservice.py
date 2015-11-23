@@ -10,7 +10,7 @@ from time import strptime
 from timestring import Date, TimestringInvalid
 
 class CubeService:
-    def __init__(self, dbName):
+    def __init__(self, dbName="cubify"):
         self.dbName = dbName
         client = MongoClient()
         self.db = client[dbName]
@@ -184,11 +184,14 @@ class CubeService:
         return {'cubeCells': cubeCells, 'distincts': distincts, 'stats': stats}
 
     #
-    # Create a cube from csv file
+    # Create a cube from csv file. Returns the new cube
     #
-    def createCubeFromCsv(self, csvFilePath, cubeName, cubeDisplayName):
+    def createCubeFromCsv(self, csvFilePath, cubeName, cubeDisplayName=None):
+        if cubeDisplayName == None:
+            cubeDisplayName = cubeName
         result = self.createCubeCellsFromCsv(csvFilePath)
         self.createCube('source', cubeName, cubeDisplayName, result['cubeCells'], result['distincts'], result['stats'], None, None)
+        return self.getCube(cubeName)
 
     #
     # Append to cube from csv file
@@ -415,9 +418,11 @@ class CubeService:
         return binnedCubeCell
 
     #
-    # Bin cube
+    # Bin cube - Returns the binned cube
     #
-    def binCube(self, binnings, sourceCubeName, binnedCubeName, binnedCubeDisplayName):
+    def binCube(self, binnings, sourceCubeName, binnedCubeName, binnedCubeDisplayName=None):
+        if binnedCubeDisplayName == None:
+            binnedCubeDisplayName = binnedCubeName
         binnedCubeCells = []
         cubeCells = self.getCubeCells(sourceCubeName)
         distincts = {}
@@ -429,6 +434,8 @@ class CubeService:
         stats = self.getStats(binnedCubeCells)
         self.createCube('binned', binnedCubeName, binnedCubeDisplayName, binnedCubeCells, distincts, stats, binnings, None)
         self.__updateCubeProperty__(binnedCubeName, { "$set": {"lastBinnedOn" : datetime.utcnow()}})
+
+        return self.getCube(binnedCubeName)
 
     #
     # Re-bin cube
@@ -456,11 +463,13 @@ class CubeService:
         self.__updateCubeProperty__(binnedCubeName, { "$set": {"stats" : stats}})
         self.__updateCubeProperty__(binnedCubeName, { "$set": {"distincts" : distincts}})
 
+        return self.getCube(binnedCubeName)
 
     #
     # Aggregate cube
     #
     def aggregateCube(self, cubeName, aggs):
+        resultCubes = []
         for agg in aggs:
             aggName = agg['name']
             aggCubeCells = []
@@ -474,6 +483,10 @@ class CubeService:
             group['_id'] = idContent
             for dimension in agg['dimensions']:
                 idContent[dimension] = '$dimensions.' + dimension
+
+            hasProjection = False
+            project = {}
+
             for measure in agg['measures']:
                 measureName = measure['outputField']['name']
 
@@ -483,20 +496,26 @@ class CubeService:
                     formulaNumerator = formulaNumerator.replace("'", '"')
                     formulaDenominator = measure['formula']['denominator']
                     formulaDenominator = formulaDenominator.replace("'", '"')
-                    group['numerator'] = json.loads(formulaNumerator)
-                    group['denominator'] = json.loads(formulaDenominator)
-                    project = {}
+                    group['numerator' + measureName] = json.loads(formulaNumerator)
+                    group['denominator' + measureName] = json.loads(formulaDenominator)
                     result = {}
                     project[measureName] = result
                     projectPipelineItem = {}
                     pipeline.append(projectPipelineItem)
                     projectPipelineItem['$project'] = project
-                    result['$divide'] = ["$numerator", "$denominator"]
+                    result['$divide'] = ["$numerator"+measureName, "$denominator"+measureName]
+                    hasProjection = True
                 else:
                     # Put numerator in group
                     formulaNumerator = measure['formula']['numerator']
                     formulaNumerator = formulaNumerator.replace("'", '"')
                     group[measureName] = json.loads(formulaNumerator)
+
+            # Need to include other grouped items in the projection -- TODO needs reworking.
+            if hasProjection :
+                for gname in group:
+                    if gname != '_id' and gname.startswith('numerator') == False and gname.startswith('denominator') == False:
+                         project[gname] = '$'+gname
 
             aggResult = self.db[cubeName].aggregate(pipeline)
             aggResultList = list(aggResult)
@@ -527,8 +546,9 @@ class CubeService:
                 self.deleteCube(aggCubeName)
 
             self.createCube('agg', aggCubeName, aggCubeName, aggCubeCells, distincts, stats, None, agg)
+            resultCubes.append(self.getCube(aggCubeName))
 
-                                
+        return resultCubes                        
 
     #
     # Export cube cells to csv
