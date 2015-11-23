@@ -12,8 +12,9 @@ Manual Installation:
    cd to the cubify root directory. Then execute:
    python setup.py install
  
-   If you have MongoDB installed and running, skip the next step and proceed to the Tutorial.
-   Install and run MongoDB by following the instructions at: https://docs.mongodb.org/manual/installation/
+   If you have MongoDB installed and running, skip the next step.
+   Install and run MongoDB by following the instructions at: 
+       https://docs.mongodb.org/manual/installation/
    Next proceed to the Tutorial.
 
 Install from docker:  
