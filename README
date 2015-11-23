@@ -5,26 +5,27 @@ Cubify is a tool written in python for data analysts who require "data agility".
 Installation
 ------------
 
-Manual Installation:
+If you don't have Python installed, go get Python at: https://www.python.org/downloads/
+If you don't have MongoDB installed, go get MongoDB at: https://docs.mongodb.org/manual/installation/
+You must have MongoDB running to use Cubify.
+
+Cubify Manual Installation:
 
    git clone https://github.com/rtansf/cubify.git
-
    cd to the cubify root directory. Then execute:
    python setup.py install
  
-   If you have MongoDB installed and running, skip the next step.
-   Install and run MongoDB by following the instructions at: 
-       https://docs.mongodb.org/manual/installation/
-   Next proceed to the Tutorial.
-
-Install from docker:  
-   TBD
+Cubify Install from docker:  
+   
+   Coming soon...
 
 Tutorial 
 --------
 
 Go to the tutorials folder in the cubify installation, open tutorial.py and follow along with the tutorial commentary below.
-In the same folder, the file pruchases.csv contains a simple dataset containing customer purchase transactions.
+You can run the tutorial, by typing: python tutorial.py
+
+In the same folder, the file purchases.csv contains a simple dataset containing customer purchase transactions.
 Our simple data set contains the following columns:
 
     Transaction Date  
