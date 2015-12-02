@@ -64,7 +64,9 @@ class CubeSetService:
                     aggCubeNames.append(binnedCubeName + "_" + agg['name'])
                 cubeSet['aggCubes'] = aggCubeNames
     
-        self.db['cubeset'].insert_one(cubeSet);        
+        self.db['cubeset'].insert_one(cubeSet)        
+        
+        return cubeSet
 
     #
     # Add cells to source cube
@@ -127,7 +129,7 @@ class CubeSetService:
 
         existing = self.getCubeSet(cubeSetName)
         if existing == None:
-            raise ValueError('Cube Set with ' + cubeSetName + ' does not exist')
+            return
 
         # Delete source, binned and agg cubes
         self.cubeService.deleteCube(existing['sourceCube'])

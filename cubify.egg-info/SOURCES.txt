@@ -6,6 +6,7 @@ cubify/cubeservice.py
 cubify/cubesetservice.py
 cubify/cubify.py
 cubify.egg-info/PKG-INFO
+cubify.egg-info/PKG-INFO~
 cubify.egg-info/SOURCES.txt
 cubify.egg-info/dependency_links.txt
 cubify.egg-info/not-zip-safe

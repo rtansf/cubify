@@ -1,0 +1,6 @@
+TransactionDate,CustomerId,CustomerState,ProductId,Qty,Price
+2015-12-01,C4,GA,P1,1,22.0
+2015-12-01,C1,NY,P2,1,18.0
+2015-12-02,C2,ME,P2,1,18.0
+2015-12-01,C3,LA,P2,1,19.0
+

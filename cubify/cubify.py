@@ -7,6 +7,8 @@ class Cubify:
         self.cubeService = CubeService(dbName)
         self.cubeSetService = CubeSetService(dbName)
 
+    ### Cubes
+
     def createCubeFromCsv(self, csvFilePath, cubeName, cubeDisplayName=None):
         return self.cubeService.createCubeFromCsv(csvFilePath, cubeName, cubeDisplayName)
 
@@ -35,6 +37,54 @@ class Cubify:
         return self.cubeService.rebinCube(binnings, sourceCubeName, binnedCubeName)
   
     def aggregateCube(self, cubeName, aggs):
-        return self.cubeService.aggregateCube(cubeName, aggs)         
-    
-   
+        return self.cubeService.aggregateCube(cubeName, aggs)     
+
+    ####  CubeSets
+
+    def createCubeSet (self, owner, cubeSetName, cubeSetDisplayName, csvFilePath, binnings, aggs):
+        return self.cubeSetService.createCubeSet(owner, cubeSetName, cubeSetDisplayName, csvFilePath, binnings, aggs)
+
+    def deleteCubeSet(self, cubeSetName):
+        return self.cubeSetService.deleteCubeSet(cubeSetName)
+
+    def getCubeSet(self, cubeSetName):
+        return self.cubeSetService.getCubeSet(cubeSetName)
+
+    def addCellsToSourceCube(self, cubeSetName, csvFilePath):
+        return self.cubeSetService.addCellsToSourceCube(cubeSetName, csvFilePath)
+        
+    def removeCellsFromSourceCube(self, cubeSetName, filter):
+        return self.cubeSetService.removeCellsFromSourceCube(cubeSetName, filter)
+
+    def updateCubeSetDisplayName(self, cubeSetName, displayName):
+        self.cubeSetService.updateCubeSetDisplayName(cubeSetName, displayName)
+
+    def performBinning(self, cubeSetName, binnings):
+        self.cubeSetService.performBinning(self, cubeSetName, binnings)
+
+    def performAggregation(self, cubeSetName, aggs):
+        self.cubeSetService.performAggregation(self, cubeSetName, aggs)
+
+    def getSourceCubeCells(self, cubeSetName):
+        return self.cubeSetService.getSourceCubeCells(cubeSetName)
+
+    def getBinnedCubeCells(self, cubeSetName):
+        return self.cubeSetService.getBinnedCubeCells(cubeSetName)
+
+    def getAggregatedCubeCells(self, cubeSetName, aggName):
+        return self.cubeSetService.getAggregatedCubeCells(cubeSetName, aggName)
+
+    def exportSourceCubeToCsv(self, cubeSetName, csvFilePath):
+        self.cubeSetService.exportSourceCubeToCsv(cubeSetName, csvFilePath)
+
+    def exportBinnedCubeToCsv(self, cubeSetName, csvFilePath):
+        self.cubeSetService.exportBinnedCubeToCsv(cubeSetName, csvFilePath)
+
+    def exportAggCubeToCsv(self, cubeSetName, csvFilePath, aggName):
+        self.cubeSetService.exportAggCubeToCsv(cubeSetName, csvFilePath, aggName)
+
+
+
+
+ 
+       
