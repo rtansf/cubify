@@ -22,6 +22,10 @@ class CubeService:
             return False
         return True
 
+    def __cleanStringValue__(self, s):
+        s = s.replace(".", "")             
+        return s
+
     def __getDateFormat__(self, s):
 
         formats = ['%Y-%m-%d %H:%M:%S',
@@ -164,6 +168,8 @@ class CubeService:
 
                     else:  # This is a string value
                         # Treat value as dimension
+                        # Clean the value
+                        value = self.__cleanStringValue__(value)
                         cubeCell['dimensions'][fieldName] = value
 
                         # Process distincts
