@@ -30,7 +30,6 @@
    ],
    "fallbackLabel" : "Other"
  },
-
  { "binningName" : "CustomerStateBinning",
    "outputField" : { "name": "Region", "displayName": "Region" },
    "sourceField" : "State",

@@ -306,6 +306,12 @@ class CubeService:
         self.db['cube'].update_one({ "name" : cubeName}, update)
 
     #
+    # Update an arbitrary field in a cube cell
+    #
+    def __updateCubeCellProperty__(self, cubeName, _id, update):
+        self.db[cubeName].update_one({ "_id" : _id}, update)
+
+    #
     #  Get cube
     #
     def getCube(self, cubeName):
@@ -371,13 +377,28 @@ class CubeService:
     # TODO Room for optimization here
     def __getDateBinLabel__(self, v, db):
         d = Date(v)
-        bins = db['bins']
-        for bin in bins:
-            minD = Date(bin['min'])
-            maxD = Date(bin['max'])
-            if d.year >= minD.year and d.month >= minD.month and d.day >= minD.day and d.year <= maxD.year and d.month <= maxD.month and d.day <= maxD.day:
-                return bin['label']
-        return db['fallbackLabel']
+        if 'period' in db:
+           period = db['period']
+           if period == 'weekly':
+               dt = datetime(d.year, d.month, d.day)
+               isoCalendar = dt.isocalendar()
+               yearNum = isoCalendar[0]
+               weekNum = isoCalendar[1]
+               return str(yearNum) + "-" + str(weekNum)
+           elif period == 'monthly':
+               return str(d.year) + "-" + str(d.month)
+           elif period == 'yearly':
+               return str(d.year)
+           else:
+               return "Unknown"
+        else:
+           bins = db['bins']
+           for bin in bins:
+               minD = Date(bin['min'])
+               maxD = Date(bin['max'])
+               if d.year >= minD.year and d.month >= minD.month and d.day >= minD.day and d.year <= maxD.year and d.month <= maxD.month and d.day <= maxD.day:
+                 return bin['label']
+           return db['fallbackLabel']
 
     #
     # Perform binning
@@ -554,7 +575,72 @@ class CubeService:
             self.createCube('agg', aggCubeName, aggCubeName, aggCubeCells, distincts, stats, None, agg)
             resultCubes.append(self.getCube(aggCubeName))
 
-        return resultCubes                        
+        return resultCubes
+
+    def addColumn(self, cubeName, newColumnName, type, expression=None, func=None):
+        if type != 'numeric' and type != 'string':
+            raise ValueError("type must be one of numeric, string")
+
+        if expression == None and func == None:
+            raise ValueError("You must supply an expression or function")
+
+        if (expression != None):
+            if type  == 'numeric':
+               expression = expression.replace('$', "cubeCell['measures']")
+            elif type == 'string':
+               expression = expression.replace('$', "cubeCell['dimensions']")
+
+        cube = self.getCube(cubeName)
+        if (cube == None):
+           raise ValueError("Cube does not exist:" + cubeName)
+
+        cubeCells = self.getCubeCells(cubeName)
+        tempMap = {}
+
+        for cubeCell in cubeCells:
+            try:
+                if expression != None:
+                    value = eval(expression)
+                else:
+                    value = func(cubeCell)
+                cubeId = cubeCell['id']
+                tempMap[cubeId] = value
+            except SyntaxError:
+                raise SyntaxError("Expression contains syntax error.")
+
+        cubeCells = self.getCubeCells(cubeName)
+        for cubeCell in cubeCells:
+            cubeId = cubeCell['id']
+            value = tempMap[cubeId]
+            if (type == 'numeric'):
+                cubeCell['measures'][newColumnName] = value
+                measureUpdateField = 'measures.' + newColumnName
+                self.__updateCubeCellProperty__(cubeName, cubeCell['_id'], { "$set": {measureUpdateField : value}})
+            elif (type == 'string'):
+                cubeCell['dimensions'][newColumnName] = value
+                dimensionUpdateField = 'dimensions.' + newColumnName
+                self.__updateCubeCellProperty__(cubeName, cubeCell['_id'], { "$set": {dimensionUpdateField : value}})
+                # Reconstruct dimension key
+                dimensionKey = self.__reconstructDimensionKey__(cubeCell['dimensions'], cubeCell['dates'])
+                self.__updateCubeCellProperty__(cubeName, cubeCell['_id'], { "$set": {"dimensionKey": dimensionKey}})
+                self.__addToDistincts__(cube['distincts'], newColumnName, value)
+
+        if type == 'numeric':
+            # Recompute stats
+            cubeCells = self.getCubeCells(cubeName)
+            stats = self.getStats(cubeCells)
+            self.__updateCubeProperty__(cubeName, { "$set": {"stats" : stats}})
+        elif type == 'string':
+            self.__updateCubeProperty__(cubeName, { "$set": {"distincts" : cube['distincts']}})
+
+
+    def __reconstructDimensionKey__(self, dimensions, dates):
+        dimensionKey = ''
+        for dimension in sorted(dimensions):
+            dimensionKey += '#' + dimension + ":" + dimensions[dimension]
+        for dateName in sorted(dates):
+            dimensionKey += '#' + dateName + ":" + str(dates[dateName])[:10]
+        return dimensionKey
 
     #
     # Export cube cells to csv
@@ -595,3 +681,6 @@ class CubeService:
                 row[rawMeasureName] = value
 
             writer.writerow(row)
+
+
+     

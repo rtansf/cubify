@@ -25,7 +25,17 @@ Tutorial
 Go to the tutorials folder in the cubify installation, open tutorial.py and follow along with the tutorial commentary below.
 You can run the tutorial, by typing: python tutorial.py
 
-In the same folder, the file purchases.csv contains a simple dataset containing customer purchase transactions.
+In this tutorial you will learn how to:
+
+   1. Create a cube 
+   2. Export a cube
+   3. Query cube cells
+   4. Add columns to a cube 
+   5. Bin a cube
+   6. Aggregate a cube
+
+So let's get started. cd to the tutorials folder.
+In the folder, the file purchases.csv contains a simple dataset containing customer purchase transactions.
 Our simple data set contains the following columns:
 
     Transaction Date  
@@ -53,8 +63,8 @@ TransactionDate,CustomerId,CustomerState,ProductId,Qty,Price
 2015-11-13,C2,NY,P1,2,22.0
 2015-11-13,C3,MA,P1,7,20.0
 
-Creating a cube
----------------
+1. Creating a cube
+------------------
 Let's create a cube from our csv file. We we call our cube, "purchases".
 First, we create an instance of Cubify and invoke createCubeFromCsv passing in the csv file path and the cube name.
 
@@ -109,12 +119,14 @@ The 'stats' property shows a list of measures in the cube with accompanying stat
               'mean': 3.142857142857143 }
    }
 
-You can also export the cube to a csv file by calling exportCubeToCsv. For example,
+2. Exporting a cube
+-------------------
+You can export the cube to a csv file by calling exportCubeToCsv. For example,
 
     cubify.exportCubeToCsv('purchases', '/tmp/exported.csv')
 
-Getting cube cells
-------------------
+3. Querying cube cells
+-----------------------
 You can get cube cells from a cube by calling getCubeCells like so:
 
     cubeCells = cubify.getCubeCells('purchases')
@@ -128,14 +140,70 @@ A cube cell has the following basic properties:
     dimensions - the dimension values for string types
     measures - the measure values of numeric type
     
-You can query cube cells using filters. For example to get all cube cells where ProductId = 'P2', do the following:
+You can query cube cells using filters. 
+For example to get all cube cells where ProductId = 'P2', do the following:
 
     p2CubeCells = cubify.queryCubeCells('purchases', { 'dimensions.ProductId' : 'P2' })
-    for p2CubeCell in p2CubeCells:
-        print p2CubeCell
 
-For details about querying cube cells and the properties of a cube cell, refer to the Cubify Reference documentation.
+Other query examples:
+    
+    cubeCells = cubify.queryCubeCells('purchases', { 'measures.Price' : { '$gt' : 21 })
+    cubeCells = cubify.queryCubeCells('purchases', { '$and' : [ { 'measures.Price' : { '$gt' : 21 }},  { 'dimensions.ProductId' : 'P2' } ]})
+    
 
+For details about query syntax, refer to the Cubify Reference documentation.
+
+4. Adding columns
+-----------------
+
+You can add new numeric and string columns to a cube using an expression or a function.
+For example, to add a numeric column called "Revenue" using the expression Price * Qty, you can call:
+
+    cubify.addColumn("purchases", "Revenue", "numeric", "$['Price'] * $['Qty']", None)
+
+If we want to add a new numeric column called "Discount" using a function called "computeDiscount", first define the function as in the example below.
+Note that the function must have one argument which will hold the cubeCell.
+
+def computeDiscount(cubeCell):
+   if cubeCell['dimensions']['CustomerState'] == 'CA':
+        return 3.5
+   else:
+        return 3.0
+    
+Then call addColumn as in the example below:
+
+   cubify.addColumn("purchases", "Discount", "numeric", None, computeDiscount)
+
+The following example shows you how to add a new string column.
+Say you want to add a new column called "ProductCategory" whose value should be "Category1" if the Product is "P1" and "Category2" for all other products.
+We can use an expression as in the following example:
+
+   cubify.addColumn('purchases', 'ProductCategory', 'string', "'Category1' if $['ProductId'] == 'P1' else 'Category2'", None)
+    
+Let's say we want to add another string column, PackageSize which will use a computePackageSize function to return the values 'SMALL' or 'LARGE'.
+First define the function,
+
+def computePackageSize(cubeCell):
+    if cubeCell['dimensions']['ProductId'] == 'P1' and cubeCell['measures']['Qty'] <= 5:
+        return 'SMALL'
+    elif cubeCell['dimensions']['ProductId'] == 'P1' and cubeCell['measures']['Qty'] > 5:
+        return 'LARGE'
+    elif cubeCell['dimensions']['ProductId'] == 'P2' and cubeCell['measures']['Qty'] <= 3:
+        return 'SMALL'
+    elif cubeCell['dimensions']['ProductId'] == 'P2' and cubeCell['measures']['Qty'] > 3:
+        return 'LARGE'
+    elif cubeCell['dimensions']['ProductId'] == 'P3' and cubeCell['measures']['Qty'] <= 6:
+        return 'SMALL'
+    elif cubeCell['dimensions']['ProductId'] == 'P3' and cubeCell['measures']['Qty'] > 6:
+        return 'LARGE'
+    else:
+        return 'SMALL'
+
+Then call addColumn as in:
+
+    cubify.addColumn('purchases', 'PackageSize', 'string', None, computePackageSize)
+
+   
 Binning a cube
 --------------
 Next, we will bin the measures and dimensions in our purchases cube. This is done with cubify's binning DSL which allows you specify defintions for a binning.

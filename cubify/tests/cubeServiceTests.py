@@ -7,6 +7,28 @@ import json
 import csv
 from cubify import CubeService
 
+def funcx(cubeCell):
+    if (cubeCell['dimensions']['State'] == 'CA'):
+        return 3
+    else:
+        return 2
+
+def funcy(cubeCell):
+    if cubeCell['dimensions']['ProductId'] == 'P1' and cubeCell['measures']['Qty'] <= 5:
+        return 'SMALL'
+    elif cubeCell['dimensions']['ProductId'] == 'P1' and cubeCell['measures']['Qty'] > 5:
+        return 'LARGE'
+    elif cubeCell['dimensions']['ProductId'] == 'P2' and cubeCell['measures']['Qty'] <= 3:
+        return 'SMALL'
+    elif cubeCell['dimensions']['ProductId'] == 'P2' and cubeCell['measures']['Qty'] > 3:
+        return 'LARGE'
+    elif cubeCell['dimensions']['ProductId'] == 'P3' and cubeCell['measures']['Qty'] <= 6:
+        return 'SMALL'
+    elif cubeCell['dimensions']['ProductId'] == 'P3' and cubeCell['measures']['Qty'] > 6:
+        return 'LARGE'
+    else:
+        return 'SMALL'
+
 class cubeServiceTests(unittest.TestCase):
 
     def testCreateCubeCellsFromCsv(self):
@@ -126,6 +148,78 @@ class cubeServiceTests(unittest.TestCase):
         self.assertTrue(dimkeys[13] == '#CustomerId:C3#PriceBin:10+#ProductId:P1#QtyBin:5+#Region:NorthEast#State:MA#Year:Year2015#Date:2015-10-11')
 
         os.remove(cubeName + '.csv')
+
+    def testBinningDateMonthly(self):
+        cubeName = 'test-' + str(uuid.uuid4())
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeName + '.csv')
+        cs = CubeService('testdb')
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+        binningFileName = 'cubify/tests/test_binnings_date1.json'
+        if (os.path.isfile(binningFileName) == False):
+            binningFileName = './test_binnings_date1.json'
+        with open(binningFileName) as binnings_file:
+            binnings = json.load(binnings_file)
+        cs.binCube(binnings, cubeName, cubeName + '_b', cubeName + '_b')
+
+        binnedCubeCells = cs.getCubeCells(cubeName + '_b')
+        dimkeys = []
+        for binnedCubeCell in binnedCubeCells:
+            dimkeys.append(binnedCubeCell['dimensionKey'])
+        dimkeys.sort()
+
+        self.assertTrue(dimkeys[0] == '#CustomerId:C1#ProductId:P1#State:CA#YearMonth:2014-10#Date:2014-10-10')
+        self.assertTrue(dimkeys[1] == '#CustomerId:C1#ProductId:P1#State:CA#YearMonth:2014-10#Date:2014-10-11')
+        self.assertTrue(dimkeys[2] == '#CustomerId:C1#ProductId:P1#State:CA#YearMonth:2015-10#Date:2015-10-10')
+        self.assertTrue(dimkeys[3] == '#CustomerId:C1#ProductId:P1#State:CA#YearMonth:2015-10#Date:2015-10-11')
+        self.assertTrue(dimkeys[4] == '#CustomerId:C1#ProductId:P2#State:CA#YearMonth:2014-10#Date:2014-10-11')
+        self.assertTrue(dimkeys[5] == '#CustomerId:C1#ProductId:P2#State:CA#YearMonth:2015-10#Date:2015-10-11')
+        self.assertTrue(dimkeys[6] == '#CustomerId:C2#ProductId:P1#State:NY#YearMonth:2014-10#Date:2014-10-10')
+        self.assertTrue(dimkeys[7] == '#CustomerId:C2#ProductId:P1#State:NY#YearMonth:2014-10#Date:2014-10-11')
+        self.assertTrue(dimkeys[8] == '#CustomerId:C2#ProductId:P1#State:NY#YearMonth:2015-10#Date:2015-10-10')
+        self.assertTrue(dimkeys[9] == '#CustomerId:C2#ProductId:P1#State:NY#YearMonth:2015-10#Date:2015-10-11')
+        self.assertTrue(dimkeys[10] == '#CustomerId:C2#ProductId:P2#State:NY#YearMonth:2014-10#Date:2014-10-10')
+        self.assertTrue(dimkeys[11] == '#CustomerId:C2#ProductId:P2#State:NY#YearMonth:2015-10#Date:2015-10-10')
+        self.assertTrue(dimkeys[12] == '#CustomerId:C3#ProductId:P1#State:MA#YearMonth:2014-10#Date:2014-10-11')
+        self.assertTrue(dimkeys[13] == '#CustomerId:C3#ProductId:P1#State:MA#YearMonth:2015-10#Date:2015-10-11')
+
+    def testBinningDateWeekly(self):
+        cubeName = 'test-' + str(uuid.uuid4())
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeName + '.csv')
+        cs = CubeService('testdb')
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+        binningFileName = 'cubify/tests/test_binnings_date2.json'
+        if (os.path.isfile(binningFileName) == False):
+            binningFileName = './test_binnings_date2.json'
+        with open(binningFileName) as binnings_file:
+            binnings = json.load(binnings_file)
+        cs.binCube(binnings, cubeName, cubeName + '_b', cubeName + '_b')
+
+        binnedCubeCells = cs.getCubeCells(cubeName + '_b')
+        dimkeys = []
+        for binnedCubeCell in binnedCubeCells:
+            dimkeys.append(binnedCubeCell['dimensionKey'])
+        dimkeys.sort()
+
+        self.assertTrue(dimkeys[0] == '#CustomerId:C1#ProductId:P1#State:CA#Week:2014-41#Date:2014-10-10')
+        self.assertTrue(dimkeys[1] == '#CustomerId:C1#ProductId:P1#State:CA#Week:2014-41#Date:2014-10-11')
+        self.assertTrue(dimkeys[2] == '#CustomerId:C1#ProductId:P1#State:CA#Week:2015-41#Date:2015-10-10')
+        self.assertTrue(dimkeys[3] == '#CustomerId:C1#ProductId:P1#State:CA#Week:2015-41#Date:2015-10-11')
+        self.assertTrue(dimkeys[4] == '#CustomerId:C1#ProductId:P2#State:CA#Week:2014-41#Date:2014-10-11')
+        self.assertTrue(dimkeys[5] == '#CustomerId:C1#ProductId:P2#State:CA#Week:2015-41#Date:2015-10-11')
+        self.assertTrue(dimkeys[6] == '#CustomerId:C2#ProductId:P1#State:NY#Week:2014-41#Date:2014-10-10')
+        self.assertTrue(dimkeys[7] == '#CustomerId:C2#ProductId:P1#State:NY#Week:2014-41#Date:2014-10-11')
+        self.assertTrue(dimkeys[8] == '#CustomerId:C2#ProductId:P1#State:NY#Week:2015-41#Date:2015-10-10')
+        self.assertTrue(dimkeys[9] == '#CustomerId:C2#ProductId:P1#State:NY#Week:2015-41#Date:2015-10-11')
+        self.assertTrue(dimkeys[10] == '#CustomerId:C2#ProductId:P2#State:NY#Week:2014-41#Date:2014-10-10')
+        self.assertTrue(dimkeys[11] == '#CustomerId:C2#ProductId:P2#State:NY#Week:2015-41#Date:2015-10-10')
+        self.assertTrue(dimkeys[12] == '#CustomerId:C3#ProductId:P1#State:MA#Week:2014-41#Date:2014-10-11')
+        self.assertTrue(dimkeys[13] == '#CustomerId:C3#ProductId:P1#State:MA#Week:2015-41#Date:2015-10-11')
 
     def testReBinning(self):
         cubeName = 'test-' + str(uuid.uuid4())
@@ -250,5 +344,108 @@ class cubeServiceTests(unittest.TestCase):
         os.remove(cubeName + '.csv')
         os.remove('testExported.csv')
 
+    def testAddColumnNumeric1(self):
 
+        cubeName = 'test-' + str(uuid.uuid4())
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeName + '.csv')
+        cs = CubeService('testdb')
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+
+        cs.addColumn(cubeName, 'Revenue', 'numeric', "$['Qty'] * $['Price']")
+        cube = cs.getCube(cubeName)
+        stats = cube['stats']
+        self.assertTrue ('Revenue' in stats)
         
+        cubeCells = cs.getCubeCells(cubeName)
+        for cubeCell in cubeCells:
+            self.assertTrue ('Revenue' in cubeCell['measures'])
+            self.assertTrue (cubeCell['measures']['Revenue'] == cubeCell['measures']['Price'] * cubeCell['measures']['Qty'])
+
+        os.remove(cubeName + '.csv')
+
+    def func(cubeCell):
+        if (cubeCell['dimensions']['customerState'] == 'CA'):
+            return 3
+        else:
+            return 2
+        
+    def testAddColumnNumeric2(self):
+        cubeName = 'test-' + str(uuid.uuid4())
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeName + '.csv')
+        cs = CubeService('testdb')
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+
+        cs.addColumn(cubeName, 'Discount', 'numeric', None, funcx)
+        cube = cs.getCube(cubeName)
+        stats = cube['stats']
+        self.assertTrue ('Discount' in stats)
+
+        cubeCells = cs.getCubeCells(cubeName)
+        for cubeCell in cubeCells:
+            self.assertTrue ('Discount' in cubeCell['measures'])
+            if (cubeCell['dimensions']['State'] == 'CA'):
+               self.assertTrue (cubeCell['measures']['Discount'] == 3)
+            else:
+               self.assertTrue (cubeCell['measures']['Discount'] == 2)
+
+        os.remove(cubeName + '.csv')
+
+    def testAddColumnString1(self):
+        cubeName = 'test-' + str(uuid.uuid4())
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeName + '.csv')
+        cs = CubeService('testdb')
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+
+        cs.addColumn(cubeName, 'ProductCategory', 'string', "'Category1' if $['ProductId'] == 'P1' else 'Category2'", None)
+        cube = cs.getCube(cubeName)
+        self.assertTrue('ProductCategory' in cube['distincts'])
+
+        cubeCells = cs.getCubeCells(cubeName)
+        for cubeCell in cubeCells:
+            self.assertTrue ('ProductCategory' in cubeCell['dimensions'])
+            if (cubeCell['dimensions']['ProductId'] == 'P1'):
+               self.assertTrue (cubeCell['dimensions']['ProductCategory'] == 'Category1')
+            else:
+               self.assertTrue (cubeCell['dimensions']['ProductCategory'] == 'Category2')
+
+        os.remove(cubeName + '.csv')
+
+    def testAddColumnString2(self):
+        cubeName = 'test-' + str(uuid.uuid4())
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeName + '.csv')
+        cs = CubeService('testdb')
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+
+        cs.addColumn(cubeName, 'PackageSize', 'string', None, funcy)
+        cube = cs.getCube(cubeName)
+        self.assertTrue('PackageSize' in cube['distincts'])
+
+        cubeCells = cs.getCubeCells(cubeName)
+        for cubeCell in cubeCells:
+            self.assertTrue ('PackageSize' in cubeCell['dimensions'])
+            if cubeCell['dimensions']['ProductId'] == 'P1' and cubeCell['measures']['Qty'] <= 5:
+               self.assertTrue (cubeCell['dimensions']['PackageSize'] == 'SMALL')
+            elif cubeCell['dimensions']['ProductId'] == 'P1' and cubeCell['measures']['Qty'] > 5:
+               self.assertTrue (cubeCell['dimensions']['PackageSize'] == 'LARGE')
+            elif cubeCell['dimensions']['ProductId'] == 'P2' and cubeCell['measures']['Qty'] <= 3:
+               self.assertTrue (cubeCell['dimensions']['PackageSize'] == 'SMALL')
+            elif cubeCell['dimensions']['ProductId'] == 'P2' and cubeCell['measures']['Qty'] > 3:
+               self.assertTrue (cubeCell['dimensions']['PackageSize'] == 'LARGE')
+            elif cubeCell['dimensions']['ProductId'] == 'P3' and cubeCell['measures']['Qty'] <= 6:
+               self.assertTrue (cubeCell['dimensions']['PackageSize'] == 'SMALL')
+            elif cubeCell['dimensions']['ProductId'] == 'P3' and cubeCell['measures']['Qty'] > 6:
+               self.assertTrue (cubeCell['dimensions']['PackageSize'] == 'LARGE')
+
+        os.remove(cubeName + '.csv')

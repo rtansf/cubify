@@ -1,0 +1,9 @@
+[
+ { "binningName" : "DateBinning",
+   "outputField" : { "name": "YearMonth", "displayName": "Year-Month" },
+   "sourceField" : "Date",
+   "type" : "date",
+   "period" : "monthly",
+   "fallbackLabel" : "Other"
+ }
+]

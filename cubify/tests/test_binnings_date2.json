@@ -1,0 +1,9 @@
+[
+ { "binningName" : "DateBinning",
+   "outputField" : { "name": "Week", "displayName": "Week" },
+   "sourceField" : "Date",
+   "type" : "date",
+   "period" : "weekly",
+   "fallbackLabel" : "Other"
+ }
+]

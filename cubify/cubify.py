@@ -30,6 +30,9 @@ class Cubify:
     def exportCubeToCsv(self, cubeName,csvFilePath):
         return self.cubeService.exportCubeToCsv(cubeName, csvFilePath)
 
+    def addColumn(self, cubeName, newColumnName, type, expression=None, func=None):
+        self.cubeService.addColumn(cubeName, newColumnName, type, expression, func)
+
     def binCube(self, binnings, sourceCubeName, binnedCubeName, binnedCubeDisplayName=None):
         return self.cubeService.binCube(binnings, sourceCubeName, binnedCubeName, binnedCubeDisplayName)
 
