@@ -204,8 +204,8 @@ Then call addColumn as in:
     cubify.addColumn('purchases', 'PackageSize', 'string', None, computePackageSize)
 
    
-Binning a cube
---------------
+5. Binning a cube
+-----------------
 Next, we will bin the measures and dimensions in our purchases cube. This is done with cubify's binning DSL which allows you specify defintions for a binning.
 For example, let's say we would like to bin the Qty measure in our cube. We define for simplicity's sake, two bins:  0-5 and 5+
 The binning definition for the Qty column (stored in the file qtyBinning.json) is show below:
@@ -329,8 +329,8 @@ C2,NY,10+,P1,0-5,NorthEast,Nov-2015,2015-11-13 00:00:00,22.0,2.0
 C3,MA,10+,P1,5+,Other,Nov-2015,2015-11-13 00:00:00,20.0,7.0
 
 
-Aggregating a cube
-------------------
+6. Aggregating a cube
+---------------------
 
 Next, let's aggregate the cube, binnedCube2 we created above. This is done with cubify's aggregation DSL.
 For example, let's say we want a cube containing the average price grouped by product and region.  
