@@ -12,6 +12,9 @@ class Cubify:
     def createCubeFromCsv(self, csvFilePath, cubeName, cubeDisplayName=None):
         return self.cubeService.createCubeFromCsv(csvFilePath, cubeName, cubeDisplayName)
 
+    def createCubeFromCube(self, fromCubeName, filter, toCubeName, toCubeDisplayName=None):
+        return self.createCubeFromCube(fromCubeName, filter, toCubeName, toCubeDisplayName)
+
     def deleteCube(self, cubeName):
         self.cubeService.deleteCube(cubeName)
 

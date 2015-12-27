@@ -58,6 +58,30 @@ class cubeServiceTests(unittest.TestCase):
         cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
         os.remove(cubeName + '.csv')
 
+    def testCreateCubeFromCube(self):
+        cubeName = 'test-' + str(uuid.uuid4())
+        toCubeName = 'test2-' + str(uuid.uuid4())
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeName + '.csv')
+        cs = CubeService('testdb')
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+        cs.createCubeFromCube(cubeName, { "dimensions.State" : "NY" }, toCubeName)
+
+        toCube = cs.getCube(toCubeName)
+        self.assertTrue (toCube != None)
+        distincts = toCube['distincts']
+        self.assertTrue (distincts['State'] == {'NY' : 6})
+        #print toCube
+
+        toCubeCells = cs.getCubeCells(toCubeName)
+        self.assertTrue (toCubeCells.count() == 6)
+        #for toCubeCell in toCubeCells:
+        #    print toCubeCell
+
+        os.remove(cubeName + '.csv')
+
     def testDeleteCube(self):
         cubeName = 'test-' + str(uuid.uuid4())
         try:
@@ -185,6 +209,8 @@ class cubeServiceTests(unittest.TestCase):
         self.assertTrue(dimkeys[12] == '#CustomerId:C3#ProductId:P1#State:MA#YearMonth:2014-10#Date:2014-10-11')
         self.assertTrue(dimkeys[13] == '#CustomerId:C3#ProductId:P1#State:MA#YearMonth:2015-10#Date:2015-10-11')
 
+        os.remove(cubeName + '.csv')
+
     def testBinningDateWeekly(self):
         cubeName = 'test-' + str(uuid.uuid4())
         try:
@@ -220,6 +246,8 @@ class cubeServiceTests(unittest.TestCase):
         self.assertTrue(dimkeys[11] == '#CustomerId:C2#ProductId:P2#State:NY#Week:2015-41#Date:2015-10-10')
         self.assertTrue(dimkeys[12] == '#CustomerId:C3#ProductId:P1#State:MA#Week:2014-41#Date:2014-10-11')
         self.assertTrue(dimkeys[13] == '#CustomerId:C3#ProductId:P1#State:MA#Week:2015-41#Date:2015-10-11')
+
+        os.remove(cubeName + '.csv')
 
     def testReBinning(self):
         cubeName = 'test-' + str(uuid.uuid4())

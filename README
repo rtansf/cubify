@@ -71,11 +71,30 @@ First, we create an instance of Cubify and invoke createCubeFromCsv passing in t
    cubify = Cubify()
    cube = cubify.createCubeFromCsv('purchases.csv', 'purchases')
 
-This returns a new cube containing dimensions and measures. 
+This returns a new cube containing cube cells. A cube cell is a "row" in a cube; it contains dimensions, and measures.
 In our purchases example, dimensions are the string and date columns: TransactionDate, CustomerId, CustomerState and ProductId.
 Measures are the numeric columns: Price and Qty.
 
-We can examine the properties of the cube we have just created. Some interesting ones are: 'distincts' and 'stats'.
+So the first row of our CSV file becomes the following cube cell:
+
+{
+    "dates" : {
+        "TransactionDate" : ISODate("2014-10-10T00:00:00.000+0000")
+    },
+    "dimensions" : {
+        "CustomerId" : "C1",
+        "CustomerState" : "CA",
+        "ProductId" : "P1"
+    },
+    "measures" : {
+        "Qty" : 3.0,
+        "Price" : 20.5
+    },
+    "dimensionKey" : "#CustomerId:C1#ProductId:P1#State:CA#Date:2014-10-10"
+}
+
+
+Now, we can examine the properties of the cube we have just created. Some interesting ones are: 'distincts' and 'stats'.
 The 'distincts' property shows a list of all dimensions in the cube with their distinct values with the number of rows that contain the value. 
 
    print cube['distincts']
@@ -118,6 +137,14 @@ The 'stats' property shows a list of measures in the cube with accompanying stat
               'total': 44.0, 
               'mean': 3.142857142857143 }
    }
+
+You can also create a cube from another cube by applying a filter to the source cube.
+The method is called "createCubeFromCube". For example to create a cube containing only cube cells where the CustomerState is "NY" from the 'purchases'
+cube above we can call the method like so:
+
+ cubify.createCubeFromCube('purchases', { 'dimensions.CustomerState' : 'NY' }, 'nyPurchases')
+
+For more details about filters, refer to the Cubify Reference documentation.
 
 2. Exporting a cube
 -------------------

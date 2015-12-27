@@ -200,12 +200,45 @@ class CubeService:
         return self.getCube(cubeName)
 
     #
+    # Create a cube by applying a filter on another cube
+    #
+    def createCubeFromCube(self, fromCubeName, filter, toCubeName, toCubeDisplayName=None):
+        if toCubeDisplayName == None:
+            toCubeDisplayName = toCubeName
+        fromCube = self.getCube(fromCubeName)
+        if fromCube == None:
+            raise ValueError("Cube does not exist: " + fromCubeName)
+        cubeCells = self.queryCubeCells(fromCubeName, filter)
+        if cubeCells.count() == 0:
+            raise ValueError("Cube not created because number of cells returned by filter = 0")
+            return
+
+        # TODO - see about not bringing all  cubeCells into memory for insertion
+        cells = []
+        distincts = {}
+
+        # Compute the distincts
+        for cubeCell in cubeCells:
+            cells.append(cubeCell)
+            for dimension in cubeCell['dimensions']:
+                value = cubeCell['dimensions'][dimension]
+                self.__addToDistincts__(distincts, dimension, value)
+
+
+        # Compute stats
+        stats = self.getStats(cells)
+
+        # Create the cube
+        self.createCube('source',toCubeName, toCubeDisplayName, cells, distincts, stats, None, None)
+
+
+    #
     # Append to cube from csv file
     #
     def appendToCubeFromCsv(self, csvFilePath, cubeName):
         cube = self.getCube(cubeName)
         if (cube == None):
-            raise ValueError("Cube does not exist:" + cubeName)
+            raise ValueError("Cube does not exist: " + cubeName)
 
         result = self.createCubeCellsFromCsv(csvFilePath)
 
