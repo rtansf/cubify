@@ -47,29 +47,29 @@ Our simple data set contains the following columns:
 
 The contents of the file are shown below:
 
-  * TransactionDate,CustomerId,CustomerState,ProductId,Qty,Price
-  * 2015-10-10,C1,CA,P1,3,20.5
-  * 2015-10-10,C1,CA,P1,3,20.5
-  * 2015-10-10,C1,CA,P2,1,15.5
-  * 2015-10-10,C2,NY,P1,2,20.0
-  * 2015-10-10,C2,NY,P2,4,16.0
-  * 2015-10-11,C2,NY,P1,2,19.5
-  * 2015-10-11,C3,MA,P1,7,18.5
-  * 2015-11-03,C1,CA,P1,3,21.5
-  * 2015-11-10,C1,CA,P1,3,22.0
-  * 2015-11-12,C1,CA,P2,1,22.0
-  * 2015-11-12,C2,NY,P1,2,22.0
-  * 2015-11-13,C2,NY,P2,4,17.0
-  * 2015-11-13,C2,NY,P1,2,22.0
-  * 2015-11-13,C3,MA,P1,7,20.0
+    TransactionDate,CustomerId,CustomerState,ProductId,Qty,Price
+    2015-10-10,C1,CA,P1,3,20.5
+    2015-10-10,C1,CA,P1,3,20.5
+    2015-10-10,C1,CA,P2,1,15.5
+    2015-10-10,C2,NY,P1,2,20.0
+    2015-10-10,C2,NY,P2,4,16.0
+    2015-10-11,C2,NY,P1,2,19.5
+    2015-10-11,C3,MA,P1,7,18.5
+    2015-11-03,C1,CA,P1,3,21.5
+    2015-11-10,C1,CA,P1,3,22.0
+    2015-11-12,C1,CA,P2,1,22.0
+    2015-11-12,C2,NY,P1,2,22.0
+    2015-11-13,C2,NY,P2,4,17.0
+    2015-11-13,C2,NY,P1,2,22.0
+    2015-11-13,C3,MA,P1,7,20.0
 
 1. Creating a cube
 ------------------
 Let's create a cube from our csv file. We we call our cube, "purchases".
 First, we create an instance of Cubify and invoke createCubeFromCsv passing in the csv file path and the cube name.
 
-   cubify = Cubify()
-   cube = cubify.createCubeFromCsv('purchases.csv', 'purchases')
+    cubify = Cubify()
+    cube = cubify.createCubeFromCsv('purchases.csv', 'purchases')
 
 This returns a new cube containing cube cells. A cube cell is a "row" in a cube; it contains dimensions, and measures.
 In our purchases example, dimensions are the string and date columns: TransactionDate, CustomerId, CustomerState and ProductId.
@@ -96,52 +96,53 @@ So the first row of our CSV file becomes the following cube cell:
 Now, we can examine the properties of the cube we have just created. Some interesting ones are: 'distincts' and 'stats'.
 The 'distincts' property shows a list of all dimensions in the cube with their distinct values with the number of rows that contain the value. 
 
-   print cube['distincts']
+    print cube['distincts']
 
-   {'CustomerState': {
+    {'CustomerState': {
         'NY': 6, 
         'CA': 6, 
         'MA': 2 }, 
-    'TransactionDate': {
+     'TransactionDate': {
         '2015-10-10': 5, 
         '2015-10-11': 2, 
         '2015-11-03': 1, 
         '2015-11-10': 1, 
         '2015-11-13': 3, 
         '2015-11-12': 2 }, 
-    'CustomerId': {
+     'CustomerId': {
         'C3': 2, 
         'C2': 6, 
         'C1': 6 }, 
-    'ProductId': {
+     'ProductId': {
         'P2': 4, 
         'P1': 10 }
-   }
+    }
 
 The 'stats' property shows a list of measures in the cube with accompanying statistics, such as standard deviation, median, mean, min, max and total.
 
-   print cube['stats']
+    print cube['stats']
 
-   {'Price': {'std': 2.1688894929555684, 
+    {
+      'Price': {'std': 2.1688894929555684, 
               'min': 15.5,
               'max': 22.0, 
               'median': 20.25,
               'total': 277.0, 
               'mean':  19.785714285714285},
  
-     'Qty':  {'std': 1.8070158058105026, 
+      'Qty':  {'std': 1.8070158058105026, 
               'min': 1.0, 
               'max': 7.0, 
               'median': 3.0, 
               'total': 44.0, 
               'mean': 3.142857142857143 }
-   }
+    }
 
 You can also create a cube from another cube by applying a filter to the source cube.
 The method is called "createCubeFromCube". For example to create a cube containing only cube cells where the CustomerState is "NY" from the 'purchases'
 cube above we can call the method like so:
 
- cubify.createCubeFromCube('purchases', { 'dimensions.CustomerState' : 'NY' }, 'nyPurchases')
+    cubify.createCubeFromCube('purchases', { 'dimensions.CustomerState' : 'NY' }, 'nyPurchases')
 
 For more details about filters, refer to the Cubify Reference documentation.
 
@@ -190,40 +191,40 @@ For example, to add a numeric column called "Revenue" using the expression Price
 If we want to add a new numeric column called "Discount" using a function called "computeDiscount", first define the function as in the example below.
 Note that the function must have one argument which will hold the cubeCell.
 
-def computeDiscount(cubeCell):
-   if cubeCell['dimensions']['CustomerState'] == 'CA':
-        return 3.5
-   else:
-        return 3.0
+    def computeDiscount(cubeCell):
+       if cubeCell['dimensions']['CustomerState'] == 'CA':
+           return 3.5
+       else:
+           return 3.0
     
 Then call addColumn as in the example below:
 
-   cubify.addColumn("purchases", "Discount", "numeric", None, computeDiscount)
+    cubify.addColumn("purchases", "Discount", "numeric", None, computeDiscount)
 
 The following example shows you how to add a new string column.
 Say you want to add a new column called "ProductCategory" whose value should be "Category1" if the Product is "P1" and "Category2" for all other products.
 We can use an expression as in the following example:
 
-   cubify.addColumn('purchases', 'ProductCategory', 'string', "'Category1' if $['ProductId'] == 'P1' else 'Category2'", None)
+    cubify.addColumn('purchases', 'ProductCategory', 'string', "'Category1' if $['ProductId'] == 'P1' else 'Category2'", None)
     
 Let's say we want to add another string column, PackageSize which will use a computePackageSize function to return the values 'SMALL' or 'LARGE'.
 First define the function,
 
-def computePackageSize(cubeCell):
-    if cubeCell['dimensions']['ProductId'] == 'P1' and cubeCell['measures']['Qty'] <= 5:
-        return 'SMALL'
-    elif cubeCell['dimensions']['ProductId'] == 'P1' and cubeCell['measures']['Qty'] > 5:
-        return 'LARGE'
-    elif cubeCell['dimensions']['ProductId'] == 'P2' and cubeCell['measures']['Qty'] <= 3:
-        return 'SMALL'
-    elif cubeCell['dimensions']['ProductId'] == 'P2' and cubeCell['measures']['Qty'] > 3:
-        return 'LARGE'
-    elif cubeCell['dimensions']['ProductId'] == 'P3' and cubeCell['measures']['Qty'] <= 6:
-        return 'SMALL'
-    elif cubeCell['dimensions']['ProductId'] == 'P3' and cubeCell['measures']['Qty'] > 6:
-        return 'LARGE'
-    else:
-        return 'SMALL'
+    def computePackageSize(cubeCell):
+       if cubeCell['dimensions']['ProductId'] == 'P1' and cubeCell['measures']['Qty'] <= 5:
+           return 'SMALL'
+       elif cubeCell['dimensions']['ProductId'] == 'P1' and cubeCell['measures']['Qty'] > 5:
+           return 'LARGE'
+       elif cubeCell['dimensions']['ProductId'] == 'P2' and cubeCell['measures']['Qty'] <= 3:
+           return 'SMALL'
+       elif cubeCell['dimensions']['ProductId'] == 'P2' and cubeCell['measures']['Qty'] > 3:
+           return 'LARGE'
+       elif cubeCell['dimensions']['ProductId'] == 'P3' and cubeCell['measures']['Qty'] <= 6:
+           return 'SMALL'
+       elif cubeCell['dimensions']['ProductId'] == 'P3' and cubeCell['measures']['Qty'] > 6:
+           return 'LARGE'
+       else:
+           return 'SMALL'
 
 Then call addColumn as in:
 
@@ -236,29 +237,29 @@ Next, we will bin the measures and dimensions in our purchases cube. This is don
 For example, let's say we would like to bin the Qty measure in our cube. We define for simplicity's sake, two bins:  0-5 and 5+
 The binning definition for the Qty column (stored in the file qtyBinning.json) is show below:
 
- [{ "binningName" : "QtyBinning",
-    "outputField" : { "name": "QtyBin", "displayName": "Qty Bin" },
-    "sourceField" : "Qty",
-    "type" : "range",
-    "bins" : [
-        { "label" : "0-5",         "min": 0,       "max": 5 },
-        { "label" : "5+",          "min": 6,       "max": 999999999 }
-    ],
-    "fallbackLabel" : "None"
- }]
+    [{ "binningName" : "QtyBinning",
+       "outputField" : { "name": "QtyBin", "displayName": "Qty Bin" },
+       "sourceField" : "Qty",
+       "type" : "range",
+       "bins" : [
+           { "label" : "0-5",         "min": 0,       "max": 5 },
+           { "label" : "5+",          "min": 6,       "max": 999999999 }
+       ],
+       "fallbackLabel" : "None"
+    }]
 
 In the definition above, we define the sourceField to be "Qty" and the outputField to be "QtyBin". The outputField will become a new dimension in the binned cube.
 Since, we are binning a continuous measure, the type is set to "range". The fallbackLabel is applied to a value that falls outside of our binning ranges. Let's apply the above binning defintion above to our purchases cube to produce a new cube called "purchases_binned_1".
 
-     with open('qtyBinning.json') as binnings_file:
+    with open('qtyBinning.json') as binnings_file:
          binnings = json.load(binnings_file)
-     binnedCube1 = cubify.binCube(binnings, 'purchases', 'purchases_binned_1')
+    binnedCube1 = cubify.binCube(binnings, 'purchases', 'purchases_binned_1')
 
 Now when you list the distinct dimension values of binnedCube1, you will see that a new dimension, QtyBin appears in the list with 12 occurrences of 0-5 bin and 2 occurrences of the 5+ bin.:
 
-     print binnedCube1['distincts']
+    print binnedCube1['distincts']
 
-     'QtyBin': {'0-5': 12, '5+': 2}  ....
+    'QtyBin': {'0-5': 12, '5+': 2}  ....
 
 Note that after binning, the number of cube cells in the cube do not change. We still have a total of 14 cells in our binned cube. 
 
@@ -266,21 +267,21 @@ If you export purchases_binned_1 to csv, you should see a new column, QtyBin.
 
     cubify.exportCubeToCsv('purchases_binned_1', '/tmp/exportedBinned1.csv')
 
-S:CustomerId,S:CustomerState,S:ProductId,S:QtyBin,D:TransactionDate,N:Price,N:Qty
-C1,CA,P1,0-5,2015-10-10 00:00:00,20.5,3.0
-C1,CA,P1,0-5,2015-10-10 00:00:00,20.5,3.0
-C1,CA,P2,0-5,2015-10-10 00:00:00,15.5,1.0
-C2,NY,P1,0-5,2015-10-10 00:00:00,20.0,2.0
-C2,NY,P2,0-5,2015-10-10 00:00:00,16.0,4.0
-C2,NY,P1,0-5,2015-10-11 00:00:00,19.5,2.0
-C3,MA,P1,5+,2015-10-11 00:00:00,18.5,7.0
-C1,CA,P1,0-5,2015-11-03 00:00:00,21.5,3.0
-C1,CA,P1,0-5,2015-11-10 00:00:00,22.0,3.0
-C1,CA,P2,0-5,2015-11-12 00:00:00,22.0,1.0
-C2,NY,P1,0-5,2015-11-12 00:00:00,22.0,2.0
-C2,NY,P2,0-5,2015-11-13 00:00:00,17.0,4.0
-C2,NY,P1,0-5,2015-11-13 00:00:00,22.0,2.0
-C3,MA,P1,5+,2015-11-13 00:00:00,20.0,7.0
+    S:CustomerId,S:CustomerState,S:ProductId,S:QtyBin,D:TransactionDate,N:Price,N:Qty
+    C1,CA,P1,0-5,2015-10-10 00:00:00,20.5,3.0
+    C1,CA,P1,0-5,2015-10-10 00:00:00,20.5,3.0
+    C1,CA,P2,0-5,2015-10-10 00:00:00,15.5,1.0
+    C2,NY,P1,0-5,2015-10-10 00:00:00,20.0,2.0
+    C2,NY,P2,0-5,2015-10-10 00:00:00,16.0,4.0
+    C2,NY,P1,0-5,2015-10-11 00:00:00,19.5,2.0
+    C3,MA,P1,5+,2015-10-11 00:00:00,18.5,7.0
+    C1,CA,P1,0-5,2015-11-03 00:00:00,21.5,3.0
+    C1,CA,P1,0-5,2015-11-10 00:00:00,22.0,3.0
+    C1,CA,P2,0-5,2015-11-12 00:00:00,22.0,1.0
+    C2,NY,P1,0-5,2015-11-12 00:00:00,22.0,2.0
+    C2,NY,P2,0-5,2015-11-13 00:00:00,17.0,4.0
+    C2,NY,P1,0-5,2015-11-13 00:00:00,22.0,2.0
+    C3,MA,P1,5+,2015-11-13 00:00:00,20.0,7.0
 
 Note that in the exported csv, the column names are prefixed with the data type of the column, S: for string, D: for date and N for numeric type.
      
@@ -288,71 +289,71 @@ Now look at the file binnings.json. It defines 4 different binnings, QtyBinning 
 
 Take a look at TransactionDateBinning. It is a binning of type "date".
 
- [{ "binningName" : "TransctionDateBinning",
-    "outputField" : { "name": "YearMonth", "displayName": "YearMonth" },
-    "sourceField" : "TransactionDate",
-    "type" : "date",
-    "bins" : [
-        { "label" : "Sep-2015", "min" : "2015-09-01", "max" : "2015-09-30" },
-        { "label" : "Oct-2015", "min" : "2015-10-01", "max" : "2015-10-31" },
-        { "label" : "Nov-2015", "min" : "2015-11-01", "max" : "2015-11-30" },
-        { "label" : "Dec-2015", "min" : "2015-12-01", "max" : "2015-12-31" }
-    ],
-    "fallbackLabel" : "Other"
- }]      	  
+   [{ "binningName" : "TransctionDateBinning",
+      "outputField" : { "name": "YearMonth", "displayName": "YearMonth" },
+      "sourceField" : "TransactionDate",
+      "type" : "date",
+      "bins" : [
+          { "label" : "Sep-2015", "min" : "2015-09-01", "max" : "2015-09-30" },
+          { "label" : "Oct-2015", "min" : "2015-10-01", "max" : "2015-10-31" },
+          { "label" : "Nov-2015", "min" : "2015-11-01", "max" : "2015-11-30" },
+          { "label" : "Dec-2015", "min" : "2015-12-01", "max" : "2015-12-31" }
+      ],
+      "fallbackLabel" : "Other"
+   }]      	  
 
 A date binning is similar to range binning except that the data type of the dimension being binned is of type date. The min and max ranges must be dates in the format "YYYY-mm-dd". In our example above, we are defining the TransactionDate field is being binned into monthly bins in the YearMonth field. 
 
 The third binning type is "enum". Take a look at the RegionBinning definition from the binnings.json file.
 
- [{ "binningName" : "RegionBinning",
-    "outputField" : { "name": "Region", "displayName": "Region" },
-    "sourceField" : "CustomerState",
-    "type" : "enum",
-    "bins" : [
-        { "label" : "West",   "value" : "CA" },
-        { "label" : "West",   "value" : "WA" },
-        { "label" : "Mountain",  "value" : "ID" },
-        { "label" : "SouthWest", "value" : "NM" },
-        { "label" : "MidWest", "value" : "ND" },
-        { "label" : "MidWest", "value" : "SD" },
-        { "label" : "NorthEast", "value" : "ME" },
-        { "label" : "NorthEast", "value" : "NY" },
-        { "label" : "South", "value" : "GA" },
-        { "label" : "South", "value" : "LA" }
-    ],
-    "fallbackLabel" : "Other"
- }]
+    [{ "binningName" : "RegionBinning",
+       "outputField" : { "name": "Region", "displayName": "Region" },
+       "sourceField" : "CustomerState",
+       "type" : "enum",
+       "bins" : [
+          { "label" : "West",   "value" : "CA" },
+          { "label" : "West",   "value" : "WA" },
+          { "label" : "Mountain",  "value" : "ID" },
+          { "label" : "SouthWest", "value" : "NM" },
+          { "label" : "MidWest", "value" : "ND" },
+          { "label" : "MidWest", "value" : "SD" },
+          { "label" : "NorthEast", "value" : "ME" },
+          { "label" : "NorthEast", "value" : "NY" },
+          { "label" : "South", "value" : "GA" },
+          { "label" : "South", "value" : "LA" }
+       ],
+       "fallbackLabel" : "Other"
+    }]
 
 There are no ranges in enum binnings; we simply apply a bin label to a value. In our example, we are binning the CustomerState field to produce the Region field. 
 
 Now, let's apply binnings.json to our purchases cube, as in the code snippet below.
 
-     with open('binnings.json') as binnings_file:
-         binnings = json.load(binnings_file)
-     binnedCube2 = cubify.binCube(binnings, 'purchases', 'purchases_binned_2')
+    with open('binnings.json') as binnings_file:
+        binnings = json.load(binnings_file)
+    binnedCube2 = cubify.binCube(binnings, 'purchases', 'purchases_binned_2')
 
 Now when you export the binned cube, you will see the new columns, QtyBin, PriceBin, YearMonth and Region.
 
-     cubify.exportCubeToCsv('purchases_binned_2', '/tmp/exportedBinned2.csv')
+    cubify.exportCubeToCsv('purchases_binned_2', '/tmp/exportedBinned2.csv')
 
 The binned cube's contents:
 
-S:CustomerId,S:CustomerState,S:PriceBin,S:ProductId,S:QtyBin,S:Region,S:YearMonth,D:TransactionDate,N:Price,N:Qty
-C1,CA,10+,P1,0-5,West,Oct-2015,2015-10-10 00:00:00,20.5,3.0
-C1,CA,10+,P1,0-5,West,Oct-2015,2015-10-10 00:00:00,20.5,3.0
-C1,CA,10+,P2,0-5,West,Oct-2015,2015-10-10 00:00:00,15.5,1.0
-C2,NY,10+,P1,0-5,NorthEast,Oct-2015,2015-10-10 00:00:00,20.0,2.0
-C2,NY,10+,P2,0-5,NorthEast,Oct-2015,2015-10-10 00:00:00,16.0,4.0
-C2,NY,10+,P1,0-5,NorthEast,Oct-2015,2015-10-11 00:00:00,19.5,2.0
-C3,MA,10+,P1,5+,Other,Oct-2015,2015-10-11 00:00:00,18.5,7.0
-C1,CA,10+,P1,0-5,West,Nov-2015,2015-11-03 00:00:00,21.5,3.0
-C1,CA,10+,P1,0-5,West,Nov-2015,2015-11-10 00:00:00,22.0,3.0
-C1,CA,10+,P2,0-5,West,Nov-2015,2015-11-12 00:00:00,22.0,1.0
-C2,NY,10+,P1,0-5,NorthEast,Nov-2015,2015-11-12 00:00:00,22.0,2.0
-C2,NY,10+,P2,0-5,NorthEast,Nov-2015,2015-11-13 00:00:00,17.0,4.0
-C2,NY,10+,P1,0-5,NorthEast,Nov-2015,2015-11-13 00:00:00,22.0,2.0
-C3,MA,10+,P1,5+,Other,Nov-2015,2015-11-13 00:00:00,20.0,7.0
+    S:CustomerId,S:CustomerState,S:PriceBin,S:ProductId,S:QtyBin,S:Region,S:YearMonth,D:TransactionDate,N:Price,N:Qty
+    C1,CA,10+,P1,0-5,West,Oct-2015,2015-10-10 00:00:00,20.5,3.0
+    C1,CA,10+,P1,0-5,West,Oct-2015,2015-10-10 00:00:00,20.5,3.0
+    C1,CA,10+,P2,0-5,West,Oct-2015,2015-10-10 00:00:00,15.5,1.0
+    C2,NY,10+,P1,0-5,NorthEast,Oct-2015,2015-10-10 00:00:00,20.0,2.0
+    C2,NY,10+,P2,0-5,NorthEast,Oct-2015,2015-10-10 00:00:00,16.0,4.0
+    C2,NY,10+,P1,0-5,NorthEast,Oct-2015,2015-10-11 00:00:00,19.5,2.0
+    C3,MA,10+,P1,5+,Other,Oct-2015,2015-10-11 00:00:00,18.5,7.0
+    C1,CA,10+,P1,0-5,West,Nov-2015,2015-11-03 00:00:00,21.5,3.0
+    C1,CA,10+,P1,0-5,West,Nov-2015,2015-11-10 00:00:00,22.0,3.0
+    C1,CA,10+,P2,0-5,West,Nov-2015,2015-11-12 00:00:00,22.0,1.0
+    C2,NY,10+,P1,0-5,NorthEast,Nov-2015,2015-11-12 00:00:00,22.0,2.0
+    C2,NY,10+,P2,0-5,NorthEast,Nov-2015,2015-11-13 00:00:00,17.0,4.0
+    C2,NY,10+,P1,0-5,NorthEast,Nov-2015,2015-11-13 00:00:00,22.0,2.0
+    C3,MA,10+,P1,5+,Other,Nov-2015,2015-11-13 00:00:00,20.0,7.0
 
 
 6. Aggregating a cube
@@ -378,30 +379,30 @@ An aggregation formula contains a numerator and denominator. For now, in our sim
 
 Now let's load the aggregation DSL file, agg1.json and call the aggregateCube method to aggregate binnedCube2.
 
-   with open('agg1.json') as agg_file:
-       agg = json.load(agg_file)
-   aggCubes = cubify.aggregateCube('purchases_binned_2', agg)
-   aggCube = aggCubes[0]
+    with open('agg1.json') as agg_file:
+        agg = json.load(agg_file)
+    aggCubes = cubify.aggregateCube('purchases_binned_2', agg)
+    aggCube = aggCubes[0]
 
 The aggregateCube method returns a list of aggregated cubes, but since we only have one aggregation definition in our DSL, the returned list contains one result cube.
 The name of our aggregated cube is 'purchases_binned_2_agg1' - the name is automatically generated by Cubify; it is always the name of the cube we are aggregating concatenated with the name of the aggregation definition.
 
 Now when we list the cube cells of our aggregated cube you will see the aggregated cube contains the following: 
 
-{ ..., 'dimensions': {'Region': 'Other', 'ProductId': 'P1'}, 'measures': {'AveragePrice': 19.25}, ...}
-{ ..., 'dimensions': {'Region': 'NorthEast', 'ProductId': 'P2'}, 'measures': {'AveragePrice': 16.5}, ...}
-{ ..., 'dimensions': {'Region': 'NorthEast', 'ProductId': 'P1'}, 'measures': {'AveragePrice': 20.875}, ...}
-{ ..., 'dimensions': {'Region': 'West', 'ProductId': 'P2'}, 'measures': {'AveragePrice': 18.75} ... }
-{ ..., 'dimensions': {'Region': 'West', 'ProductId': 'P1'}, 'measures': {'AveragePrice': 21.125} ... }
+    { ..., 'dimensions': {'Region': 'Other', 'ProductId': 'P1'}, 'measures': {'AveragePrice': 19.25}, ...}
+    { ..., 'dimensions': {'Region': 'NorthEast', 'ProductId': 'P2'}, 'measures': {'AveragePrice': 16.5}, ...}
+    { ..., 'dimensions': {'Region': 'NorthEast', 'ProductId': 'P1'}, 'measures': {'AveragePrice': 20.875}, ...}
+    { ..., 'dimensions': {'Region': 'West', 'ProductId': 'P2'}, 'measures': {'AveragePrice': 18.75} ... }
+    { ..., 'dimensions': {'Region': 'West', 'ProductId': 'P1'}, 'measures': {'AveragePrice': 21.125} ... }
  
 And when we export the cube, the CVS file contains the following:
 
-S:ProductId,S:Region,N:AveragePrice
-P1,Other,19.25
-P2,NorthEast,16.5
-P1,NorthEast,20.875
-P2,West,18.75
-P1,West,21.125
+    S:ProductId,S:Region,N:AveragePrice
+    P1,Other,19.25
+    P2,NorthEast,16.5
+    P1,NorthEast,20.875
+    P2,West,18.75
+    P1,West,21.125
 
 Now let's apply a more complex aggregation to our binnedCube2. Take a look at agg2.json. 
 
@@ -425,10 +426,10 @@ The formula for TotalQty is self-explanatory. The formula for AverageRevenue use
 
 Now let's load the aggregation DSL file, agg2.json and call the aggregateCube method to aggregate binnedCube2.
 
-   with open('agg2.json') as agg_file:
-       agg = json.load(agg_file)
-   aggCubes = cubify.aggregateCube('purchases_binned_2', agg)
-   aggCube = aggCubes[0]
+    with open('agg2.json') as agg_file:
+        agg = json.load(agg_file)
+    aggCubes = cubify.aggregateCube('purchases_binned_2', agg)
+    aggCube = aggCubes[0]
 
 Now when we list the cube cells for the aggregated cube we get our two new measures, AverageRevenue and TotalQty and cube now contains only 2 cells, one per product.
 
