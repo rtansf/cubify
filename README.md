@@ -7,7 +7,8 @@ Installation
 
     If you don't have Python installed, go get Python at: https://www.python.org/downloads/
     If you don't have MongoDB installed, go get MongoDB at: https://docs.mongodb.org/manual/installation/
-    Make sure MongoDB is running and listening on default port 27017. <b>You must have MongoDB running to use Cubify.</b>
+    Make sure MongoDB is running and listening on default port 27017. 
+    **You must have MongoDB running to use Cubify.**
 
 Cubify Manual Installation:
 
