@@ -289,18 +289,18 @@ Now look at the file binnings.json. It defines 4 different binnings, QtyBinning 
 
 Take a look at TransactionDateBinning. It is a binning of type "date".
 
-   [{ "binningName" : "TransctionDateBinning",
-      "outputField" : { "name": "YearMonth", "displayName": "YearMonth" },
-      "sourceField" : "TransactionDate",
-      "type" : "date",
-      "bins" : [
+    [{ "binningName" : "TransctionDateBinning",
+       "outputField" : { "name": "YearMonth", "displayName": "YearMonth" },
+       "sourceField" : "TransactionDate",
+       "type" : "date",
+       "bins" : [
           { "label" : "Sep-2015", "min" : "2015-09-01", "max" : "2015-09-30" },
           { "label" : "Oct-2015", "min" : "2015-10-01", "max" : "2015-10-31" },
           { "label" : "Nov-2015", "min" : "2015-11-01", "max" : "2015-11-30" },
           { "label" : "Dec-2015", "min" : "2015-12-01", "max" : "2015-12-31" }
-      ],
-      "fallbackLabel" : "Other"
-   }]      	  
+       ],
+       "fallbackLabel" : "Other"
+    }]      	  
 
 A date binning is similar to range binning except that the data type of the dimension being binned is of type date. The min and max ranges must be dates in the format "YYYY-mm-dd". In our example above, we are defining the TransactionDate field is being binned into monthly bins in the YearMonth field. 
 
