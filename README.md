@@ -77,22 +77,21 @@ Measures are the numeric columns: Price and Qty.
 
 So the first row of our CSV file becomes the following cube cell:
 
-{
-    "dates" : {
-        "TransactionDate" : "2014-10-10"
-    },
-    "dimensions" : {
-        "CustomerId" : "C1",
-        "CustomerState" : "CA",
-        "ProductId" : "P1"
-    },
-    "measures" : {
-        "Qty" : 3.0,
-        "Price" : 20.5
-    },
-    "dimensionKey" : "#CustomerId:C1#ProductId:P1#State:CA#TransactionDate:2014-10-10"
-}
-
+    {
+        "dates" : {
+            "TransactionDate" : "2014-10-10"
+        },
+        "dimensions" : {
+            "CustomerId" : "C1",
+	    "CustomerState" : "CA",
+            "ProductId" : "P1"	
+        },
+        "measures" : {
+            "Qty" : 3.0,
+            "Price" : 20.5
+        },
+        "dimensionKey" : "#CustomerId:C1#ProductId:P1#State:CA#TransactionDate:2014-10-10"
+    }
 
 Now, we can examine the properties of the cube we have just created. Some interesting ones are: 'distincts' and 'stats'.
 The 'distincts' property shows a list of all dimensions in the cube with their distinct values with the number of rows that contain the value. 
