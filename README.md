@@ -7,14 +7,14 @@ Installation
 
     If you don't have Python installed, go get Python at: https://www.python.org/downloads/
     If you don't have MongoDB installed, go get MongoDB at: https://docs.mongodb.org/manual/installation/
-    Make sure MongoDB is running and listening on default port 27017. 
+    Make sure MongoDB is running and listening on default port 27017 to run the tutorials.
 
 **Note: You must have MongoDB running to use Cubify.**
 
 Cubify Manual Installation:
 
     git clone https://github.com/rtansf/cubify.git
-    cd to the cubify root directory. Then execute:
+    cd cubify
     python setup.py install
  
 Cubify Install from docker:  
@@ -24,8 +24,10 @@ Cubify Install from docker:
 Tutorial 
 --------
 
-Go to the tutorials folder in the cubify installation, open tutorial.py and follow along with the tutorial commentary below.
-You can run the tutorial, by typing: python tutorial.py
+Go to the tutorials folder in the cubify installation, open __tutorial.py__ and follow along with the tutorial commentary below.
+You can run the tutorial, by typing: 
+
+    python tutorial.py
 
 In this tutorial you will learn how to:
 
