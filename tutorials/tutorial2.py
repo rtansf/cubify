@@ -63,6 +63,13 @@ print ""
 #
 cubify.addCellsToSourceCube('purchasesCubeSet', 'morePurchases.csv')
 
+binnedCubeCells = cubify.getBinnedCubeCells('purchasesCubeSet')
+print ""
+print "Cube cells in purchasesCubeSet's binned cube:"
+for cubeCell in binnedCubeCells:
+    print cubeCell
+print ""
+
 agg1CubeCells = cubify.getAggregatedCubeCells('purchasesCubeSet', 'agg1')
 print ""
 print "Cube cells in purchasesCubeSet's agg1 cube:"

@@ -308,6 +308,18 @@ Take a look at TransactionDateBinning. It is a binning of type "date".
 
 A date binning is similar to range binning except that the data type of the dimension being binned is of type date. The min and max ranges must be dates in the format "YYYY-mm-dd". In our example above, we are defining the TransactionDate field is being binned into monthly bins in the YearMonth field. 
 
+As a shortcut, the above binning definition for monthly bins can be omitted and replaced with a "period" property like so:
+
+    [{ "binningName" : "TransctionDateBinning",
+       "outputField" : { "name": "YearMonth", "displayName": "YearMonth" },
+       "sourceField" : "TransactionDate",
+       "type" : "date",
+       "period" : "monthly", 
+       "fallbackLabel" : "Other"
+    }]      	  
+
+If you want to bin the Transaction dates into weekly bins, then simply specify "period" as "weekly". 
+
 The third binning type is "enum". Take a look at the RegionBinning definition from the binnings.json file.
 
     [{ "binningName" : "RegionBinning",
@@ -446,7 +458,103 @@ And the exported CSV file looks like so:
     P2,16.95,10.0
     P1,20.294117647058822,34.0
 
-We have come to end of the first part of our tutorial. To harness even more power from Cubify, go to the part 2 of the tutorial where we will look at solving the problems for binning and aggregation when our source data cube starts to grow and change over time. CubeSets will help us do that ... 
+We have come to end of the first part of our tutorial. 
+
+Part 2 of the tutorial covers the even more powerful concept of "Cube Sets". With minimal effort, a cube set allows you to automatically bin and aggregate your data and thus maintain the different views of your data as it grows and changes over time.
+
+Cube Set Tutorial
+-----------------
+
+We have seen the binning definitions (binnings.json)  and aggregation definitions (aggs.json) in tutorial 1. We will now use these definitions together with the source data defined in purchases.csv to create our cube set, called "purchasesCubeSet". 
+
+Open the file, "__tutorials2.py__" in the tutorials folder and follow along with the commentary below. You can execute the tutorial by typing:
+   
+    python tutorial2.py
+
+Let's create our cube set using the createCubeSet method in cubify like so:
+
+    with open('binnings.json') as binnings_file:
+        binnings = json.load(binnings_file)
+
+    with open('aggs.json') as aggs_file:
+        aggs = json.load(aggs_file)
+
+    cubeSet = cubify.createCubeSet('tutorial', 'purchasesCubeSet', 'Purchases Cube Set', 'purchases.csv', binnings, aggs)
+     
+The first argument to createCubeSet is the owner of the cube set. This can be any string. In our example, the owner of the cube set is "tutorial".
+The second argument is the name of the cube set. 
+The third argument is the display name of the cube set.
+The fourth argument is the name of the CSV file that contains our data.
+The fifth argument is our binnings definition.
+The sixth argument is our aggregations definition.
+
+A cube set is essentially a container for cubes of certain types which are linked together. 
+There are 3 types of cubes in a cube set: "source", "binned" and "aggregated".
+A cube set consists of one and only one source cube, one and only one binned cube, and one or more aggregated cubes.
+
+In our tutorial, once createCubeSet returns successfully, our purchasesCubeSet contains a "source" cube reflecting the original data imported from purchases.csv.
+To get the source cube cells, call getSourceCubeCells like so:
+
+    cubeCells = cubify.getSourceCubeCells('purchasesCubeSet')
+ 
+Our cube set also contains a binned cube - with the binnings defined in binnings.json applied to the source cube.
+To get the binned cube cells, call getBinnedCubeCells like so:
+
+    binnedCubeCells = cubify.getBinnedCubeCells('purchasesCubeSet')
+
+Finally our cube set also contains 2 aggregated cubes (resulting from the 2 aggregation definitions defined in aggs.json).
+To refresh your memory, here is aggs.json:
+
+    [
+        {
+           "name" : "agg1",
+           "dimensions": ["ProductId", "Region"],
+           "measures" : [
+               { "outputField" : {"name":"AveragePrice", "displayName": "Average Price"},
+                 "formula" : { "numerator" : "{ '$avg': '$measures.Price' }", "denominator" : "" }
+               }
+           ]
+        },
+        {
+           "name" : "agg2",
+           "dimensions": ["ProductId"],
+           "measures" : [
+               { "outputField" : {"name":"TotalQty", "displayName": "Total Qty"},
+                 "formula" : {"numerator" : "{ '$sum': '$measures.Qty' }", "denominator" : "" }
+               },
+               { "outputField" : {"name":"AverageRevenue", "displayName": "Average Revenue"},
+                 "formula" : { "numerator"   : "{ '$sum': { '$multiply': ['$measures.Qty', '$measures.Price'] }}", 
+                               "denominator" : "{ '$sum': '$measures.Qty' }" }
+               }
+           ]
+        }
+    ]
+
+You can retrieve the cube cells of the aggregated cubes by referring to the aggregation names like so:
+
+    agg1CubeCells = cubify.getAggregatedCubeCells('purchasesCubeSet', 'agg1')
+    agg2CubeCells = cubify.getAggregatedCubeCells('purchasesCubeSet', 'agg2')
+
+All is well with our cube set thus far. But now let's say we are in a new month and we have more purchases data to add to our cube set.
+Let's assume the new purchases data is in a file called "morePurchases.csv". To add the cells to our source cube in our cube set, simply call:
+
+    cubify.addCellsToSourceCube('purchasesCubeSet', 'morePurchases.csv')
+
+This method adds the new cells to our source cube, as well as updates the binned cube and aggregated cubes. Thus our binned and aggregated cubes are kept in synch with 
+the data in our source cube. You can verify that this is so by examining the cells of the binned cube and aggregated cubes.
+
+
+
+
+
+
+
+  
+ 
+
+
+ 
+  
 
 
 
