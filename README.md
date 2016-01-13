@@ -5,19 +5,30 @@ Cubify is a tool written in python for data analysts who require "data agility".
 Installation
 ------------
 
-    If you don't have Python installed, go get Python at: https://www.python.org/downloads/
-    If you don't have MongoDB installed, go get MongoDB at: https://docs.mongodb.org/manual/installation/
+__PRE-REQUISITES__:
+
+    If you don't have __Python__ installed, go get Python at: https://www.python.org/downloads/
+    If you don't have __MongoDB__ installed, go get MongoDB at: https://docs.mongodb.org/manual/installation/
     Make sure MongoDB is running and listening on default port 27017 to run the tutorials.
 
 **Note: You must have MongoDB running to use Cubify.**
 
-Cubify Manual Installation:
+__UBUNTU LINUX__:
+    
+    sudo apt-get install python-setuptools
+    sudo apt-get install build-essential python-dev
+    sudo apt-get install python-numpy
+    git clone https://github.com/rtansf/cubify.git
+    cd cubify
+    sudo python setup.py install
+
+__MAC OS X__:
 
     git clone https://github.com/rtansf/cubify.git
     cd cubify
-    python setup.py install
+    sudo python setup.py install
  
-Cubify Install from docker:  
+__DOCKER__:
    
     Coming soon...
 
