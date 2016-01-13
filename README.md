@@ -7,16 +7,17 @@ Installation
 
 __PRE-REQUISITES__:
 
-    If you don't have **Python** installed, go get Python at: https://www.python.org/downloads/
-    If you don't have **MongoDB** installed, go get MongoDB at: https://docs.mongodb.org/manual/installation/
+    If you don't have Python installed, go get Python at: https://www.python.org/downloads/
+    If you don't have MongoDB installed, go get MongoDB at: https://docs.mongodb.org/manual/installation/
     Make sure MongoDB is running and listening on default port 27017 to run the tutorials.
 
 **Note: You must have MongoDB running to use Cubify.**
-
-__UBUNTU LINUX__:
+    
+__UBUNTU__:
     
     sudo apt-get install python-setuptools
-    sudo apt-get install build-essential python-dev
+    sudo apt-get install build-essential 
+    sudo apt-get install python-dev
     sudo apt-get install python-numpy
     git clone https://github.com/rtansf/cubify.git
     cd cubify
