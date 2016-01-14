@@ -1,2 +1,3 @@
+#!/bin/bash
 cd cubify
-python setup.py install
+sudo python setup.py install
