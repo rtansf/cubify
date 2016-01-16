@@ -31,7 +31,9 @@ __MAC OS X__:
  
 __DOCKER__:
    
-    Coming soon...
+    docker run -it rtansf/cubify
+    service mongod start
+    cd cubify    
 
 Tutorial 
 --------
