@@ -159,7 +159,11 @@ class CubeService:
 
                     elif fieldType == 'date':
                         # Treat date value as dimension
-                        d = Date(value)
+                        try:
+                           d = Date(value)
+                        except ValueError:
+                           print "Invalid date: " + value + " Replaced with 1990-01-01"
+                           d = Date('1990-01-01')
                         date = datetime(d.year, d.month, d.day)
                         cubeCell['dates'][fieldName] = date
 
