@@ -10,10 +10,9 @@ Installation
 __PRE-REQUISITES__:
 
     If you are installing manually and not using Docker - you'll need to have the following installed:
-    Python  https://www.python.org/downloads/
-    MongoDB at: https://docs.mongodb.org/manual/installation/
-
-**Note: You must have MongoDB up (on default port 27107) to run the Cubify tutorials below.**
+    - Python  https://www.python.org/downloads/
+    - MongoDB at: https://docs.mongodb.org/manual/installation/
+    **Note: You must have MongoDB up (on default port 27107) to run the Cubify tutorials below.**
     
 __UBUNTU__:
     
@@ -259,6 +258,9 @@ Then call addColumn as in:
    
 5. Binning a cube
 -----------------
+
+![alt text](http://pluralconcepts.com/images/BinnedCube.png "Binned Cube")
+
 Next, we will bin the measures and dimensions in our purchases cube. This is done with cubify's binning DSL which allows you specify defintions for a binning.
 For example, let's say we would like to bin the Qty measure in our cube. We define for simplicity's sake, two bins:  0-5 and 5+
 The binning definition for the Qty column (stored in the file qtyBinning.json) is show below:
@@ -396,6 +398,8 @@ The binned cube's contents:
 
 6. Aggregating a cube
 ---------------------
+
+![alt text](http://pluralconcepts.com/images/AggregatedCube.png "Aggregated Cube")
 
 Next, let's aggregate the cube, binnedCube2 we created above. This is done with cubify's aggregation DSL.
 For example, let's say we want a cube containing the average price grouped by product and region.  
