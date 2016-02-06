@@ -486,7 +486,7 @@ Cube Set Tutorial
 ![alt text](http://pluralconcepts.com/images/cubeset.png "Cube Set")
 
 The above diagram illustrates the concept of a cube set. A cube set consists of a source cube, a binned cube and one or more aggregated cubes.
-As raw data is ingested into the source cube over time, the state of the downstream cubes are always kept in synch with one another other.
+As raw data is ingested into the source cube over time, the state of the downstream binned and aggregated cubes are always kept in synch with one another.
 
 We have seen the binning definitions (binnings.json)  and aggregation definitions (aggs.json) in tutorial 1. We will now use these definitions together with the source data defined in purchases.csv to create our cube set, called "purchasesCubeSet". 
 
