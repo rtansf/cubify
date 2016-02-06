@@ -83,6 +83,8 @@ The contents of the file, purchases.csv are shown below:
     2015-11-13,C2,NY,P1,2,22.0
     2015-11-13,C3,MA,P1,7,20.0
 
+In the dataset above, the columns Transaction Date, CustomerId, CustomerState and ProductId are the **dimensions** and Qty and Price are the **measures**. 
+
 1. Creating a cube
 ------------------
 Let's create a cube from our csv file. We we call our cube, "purchases".
