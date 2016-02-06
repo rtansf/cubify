@@ -9,11 +9,11 @@ Installation
 
 __PRE-REQUISITES__:
 
-    If you don't have Python installed, go get Python at: https://www.python.org/downloads/
-    If you don't have MongoDB installed, go get MongoDB at: https://docs.mongodb.org/manual/installation/
-    Make sure MongoDB is running and listening on default port 27017 to run the tutorials.
+    If you are installing manually and not using Docker - you'll need to have the following installed:
+    Python  https://www.python.org/downloads/
+    MongoDB at: https://docs.mongodb.org/manual/installation/
 
-**Note: You must have MongoDB running to use Cubify.**
+**Note: You must have MongoDB up (on default port 27107) to run the Cubify tutorials below.**
     
 __UBUNTU__:
     
@@ -87,13 +87,17 @@ In the dataset above, the columns Transaction Date, CustomerId, CustomerState an
 
 1. Creating a cube
 ------------------
-Let's create a cube from our csv file. We we call our cube, "purchases".
+
+![alt text](http://pluralconcepts.com/images/SourceCube.png "Source Cube")
+
+The diagram above shows that a cube can be created from raw data contained in a CSV file. Cubes created from raw data are termed "source cubes". 
+Let's create a cube from our raw data contained in the CSV file. We we call our specific cube, "purchases".
 First, we create an instance of Cubify and invoke createCubeFromCsv passing in the csv file path and the cube name.
 
     cubify = Cubify()
     cube = cubify.createCubeFromCsv('purchases.csv', 'purchases')
 
-This returns a new cube containing cube cells. A cube cell is a "row" in a cube; it contains dimensions, and measures.
+This returns a new cube containing cube cells. A cube cell is simply a "row" in a cube, albeit a special row - it contains dimensions, and measures.
 In our purchases example, dimensions are the string and date columns: TransactionDate, CustomerId, CustomerState and ProductId.
 Measures are the numeric columns: Price and Qty.
 
