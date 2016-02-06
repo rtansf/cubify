@@ -1,3 +1,5 @@
+![alt text](http://pluralconcepts.com/images/rubik-cube.jpg "Cubify")
+
 <h1>Cubify - "Data Cubes On Steroids" </h1>
 
 Cubify is a tool written in python for data analysts who require "data agility". If you need to experiment with different ways of binning data, and viewing data at various levels of granularity Cubify is the tool for you! Cubify allows you to easily create a data cube from CSV and then to transform the cube into other cubes by binning and aggregation.  So what is a data cube? It is simply a structure that organizes data into dimensions and measures, concepts used in data warehouse systems.
