@@ -2,7 +2,9 @@
 
 <h1>Cubify - "Data Cubes On Steroids" </h1>
 
-Cubify is a tool written in python for data analysts who require "data agility". If you need to experiment with different ways of binning data, and viewing data at various levels of granularity Cubify is the tool for you! Cubify allows you to easily create a data cube from CSV and then to transform the cube into other cubes by binning and aggregation.  So what is a data cube? It is simply a structure that organizes data into dimensions and measures, concepts used in data warehouse systems.
+Cubify is a tool written in python for data analysts who require "data agility". If you need to experiment with different ways of binning data, and viewing data at various levels of granularity, Cubify is for you! With Cubify, you can easily create a data cube from CSV and then transform the cube into other cubes by binning and aggregation.  
+
+So what is a data cube? It is simply a structure that organizes data into dimensions and measures, concepts used in data warehouse systems.
 
 Installation
 ------------
@@ -54,7 +56,7 @@ In this tutorial you will learn how to:
    6. Aggregate a cube
 
 So let's get started. cd to the tutorials folder.
-In the folder, the file purchases.csv contains a simple dataset containing customer purchase transactions.
+In the folder, the file purchases.csv contains a very simple dataset containing customer purchase transactions.
 Our simple data set contains the following columns:
 
     Transaction Date  
@@ -96,7 +98,7 @@ First, we create an instance of Cubify and invoke createCubeFromCsv passing in t
     cubify = Cubify()
     cube = cubify.createCubeFromCsv('purchases.csv', 'purchases')
 
-This returns a new cube containing cube cells. A cube cell is simply a "row" in a cube, albeit a special row - it contains dimensions, and measures.
+This returns a new cube containing cube cells. A cube cell is simply a row in a cube, albeit a special row - it contains dimensions, and measures.
 In our purchases example, dimensions are the string and date columns: TransactionDate, CustomerId, CustomerState and ProductId.
 Measures are the numeric columns: Price and Qty.
 
@@ -168,6 +170,9 @@ The method is called "createCubeFromCube". For example to create a cube containi
 cube above we can call the method like so:
 
     cubify.createCubeFromCube('purchases', { 'dimensions.CustomerState' : 'NY' }, 'nyPurchases')
+
+The first argument is the name of the cube we are querying, followed by the filter, and then the name of the new cube.
+The above will result in a cube called 'nyPurchases'.
 
 For more details about filters, refer to the Cubify Reference documentation.
 
