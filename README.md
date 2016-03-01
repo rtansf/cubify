@@ -26,7 +26,7 @@ __UBUNTU__:
     cd cubify
     sudo python setup.py install
 
-__MAC OS X__:
+__MAC OS X__ / __WINDOWS__::
 
     git clone https://github.com/rtansf/cubify.git
     cd cubify
