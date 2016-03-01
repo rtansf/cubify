@@ -69,9 +69,9 @@ class CubeSetService:
         return cubeSet
 
     #
-    # Add cells to source cube
+    # Add rows to source cube
     #
-    def addCellsToSourceCube(self, cubeSetName, csvFilePath):
+    def addRowsToSourceCube(self, cubeSetName, csvFilePath):
         existing = self.getCubeSet(cubeSetName)
         if existing == None:
             raise ValueError('Cube Set with ' + cubeSetName + ' does not exist')
@@ -93,13 +93,13 @@ class CubeSetService:
                    self.cubeService.aggregateCube(binnedCubeName, aggs)
 
     #
-    # Remove cells from source
+    # Remove rows from source
     #
-    def removeCellsFromSourceCube(self, cubeSetName, filter):
+    def removeRowsFromSourceCube(self, cubeSetName, filter):
         existing = self.getCubeSet(cubeSetName)
         if existing == None:
             raise ValueError('Cube Set with ' + cubeSetName + ' does not exist')
-        self.cubeService.deleteCubeCells(existing['sourceCube'], filter)
+        self.cubeService.deleteCubeRows(existing['sourceCube'], filter)
 
         #re-bin
         if 'binnedCube' in existing:
@@ -143,32 +143,32 @@ class CubeSetService:
         self.db['cubeset'].remove({ "name": cubeSetName })
 
     # 
-    # Get source cube cells. Iterator to cube cells is returned.
+    # Get source cube rows. Iterator to cube rows is returned.
     # 
-    def getSourceCubeCells(self, cubeSetName):
+    def getSourceCubeRows(self, cubeSetName):
         existing = self.getCubeSet(cubeSetName)
         if existing == None:
             raise ValueError('Cube Set with ' + cubeSetName + ' does not exist')
 
-        return self.cubeService.getCubeCells(existing['sourceCube'])
+        return self.cubeService.getCubeRows(existing['sourceCube'])
 
     # 
-    # Get binned cube cells. Iterator to cube cells is returned.
+    # Get binned cube rows. Iterator to cube rows is returned.
     # 
-    def getBinnedCubeCells(self, cubeSetName):
+    def getBinnedCubeRows(self, cubeSetName):
         existing = self.getCubeSet(cubeSetName)
         if existing == None:
             raise ValueError('Cube Set with ' + cubeSetName + ' does not exist')
 
         if existing['binnedCube'] != None:
-            return self.cubeService.getCubeCells(existing['binnedCube'])
+            return self.cubeService.getCubeRows(existing['binnedCube'])
         else:
             return None
 
     # 
-    # Get aggregated cube cells. Iterator to cube cells is returned.
+    # Get aggregated cube rows. Iterator to cube rows is returned.
     # 
-    def getAggregatedCubeCells(self, cubeSetName, aggName):
+    def getAggregatedCubeRows(self, cubeSetName, aggName):
         existing = self.getCubeSet(cubeSetName)
         if existing == None:
             raise ValueError('Cube Set with ' + cubeSetName + ' does not exist')
@@ -176,7 +176,7 @@ class CubeSetService:
         if 'aggCubes' in existing:
             for aggCube in existing['aggCubes']:
                if existing['binnedCube'] + "_" + aggName == aggCube:
-                   return self.cubeService.getCubeCells(aggCube)
+                   return self.cubeService.getCubeRows(aggCube)
 
         return None
 

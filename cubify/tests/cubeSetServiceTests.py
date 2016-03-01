@@ -111,7 +111,7 @@ class cubeSetServiceTests(unittest.TestCase):
 
         os.remove(csvFilePath)
 
-    def testGetSourceCubeCells(self):
+    def testGetSourceCubeRows(self):
         cubeSetName = 'test-' + str(uuid.uuid4())
         csvFilePath =  cubeSetName + '.csv'
         try:
@@ -131,12 +131,12 @@ class cubeSetServiceTests(unittest.TestCase):
 
         cs = CubeSetService('testdb')
         cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFilePath, binnings, aggs)
-        cubeCells = cs.getSourceCubeCells(cubeSetName)
-        self.assertTrue(cubeCells.count() == 14)
+        cubeRows = cs.getSourceCubeRows(cubeSetName)
+        self.assertTrue(cubeRows.count() == 14)
 
         os.remove(csvFilePath)
 
-    def testGetBinnedCubeCells(self):
+    def testGetBinnedCubeRows(self):
         cubeSetName = 'test-' + str(uuid.uuid4())
         csvFilePath =  cubeSetName + '.csv'
         try:
@@ -156,11 +156,11 @@ class cubeSetServiceTests(unittest.TestCase):
 
         cs = CubeSetService('testdb')
         cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFilePath, binnings, aggs)
-        binnedCubeCells = cs.getBinnedCubeCells(cubeSetName)
+        binnedCubeRows = cs.getBinnedCubeRows(cubeSetName)
 
         dimkeys = []
-        for binnedCubeCell in binnedCubeCells:
-            dimkeys.append(binnedCubeCell['dimensionKey'])
+        for binnedCubeRow in binnedCubeRows:
+            dimkeys.append(binnedCubeRow['dimensionKey'])
         dimkeys.sort()
 
         self.assertTrue(dimkeys[0] == '#CustomerId:C1#PriceBin:0-5#ProductId:P1#QtyBin:0-5#Region:West#State:CA#Year:Year2014#Date:2014-10-11')
@@ -180,7 +180,7 @@ class cubeSetServiceTests(unittest.TestCase):
 
         os.remove(csvFilePath)
 
-    def testGetAggregatedCubeCells(self):
+    def testGetAggregatedCubeRows(self):
         cubeSetName = 'test-' + str(uuid.uuid4())
         csvFilePath =  cubeSetName + '.csv'
         try:
@@ -202,29 +202,29 @@ class cubeSetServiceTests(unittest.TestCase):
         cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFilePath, binnings, aggs)
 
         agg = aggs[0]
-        aggCubeCells = cs.getAggregatedCubeCells(cubeSetName, agg['name'])
-        self.assertTrue (aggCubeCells.count(False) == 4)
-        for aggCubeCell in aggCubeCells:
-            self.assertTrue(len(aggCubeCell['dimensions']) == 2)
-            print aggCubeCell
+        aggCubeRows = cs.getAggregatedCubeRows(cubeSetName, agg['name'])
+        self.assertTrue (aggCubeRows.count(False) == 4)
+        for aggCubeRow in aggCubeRows:
+            self.assertTrue(len(aggCubeRow['dimensions']) == 2)
+            print aggCubeRow
 
         print '---------'
 
         agg = aggs[1]
-        aggCubeCells = cs.getAggregatedCubeCells(cubeSetName, agg['name'])
-        self.assertTrue (aggCubeCells.count(False) == 2)
-        for aggCubeCell in aggCubeCells:
-            self.assertTrue(len(aggCubeCell['dimensions']) == 1)
-            print aggCubeCell
+        aggCubeRows = cs.getAggregatedCubeRows(cubeSetName, agg['name'])
+        self.assertTrue (aggCubeRows.count(False) == 2)
+        for aggCubeRow in aggCubeRows:
+            self.assertTrue(len(aggCubeRow['dimensions']) == 1)
+            print aggCubeRow
 
         print '---------'
 
         agg = aggs[2]
-        aggCubeCells = cs.getAggregatedCubeCells(cubeSetName, agg['name'])
-        self.assertTrue (aggCubeCells.count(False) == 2)
-        for aggCubeCell in aggCubeCells:
-            self.assertTrue(len(aggCubeCell['dimensions']) == 1)
-            print aggCubeCell
+        aggCubeRows = cs.getAggregatedCubeRows(cubeSetName, agg['name'])
+        self.assertTrue (aggCubeRows.count(False) == 2)
+        for aggCubeRow in aggCubeRows:
+            self.assertTrue(len(aggCubeRow['dimensions']) == 1)
+            print aggCubeRow
 
         print '---------'
 
@@ -256,10 +256,10 @@ class cubeSetServiceTests(unittest.TestCase):
 
         cs.performBinning(cubeSetName, binnings)
 
-        binnedCubeCells = cs.getBinnedCubeCells(cubeSetName)
+        binnedCubeRows = cs.getBinnedCubeRows(cubeSetName)
         dimkeys = []
-        for binnedCubeCell in binnedCubeCells:
-            dimkeys.append(binnedCubeCell['dimensionKey'])
+        for binnedCubeRow in binnedCubeRows:
+            dimkeys.append(binnedCubeRow['dimensionKey'])
         dimkeys.sort()
 
         self.assertTrue(dimkeys[0] == '#CustomerId:C1#PriceBin:0-5#ProductId:P1#QtyBin:0-3#Region:West#State:CA#Year:Year2014#Date:2014-10-11')
@@ -303,35 +303,35 @@ class cubeSetServiceTests(unittest.TestCase):
         cs.performAggregation(cubeSetName, aggs)
 
         agg = aggs[0]
-        aggCubeCells = cs.getAggregatedCubeCells(cubeSetName, agg['name'])
-        self.assertTrue (aggCubeCells.count(False) == 4)
-        for aggCubeCell in aggCubeCells:
-            self.assertTrue(len(aggCubeCell['dimensions']) == 2)
-            print aggCubeCell
+        aggCubeRows = cs.getAggregatedCubeRows(cubeSetName, agg['name'])
+        self.assertTrue (aggCubeRows.count(False) == 4)
+        for aggCubeRow in aggCubeRows:
+            self.assertTrue(len(aggCubeRow['dimensions']) == 2)
+            print aggCubeRow
 
         print '---------'
 
         agg = aggs[1]
-        aggCubeCells = cs.getAggregatedCubeCells(cubeSetName, agg['name'])
-        self.assertTrue (aggCubeCells.count(False) == 2)
-        for aggCubeCell in aggCubeCells:
-            self.assertTrue(len(aggCubeCell['dimensions']) == 1)
-            print aggCubeCell
+        aggCubeRows = cs.getAggregatedCubeRows(cubeSetName, agg['name'])
+        self.assertTrue (aggCubeRows.count(False) == 2)
+        for aggCubeRow in aggCubeRows:
+            self.assertTrue(len(aggCubeRow['dimensions']) == 1)
+            print aggCubeRow
 
         print '---------'
 
         agg = aggs[2]
-        aggCubeCells = cs.getAggregatedCubeCells(cubeSetName, agg['name'])
-        self.assertTrue (aggCubeCells.count(False) == 2)
-        for aggCubeCell in aggCubeCells:
-            self.assertTrue(len(aggCubeCell['dimensions']) == 1)
-            print aggCubeCell
+        aggCubeRows = cs.getAggregatedCubeRows(cubeSetName, agg['name'])
+        self.assertTrue (aggCubeRows.count(False) == 2)
+        for aggCubeRow in aggCubeRows:
+            self.assertTrue(len(aggCubeRow['dimensions']) == 1)
+            print aggCubeRow
 
         print '---------'
 
         os.remove(cubeSetName + '.csv')
 
-    def testAddCellsToSourceCube(self):
+    def testAddRowsToSourceCube(self):
 
         cubeSetName = 'test-' + str(uuid.uuid4())
         csvFilePath =  cubeSetName + '.csv'
@@ -356,15 +356,15 @@ class cubeSetServiceTests(unittest.TestCase):
         incFileName = 'cubify/tests/testdataIncremental.csv'
         if (os.path.isfile(incFileName) == False):
             incFileName = './testdataIncremental.csv'
-        cs.addCellsToSourceCube(cubeSetName, incFileName)
+        cs.addRowsToSourceCube(cubeSetName, incFileName)
 
-        sourceCubeCells = cs.getSourceCubeCells(cubeSetName)
-        self.assertTrue(sourceCubeCells.count() == 21)
+        sourceCubeRows = cs.getSourceCubeRows(cubeSetName)
+        self.assertTrue(sourceCubeRows.count() == 21)
 
-        binnedCubeCells = cs.getBinnedCubeCells(cubeSetName)
+        binnedCubeRows = cs.getBinnedCubeRows(cubeSetName)
         dimkeys = []
-        for binnedCubeCell in binnedCubeCells:
-            dimkeys.append(binnedCubeCell['dimensionKey'])
+        for binnedCubeRow in binnedCubeRows:
+            dimkeys.append(binnedCubeRow['dimensionKey'])
         dimkeys.sort()
 
         self.assertTrue(dimkeys[0] == '#CustomerId:C1#PriceBin:0-5#ProductId:P1#QtyBin:0-5#Region:West#State:CA#Year:Year2014#Date:2014-10-11')
@@ -390,36 +390,36 @@ class cubeSetServiceTests(unittest.TestCase):
         self.assertTrue(dimkeys[20] == '#CustomerId:C3#PriceBin:10+#ProductId:P1#QtyBin:5+#Region:NorthEast#State:MA#Year:Year2016#Date:2016-10-11')
 
         agg = aggs[0]
-        aggCubeCells = cs.getAggregatedCubeCells(cubeSetName, agg['name'])
-        self.assertTrue (aggCubeCells.count(False) == 4)
-        for aggCubeCell in aggCubeCells:
-            self.assertTrue(len(aggCubeCell['dimensions']) == 2)
-            print aggCubeCell
+        aggCubeRows = cs.getAggregatedCubeRows(cubeSetName, agg['name'])
+        self.assertTrue (aggCubeRows.count(False) == 4)
+        for aggCubeRow in aggCubeRows:
+            self.assertTrue(len(aggCubeRow['dimensions']) == 2)
+            print aggCubeRow
 
         print '---------'
 
         agg = aggs[1]
-        aggCubeCells = cs.getAggregatedCubeCells(cubeSetName, agg['name'])
-        self.assertTrue (aggCubeCells.count(False) == 2)
-        for aggCubeCell in aggCubeCells:
-            self.assertTrue(len(aggCubeCell['dimensions']) == 1)
-            print aggCubeCell
+        aggCubeRows = cs.getAggregatedCubeRows(cubeSetName, agg['name'])
+        self.assertTrue (aggCubeRows.count(False) == 2)
+        for aggCubeRow in aggCubeRows:
+            self.assertTrue(len(aggCubeRow['dimensions']) == 1)
+            print aggCubeRow
 
         print '---------'
 
         agg = aggs[2]
-        aggCubeCells = cs.getAggregatedCubeCells(cubeSetName, agg['name'])
-        self.assertTrue (aggCubeCells.count(False) == 2)
-        for aggCubeCell in aggCubeCells:
-            self.assertTrue(len(aggCubeCell['dimensions']) == 1)
-            print aggCubeCell
+        aggCubeRows = cs.getAggregatedCubeRows(cubeSetName, agg['name'])
+        self.assertTrue (aggCubeRows.count(False) == 2)
+        for aggCubeRow in aggCubeRows:
+            self.assertTrue(len(aggCubeRow['dimensions']) == 1)
+            print aggCubeRow
 
         print '---------'
 
         os.remove(cubeSetName + '.csv')
 
 
-    def testRemoveCellsFromSourceCube(self):
+    def testRemoveRowsFromSourceCube(self):
         cubeSetName = 'test-' + str(uuid.uuid4())
         csvFilePath =  cubeSetName + '.csv'
         try:
@@ -439,14 +439,14 @@ class cubeSetServiceTests(unittest.TestCase):
 
         cs = CubeSetService('testdb')
         cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFilePath, binnings, aggs)
-        cs.removeCellsFromSourceCube(cubeSetName, { "dimensions.State" : "CA"})
+        cs.removeRowsFromSourceCube(cubeSetName, { "dimensions.State" : "CA"})
 
-        cubeCells = cs.getSourceCubeCells(cubeSetName)
-        self.assertTrue(cubeCells.count() == 8)
+        cubeRows = cs.getSourceCubeRows(cubeSetName)
+        self.assertTrue(cubeRows.count() == 8)
 
         dimkeys = []
-        for cubeCell in cubeCells:
-            dimkeys.append(cubeCell['dimensionKey'])
+        for cubeRow in cubeRows:
+            dimkeys.append(cubeRow['dimensionKey'])
         dimkeys.sort()
 
         self.assertTrue(dimkeys[0] == '#CustomerId:C2#ProductId:P1#State:NY#Date:2014-10-10')

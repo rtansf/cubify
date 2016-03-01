@@ -7,31 +7,31 @@ import json
 import csv
 from cubify import CubeService
 
-def funcx(cubeCell):
-    if (cubeCell['dimensions']['State'] == 'CA'):
+def funcx(cubeRow):
+    if (cubeRow['dimensions']['State'] == 'CA'):
         return 3
     else:
         return 2
 
-def funcy(cubeCell):
-    if cubeCell['dimensions']['ProductId'] == 'P1' and cubeCell['measures']['Qty'] <= 5:
+def funcy(cubeRow):
+    if cubeRow['dimensions']['ProductId'] == 'P1' and cubeRow['measures']['Qty'] <= 5:
         return 'SMALL'
-    elif cubeCell['dimensions']['ProductId'] == 'P1' and cubeCell['measures']['Qty'] > 5:
+    elif cubeRow['dimensions']['ProductId'] == 'P1' and cubeRow['measures']['Qty'] > 5:
         return 'LARGE'
-    elif cubeCell['dimensions']['ProductId'] == 'P2' and cubeCell['measures']['Qty'] <= 3:
+    elif cubeRow['dimensions']['ProductId'] == 'P2' and cubeRow['measures']['Qty'] <= 3:
         return 'SMALL'
-    elif cubeCell['dimensions']['ProductId'] == 'P2' and cubeCell['measures']['Qty'] > 3:
+    elif cubeRow['dimensions']['ProductId'] == 'P2' and cubeRow['measures']['Qty'] > 3:
         return 'LARGE'
-    elif cubeCell['dimensions']['ProductId'] == 'P3' and cubeCell['measures']['Qty'] <= 6:
+    elif cubeRow['dimensions']['ProductId'] == 'P3' and cubeRow['measures']['Qty'] <= 6:
         return 'SMALL'
-    elif cubeCell['dimensions']['ProductId'] == 'P3' and cubeCell['measures']['Qty'] > 6:
+    elif cubeRow['dimensions']['ProductId'] == 'P3' and cubeRow['measures']['Qty'] > 6:
         return 'LARGE'
     else:
         return 'SMALL'
 
 class cubeServiceTests(unittest.TestCase):
 
-    def testCreateCubeCellsFromCsv(self):
+    def testCreateCubeRowsFromCsv(self):
         cubeName = 'test-' + str(uuid.uuid4())
         try:
             shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
@@ -39,11 +39,11 @@ class cubeServiceTests(unittest.TestCase):
             shutil.copyfile('./testdata.csv', cubeName + '.csv')
 
         cs = CubeService('testdb')
-        result = cs.createCubeCellsFromCsv(cubeName + '.csv')
-        cubeCells = result['cubeCells']
+        result = cs.createCubeRowsFromCsv(cubeName + '.csv')
+        cubeRows = result['cubeRows']
         distincts = result['distincts']
 
-        self.assertTrue(len(cubeCells) == 14)
+        self.assertTrue(len(cubeRows) == 14)
         self.assertTrue(len(distincts) == 4)
 
         os.remove(cubeName + '.csv')
@@ -75,10 +75,10 @@ class cubeServiceTests(unittest.TestCase):
         self.assertTrue (distincts['State'] == {'NY' : 6})
         #print toCube
 
-        toCubeCells = cs.getCubeCells(toCubeName)
-        self.assertTrue (toCubeCells.count() == 6)
-        #for toCubeCell in toCubeCells:
-        #    print toCubeCell
+        toCubeRows = cs.getCubeRows(toCubeName)
+        self.assertTrue (toCubeRows.count() == 6)
+        #for toCubeRow in toCubeRows:
+        #    print toCubeRow
 
         os.remove(cubeName + '.csv')
 
@@ -114,8 +114,8 @@ class cubeServiceTests(unittest.TestCase):
             shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
         cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
-        cubeCells = cs.getCubeCells(cubeName)
-        stats = cs.getStats(cubeCells)
+        cubeRows = cs.getCubeRows(cubeName)
+        stats = cs.getStats(cubeRows)
         for stat in stats:
             self.assertTrue(stat in ['Price', 'Qty'])
             if stat == 'Price':
@@ -150,10 +150,10 @@ class cubeServiceTests(unittest.TestCase):
             binnings = json.load(binnings_file)
         cs.binCube(binnings, cubeName, cubeName + '_b', cubeName + '_b')
 
-        binnedCubeCells = cs.getCubeCells(cubeName + '_b')
+        binnedCubeRows = cs.getCubeRows(cubeName + '_b')
         dimkeys = []
-        for binnedCubeCell in binnedCubeCells:
-            dimkeys.append(binnedCubeCell['dimensionKey'])
+        for binnedCubeRow in binnedCubeRows:
+            dimkeys.append(binnedCubeRow['dimensionKey'])
         dimkeys.sort()
 
         self.assertTrue(dimkeys[0] == '#CustomerId:C1#PriceBin:0-5#ProductId:P1#QtyBin:0-5#Region:West#State:CA#Year:Year2014#Date:2014-10-11')
@@ -188,10 +188,10 @@ class cubeServiceTests(unittest.TestCase):
             binnings = json.load(binnings_file)
         cs.binCube(binnings, cubeName, cubeName + '_b', cubeName + '_b')
 
-        binnedCubeCells = cs.getCubeCells(cubeName + '_b')
+        binnedCubeRows = cs.getCubeRows(cubeName + '_b')
         dimkeys = []
-        for binnedCubeCell in binnedCubeCells:
-            dimkeys.append(binnedCubeCell['dimensionKey'])
+        for binnedCubeRow in binnedCubeRows:
+            dimkeys.append(binnedCubeRow['dimensionKey'])
         dimkeys.sort()
 
         self.assertTrue(dimkeys[0] == '#CustomerId:C1#ProductId:P1#State:CA#YearMonth:2014-10#Date:2014-10-10')
@@ -226,10 +226,10 @@ class cubeServiceTests(unittest.TestCase):
             binnings = json.load(binnings_file)
         cs.binCube(binnings, cubeName, cubeName + '_b', cubeName + '_b')
 
-        binnedCubeCells = cs.getCubeCells(cubeName + '_b')
+        binnedCubeRows = cs.getCubeRows(cubeName + '_b')
         dimkeys = []
-        for binnedCubeCell in binnedCubeCells:
-            dimkeys.append(binnedCubeCell['dimensionKey'])
+        for binnedCubeRow in binnedCubeRows:
+            dimkeys.append(binnedCubeRow['dimensionKey'])
         dimkeys.sort()
 
         self.assertTrue(dimkeys[0] == '#CustomerId:C1#ProductId:P1#State:CA#Week:2014-41#Date:2014-10-10')
@@ -274,10 +274,10 @@ class cubeServiceTests(unittest.TestCase):
 
         cs.rebinCube(binnings, cubeName, cubeName + "_b")
 
-        binnedCubeCells = cs.getCubeCells(cubeName + '_b')
+        binnedCubeRows = cs.getCubeRows(cubeName + '_b')
         dimkeys = []
-        for binnedCubeCell in binnedCubeCells:
-            dimkeys.append(binnedCubeCell['dimensionKey'])
+        for binnedCubeRow in binnedCubeRows:
+            dimkeys.append(binnedCubeRow['dimensionKey'])
         dimkeys.sort()
 
         self.assertTrue(dimkeys[0] == '#CustomerId:C1#PriceBin:0-5#ProductId:P1#QtyBin:0-3#Region:West#State:CA#Year:Year2014#Date:2014-10-11')
@@ -320,29 +320,29 @@ class cubeServiceTests(unittest.TestCase):
 
         cs.aggregateCube(cubeName + '_b', aggs)
 
-        aggCubeCells = cs.getCubeCells(cubeName + '_b_agg1')
-        self.assertTrue (aggCubeCells.count() == 4)
-        for aggCubeCell in aggCubeCells:
-            self.assertTrue(len(aggCubeCell['dimensions']) == 2)
-            print aggCubeCell
+        aggCubeRows = cs.getCubeRows(cubeName + '_b_agg1')
+        self.assertTrue (aggCubeRows.count() == 4)
+        for aggCubeRow in aggCubeRows:
+            self.assertTrue(len(aggCubeRow['dimensions']) == 2)
+            print aggCubeRow
 
         print '---------'
 
-        aggCubeCells = cs.getCubeCells(cubeName + '_b_agg2')
-        self.assertTrue (aggCubeCells.count() == 2)
-        print aggCubeCells.count()
-        for aggCubeCell in aggCubeCells:
-            self.assertTrue(len(aggCubeCell['dimensions']) == 1)
-            print aggCubeCell
+        aggCubeRows = cs.getCubeRows(cubeName + '_b_agg2')
+        self.assertTrue (aggCubeRows.count() == 2)
+        print aggCubeRows.count()
+        for aggCubeRow in aggCubeRows:
+            self.assertTrue(len(aggCubeRow['dimensions']) == 1)
+            print aggCubeRow
 
         print '---------'
 
-        aggCubeCells = cs.getCubeCells(cubeName + '_b_agg3')
-        self.assertTrue (aggCubeCells.count() == 2)
-        print aggCubeCells.count()
-        for aggCubeCell in aggCubeCells:
-            self.assertTrue(len(aggCubeCell['dimensions']) == 1)
-            print aggCubeCell
+        aggCubeRows = cs.getCubeRows(cubeName + '_b_agg3')
+        self.assertTrue (aggCubeRows.count() == 2)
+        print aggCubeRows.count()
+        for aggCubeRow in aggCubeRows:
+            self.assertTrue(len(aggCubeRow['dimensions']) == 1)
+            print aggCubeRow
 
         print '---------'
 
@@ -387,15 +387,15 @@ class cubeServiceTests(unittest.TestCase):
         stats = cube['stats']
         self.assertTrue ('Revenue' in stats)
         
-        cubeCells = cs.getCubeCells(cubeName)
-        for cubeCell in cubeCells:
-            self.assertTrue ('Revenue' in cubeCell['measures'])
-            self.assertTrue (cubeCell['measures']['Revenue'] == cubeCell['measures']['Price'] * cubeCell['measures']['Qty'])
+        cubeRows = cs.getCubeRows(cubeName)
+        for cubeRow in cubeRows:
+            self.assertTrue ('Revenue' in cubeRow['measures'])
+            self.assertTrue (cubeRow['measures']['Revenue'] == cubeRow['measures']['Price'] * cubeRow['measures']['Qty'])
 
         os.remove(cubeName + '.csv')
 
-    def func(cubeCell):
-        if (cubeCell['dimensions']['customerState'] == 'CA'):
+    def func(cubeRow):
+        if (cubeRow['dimensions']['customerState'] == 'CA'):
             return 3
         else:
             return 2
@@ -414,13 +414,13 @@ class cubeServiceTests(unittest.TestCase):
         stats = cube['stats']
         self.assertTrue ('Discount' in stats)
 
-        cubeCells = cs.getCubeCells(cubeName)
-        for cubeCell in cubeCells:
-            self.assertTrue ('Discount' in cubeCell['measures'])
-            if (cubeCell['dimensions']['State'] == 'CA'):
-               self.assertTrue (cubeCell['measures']['Discount'] == 3)
+        cubeRows = cs.getCubeRows(cubeName)
+        for cubeRow in cubeRows:
+            self.assertTrue ('Discount' in cubeRow['measures'])
+            if (cubeRow['dimensions']['State'] == 'CA'):
+               self.assertTrue (cubeRow['measures']['Discount'] == 3)
             else:
-               self.assertTrue (cubeCell['measures']['Discount'] == 2)
+               self.assertTrue (cubeRow['measures']['Discount'] == 2)
 
         os.remove(cubeName + '.csv')
 
@@ -437,13 +437,13 @@ class cubeServiceTests(unittest.TestCase):
         cube = cs.getCube(cubeName)
         self.assertTrue('ProductCategory' in cube['distincts'])
 
-        cubeCells = cs.getCubeCells(cubeName)
-        for cubeCell in cubeCells:
-            self.assertTrue ('ProductCategory' in cubeCell['dimensions'])
-            if (cubeCell['dimensions']['ProductId'] == 'P1'):
-               self.assertTrue (cubeCell['dimensions']['ProductCategory'] == 'Category1')
+        cubeRows = cs.getCubeRows(cubeName)
+        for cubeRow in cubeRows:
+            self.assertTrue ('ProductCategory' in cubeRow['dimensions'])
+            if (cubeRow['dimensions']['ProductId'] == 'P1'):
+               self.assertTrue (cubeRow['dimensions']['ProductCategory'] == 'Category1')
             else:
-               self.assertTrue (cubeCell['dimensions']['ProductCategory'] == 'Category2')
+               self.assertTrue (cubeRow['dimensions']['ProductCategory'] == 'Category2')
 
         os.remove(cubeName + '.csv')
 
@@ -460,20 +460,20 @@ class cubeServiceTests(unittest.TestCase):
         cube = cs.getCube(cubeName)
         self.assertTrue('PackageSize' in cube['distincts'])
 
-        cubeCells = cs.getCubeCells(cubeName)
-        for cubeCell in cubeCells:
-            self.assertTrue ('PackageSize' in cubeCell['dimensions'])
-            if cubeCell['dimensions']['ProductId'] == 'P1' and cubeCell['measures']['Qty'] <= 5:
-               self.assertTrue (cubeCell['dimensions']['PackageSize'] == 'SMALL')
-            elif cubeCell['dimensions']['ProductId'] == 'P1' and cubeCell['measures']['Qty'] > 5:
-               self.assertTrue (cubeCell['dimensions']['PackageSize'] == 'LARGE')
-            elif cubeCell['dimensions']['ProductId'] == 'P2' and cubeCell['measures']['Qty'] <= 3:
-               self.assertTrue (cubeCell['dimensions']['PackageSize'] == 'SMALL')
-            elif cubeCell['dimensions']['ProductId'] == 'P2' and cubeCell['measures']['Qty'] > 3:
-               self.assertTrue (cubeCell['dimensions']['PackageSize'] == 'LARGE')
-            elif cubeCell['dimensions']['ProductId'] == 'P3' and cubeCell['measures']['Qty'] <= 6:
-               self.assertTrue (cubeCell['dimensions']['PackageSize'] == 'SMALL')
-            elif cubeCell['dimensions']['ProductId'] == 'P3' and cubeCell['measures']['Qty'] > 6:
-               self.assertTrue (cubeCell['dimensions']['PackageSize'] == 'LARGE')
+        cubeRows = cs.getCubeRows(cubeName)
+        for cubeRow in cubeRows:
+            self.assertTrue ('PackageSize' in cubeRow['dimensions'])
+            if cubeRow['dimensions']['ProductId'] == 'P1' and cubeRow['measures']['Qty'] <= 5:
+               self.assertTrue (cubeRow['dimensions']['PackageSize'] == 'SMALL')
+            elif cubeRow['dimensions']['ProductId'] == 'P1' and cubeRow['measures']['Qty'] > 5:
+               self.assertTrue (cubeRow['dimensions']['PackageSize'] == 'LARGE')
+            elif cubeRow['dimensions']['ProductId'] == 'P2' and cubeRow['measures']['Qty'] <= 3:
+               self.assertTrue (cubeRow['dimensions']['PackageSize'] == 'SMALL')
+            elif cubeRow['dimensions']['ProductId'] == 'P2' and cubeRow['measures']['Qty'] > 3:
+               self.assertTrue (cubeRow['dimensions']['PackageSize'] == 'LARGE')
+            elif cubeRow['dimensions']['ProductId'] == 'P3' and cubeRow['measures']['Qty'] <= 6:
+               self.assertTrue (cubeRow['dimensions']['PackageSize'] == 'SMALL')
+            elif cubeRow['dimensions']['ProductId'] == 'P3' and cubeRow['measures']['Qty'] > 6:
+               self.assertTrue (cubeRow['dimensions']['PackageSize'] == 'LARGE')
 
         os.remove(cubeName + '.csv')
