@@ -297,6 +297,267 @@ class cubeServiceTests(unittest.TestCase):
 
         os.remove(cubeName + '.csv')
 
+    def testAutoReBinning(self):
+        cubeName = 'test-' + str(uuid.uuid4())
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeName + '.csv')
+        cs = CubeService('testdb')
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+
+        cs.autoBinCube(cubeName, cubeName + '_b')
+
+        # Add some new cube rows 
+        cs.appendToCubeFromCsv('./testdata-autobin.csv', cubeName)
+
+        cs.autoRebinCube(cubeName, cubeName + "_b")
+
+        binnedCubeRows = cs.getCubeRows(cubeName + '_b')
+        dimkeys = []
+        for binnedCubeRow in binnedCubeRows:
+            dimkeys.append(binnedCubeRow['dimensionKey'])
+        dimkeys.sort()
+
+        #for dimkey in dimkeys:
+        #    print dimkey
+
+        self.assertTrue(dimkeys[0] == '#CustomerId:C1#DateBin:2014-10#PriceBin:1-5#ProductId:P1#QtyBin:1-3#State:CA#Date:2014-10-11')
+        self.assertTrue(dimkeys[1] == '#CustomerId:C1#DateBin:2014-10#PriceBin:13-17#ProductId:P2#QtyBin:1-3#State:CA#Date:2014-10-11')
+        self.assertTrue(dimkeys[2] == '#CustomerId:C1#DateBin:2014-10#PriceBin:17-23#ProductId:P1#QtyBin:1-3#State:CA#Date:2014-10-10')
+        self.assertTrue(dimkeys[3] == '#CustomerId:C1#DateBin:2015-10#PriceBin:1-5#ProductId:P1#QtyBin:1-3#State:CA#Date:2015-10-11')
+        self.assertTrue(dimkeys[4] == '#CustomerId:C1#DateBin:2015-10#PriceBin:13-17#ProductId:P2#QtyBin:1-3#State:CA#Date:2015-10-11')
+        self.assertTrue(dimkeys[5] == '#CustomerId:C1#DateBin:2015-10#PriceBin:17-23#ProductId:P1#QtyBin:1-3#State:CA#Date:2015-10-10')
+        self.assertTrue(dimkeys[6] == '#CustomerId:C1#DateBin:2015-11#PriceBin:17-23#ProductId:P1#QtyBin:9-13#State:CA#Date:2015-11-10')
+        self.assertTrue(dimkeys[7] == '#CustomerId:C1#DateBin:2015-12#PriceBin:13-17#ProductId:P2#QtyBin:7-9#State:CA#Date:2015-12-12')
+        self.assertTrue(dimkeys[8] == '#CustomerId:C1#DateBin:2015-12#PriceBin:9-13#ProductId:P1#QtyBin:9-13#State:CA#Date:2015-12-11')
+        self.assertTrue(dimkeys[9] == '#CustomerId:C2#DateBin:2014-10#PriceBin:1-5#ProductId:P1#QtyBin:1-3#State:NY#Date:2014-10-11')
+        self.assertTrue(dimkeys[10] == '#CustomerId:C2#DateBin:2014-10#PriceBin:17-23#ProductId:P1#QtyBin:1-3#State:NY#Date:2014-10-10')
+        self.assertTrue(dimkeys[11] == '#CustomerId:C2#DateBin:2014-10#PriceBin:5-9#ProductId:P2#QtyBin:3-5#State:NY#Date:2014-10-10')
+        self.assertTrue(dimkeys[12] == '#CustomerId:C2#DateBin:2015-10#PriceBin:1-5#ProductId:P1#QtyBin:1-3#State:NY#Date:2015-10-11')
+        self.assertTrue(dimkeys[13] == '#CustomerId:C2#DateBin:2015-10#PriceBin:17-23#ProductId:P1#QtyBin:1-3#State:NY#Date:2015-10-10')
+        self.assertTrue(dimkeys[14] == '#CustomerId:C2#DateBin:2015-10#PriceBin:5-9#ProductId:P2#QtyBin:3-5#State:NY#Date:2015-10-10')
+        self.assertTrue(dimkeys[15] == '#CustomerId:C2#DateBin:2015-11#PriceBin:13-17#ProductId:P1#QtyBin:5-7#State:NY#Date:2015-11-14')
+        self.assertTrue(dimkeys[16] == '#CustomerId:C2#DateBin:2015-12#PriceBin:1-5#ProductId:P1#QtyBin:1-3#State:NY#Date:2015-12-13')
+        self.assertTrue(dimkeys[17] == '#CustomerId:C2#DateBin:2015-12#PriceBin:17-23#ProductId:P2#QtyBin:5-7#State:NY#Date:2015-12-12')
+        self.assertTrue(dimkeys[18] == '#CustomerId:C3#DateBin:2014-10#PriceBin:9-13#ProductId:P1#QtyBin:5-7#State:MA#Date:2014-10-11')
+        self.assertTrue(dimkeys[19] == '#CustomerId:C3#DateBin:2015-10#PriceBin:9-13#ProductId:P1#QtyBin:5-7#State:MA#Date:2015-10-11')
+        self.assertTrue(dimkeys[20] == '#CustomerId:C3#DateBin:2015-12#PriceBin:9-13#ProductId:P1#QtyBin:5-7#State:MA#Date:2015-12-15')
+
+        os.remove(cubeName + '.csv')
+
+
+    def testAutoBinning(self):
+        cubeName = 'test-' + str(uuid.uuid4())
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeName + '.csv')
+        cs = CubeService('testdb')
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+
+        cs.autoBinCube(cubeName, cubeName + "_b", ["Price", "Qty"])
+
+        binnedCubeRows = cs.getCubeRows(cubeName + '_b')
+        dimkeys = []
+        for binnedCubeRow in binnedCubeRows:
+            dimkeys.append(binnedCubeRow['dimensionKey'])
+        dimkeys.sort()
+
+        self.assertTrue(dimkeys[0] == '#CustomerId:C1#PriceBin:1-5#ProductId:P1#QtyBin:2-3#State:CA#Date:2014-10-11')
+        self.assertTrue(dimkeys[1] == '#CustomerId:C1#PriceBin:1-5#ProductId:P1#QtyBin:2-3#State:CA#Date:2015-10-11')
+        self.assertTrue(dimkeys[2] == '#CustomerId:C1#PriceBin:13-17#ProductId:P2#QtyBin:1-2#State:CA#Date:2014-10-11')
+        self.assertTrue(dimkeys[3] == '#CustomerId:C1#PriceBin:13-17#ProductId:P2#QtyBin:1-2#State:CA#Date:2015-10-11')
+        self.assertTrue(dimkeys[4] == '#CustomerId:C1#PriceBin:17-21#ProductId:P1#QtyBin:2-3#State:CA#Date:2014-10-10')
+        self.assertTrue(dimkeys[5] == '#CustomerId:C1#PriceBin:17-21#ProductId:P1#QtyBin:2-3#State:CA#Date:2015-10-10')
+        self.assertTrue(dimkeys[6] == '#CustomerId:C2#PriceBin:1-5#ProductId:P1#QtyBin:1-2#State:NY#Date:2014-10-11')
+        self.assertTrue(dimkeys[7] == '#CustomerId:C2#PriceBin:1-5#ProductId:P1#QtyBin:1-2#State:NY#Date:2015-10-11')
+        self.assertTrue(dimkeys[8] == '#CustomerId:C2#PriceBin:17-21#ProductId:P1#QtyBin:1-2#State:NY#Date:2014-10-10')
+        self.assertTrue(dimkeys[9] == '#CustomerId:C2#PriceBin:17-21#ProductId:P1#QtyBin:1-2#State:NY#Date:2015-10-10')
+        self.assertTrue(dimkeys[10] == '#CustomerId:C2#PriceBin:5-9#ProductId:P2#QtyBin:3-4#State:NY#Date:2014-10-10')
+        self.assertTrue(dimkeys[11] == '#CustomerId:C2#PriceBin:5-9#ProductId:P2#QtyBin:3-4#State:NY#Date:2015-10-10')
+        self.assertTrue(dimkeys[12] == '#CustomerId:C3#PriceBin:9-13#ProductId:P1#QtyBin:5-7#State:MA#Date:2014-10-11')
+        self.assertTrue(dimkeys[13] == '#CustomerId:C3#PriceBin:9-13#ProductId:P1#QtyBin:5-7#State:MA#Date:2015-10-11')
+
+        os.remove(cubeName + '.csv')
+
+    def testAutoBinningAllMeasures(self):
+        cubeName = 'test-' + str(uuid.uuid4())
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeName + '.csv')
+        cs = CubeService('testdb')
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+
+        cs.autoBinCube(cubeName, cubeName + "_b")
+
+        binnedCubeRows = cs.getCubeRows(cubeName + '_b')
+        dimkeys = []
+        for binnedCubeRow in binnedCubeRows:
+            dimkeys.append(binnedCubeRow['dimensionKey'])
+        dimkeys.sort()
+
+        #for dimkey in dimkeys:
+        #    print dimkey
+
+        self.assertTrue(dimkeys[0] == '#CustomerId:C1#DateBin:2014-10#PriceBin:1-5#ProductId:P1#QtyBin:2-3#State:CA#Date:2014-10-11')
+        self.assertTrue(dimkeys[1] == '#CustomerId:C1#DateBin:2014-10#PriceBin:13-17#ProductId:P2#QtyBin:1-2#State:CA#Date:2014-10-11')
+        self.assertTrue(dimkeys[2] == '#CustomerId:C1#DateBin:2014-10#PriceBin:17-21#ProductId:P1#QtyBin:2-3#State:CA#Date:2014-10-10')
+        self.assertTrue(dimkeys[3] == '#CustomerId:C1#DateBin:2015-10#PriceBin:1-5#ProductId:P1#QtyBin:2-3#State:CA#Date:2015-10-11')
+        self.assertTrue(dimkeys[4] == '#CustomerId:C1#DateBin:2015-10#PriceBin:13-17#ProductId:P2#QtyBin:1-2#State:CA#Date:2015-10-11')
+        self.assertTrue(dimkeys[5] == '#CustomerId:C1#DateBin:2015-10#PriceBin:17-21#ProductId:P1#QtyBin:2-3#State:CA#Date:2015-10-10')
+        self.assertTrue(dimkeys[6] == '#CustomerId:C2#DateBin:2014-10#PriceBin:1-5#ProductId:P1#QtyBin:1-2#State:NY#Date:2014-10-11')
+        self.assertTrue(dimkeys[7] == '#CustomerId:C2#DateBin:2014-10#PriceBin:17-21#ProductId:P1#QtyBin:1-2#State:NY#Date:2014-10-10')
+        self.assertTrue(dimkeys[8] == '#CustomerId:C2#DateBin:2014-10#PriceBin:5-9#ProductId:P2#QtyBin:3-4#State:NY#Date:2014-10-10')
+        self.assertTrue(dimkeys[9] == '#CustomerId:C2#DateBin:2015-10#PriceBin:1-5#ProductId:P1#QtyBin:1-2#State:NY#Date:2015-10-11')
+        self.assertTrue(dimkeys[10] == '#CustomerId:C2#DateBin:2015-10#PriceBin:17-21#ProductId:P1#QtyBin:1-2#State:NY#Date:2015-10-10')
+        self.assertTrue(dimkeys[11] == '#CustomerId:C2#DateBin:2015-10#PriceBin:5-9#ProductId:P2#QtyBin:3-4#State:NY#Date:2015-10-10')
+        self.assertTrue(dimkeys[12] == '#CustomerId:C3#DateBin:2014-10#PriceBin:9-13#ProductId:P1#QtyBin:5-7#State:MA#Date:2014-10-11')
+        self.assertTrue(dimkeys[13] == '#CustomerId:C3#DateBin:2015-10#PriceBin:9-13#ProductId:P1#QtyBin:5-7#State:MA#Date:2015-10-11')
+
+        os.remove(cubeName + '.csv')
+
+    def testAutoBinning2(self):
+        cubeName = 'test-' + str(uuid.uuid4())
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeName + '.csv')
+        cs = CubeService('testdb')
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+
+        cs.autoBinCube(cubeName, cubeName + "_b", ["Date", "Qty"])
+
+        binnedCubeRows = cs.getCubeRows(cubeName + '_b')
+        dimkeys = []
+        for binnedCubeRow in binnedCubeRows:
+            dimkeys.append(binnedCubeRow['dimensionKey'])
+        dimkeys.sort()
+
+        self.assertTrue(dimkeys[0] == '#CustomerId:C1#DateBin:2014-10#ProductId:P1#QtyBin:2-3#State:CA#Date:2014-10-10')
+        self.assertTrue(dimkeys[1] == '#CustomerId:C1#DateBin:2014-10#ProductId:P1#QtyBin:2-3#State:CA#Date:2014-10-11')
+        self.assertTrue(dimkeys[2] == '#CustomerId:C1#DateBin:2014-10#ProductId:P2#QtyBin:1-2#State:CA#Date:2014-10-11')
+        self.assertTrue(dimkeys[3] == '#CustomerId:C1#DateBin:2015-10#ProductId:P1#QtyBin:2-3#State:CA#Date:2015-10-10')
+        self.assertTrue(dimkeys[4] == '#CustomerId:C1#DateBin:2015-10#ProductId:P1#QtyBin:2-3#State:CA#Date:2015-10-11')
+        self.assertTrue(dimkeys[5] == '#CustomerId:C1#DateBin:2015-10#ProductId:P2#QtyBin:1-2#State:CA#Date:2015-10-11')
+        self.assertTrue(dimkeys[6] == '#CustomerId:C2#DateBin:2014-10#ProductId:P1#QtyBin:1-2#State:NY#Date:2014-10-10')
+        self.assertTrue(dimkeys[7] == '#CustomerId:C2#DateBin:2014-10#ProductId:P1#QtyBin:1-2#State:NY#Date:2014-10-11')
+        self.assertTrue(dimkeys[8] == '#CustomerId:C2#DateBin:2014-10#ProductId:P2#QtyBin:3-4#State:NY#Date:2014-10-10')
+        self.assertTrue(dimkeys[9] == '#CustomerId:C2#DateBin:2015-10#ProductId:P1#QtyBin:1-2#State:NY#Date:2015-10-10')
+        self.assertTrue(dimkeys[10] == '#CustomerId:C2#DateBin:2015-10#ProductId:P1#QtyBin:1-2#State:NY#Date:2015-10-11')
+        self.assertTrue(dimkeys[11] == '#CustomerId:C2#DateBin:2015-10#ProductId:P2#QtyBin:3-4#State:NY#Date:2015-10-10')
+        self.assertTrue(dimkeys[12] == '#CustomerId:C3#DateBin:2014-10#ProductId:P1#QtyBin:5-7#State:MA#Date:2014-10-11')
+        self.assertTrue(dimkeys[13] == '#CustomerId:C3#DateBin:2015-10#ProductId:P1#QtyBin:5-7#State:MA#Date:2015-10-11')
+
+        os.remove(cubeName + '.csv')
+
+
+    def testAutoBinning3(self):
+        cubeName = 'test-' + str(uuid.uuid4())
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeName + '.csv')
+        cs = CubeService('testdb')
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+
+        cs.autoBinCube(cubeName, cubeName + "_b", ["Date", "Qty"], { "Date": "monthly"})
+
+        binnedCubeRows = cs.getCubeRows(cubeName + '_b')
+        dimkeys = []
+        for binnedCubeRow in binnedCubeRows:
+            dimkeys.append(binnedCubeRow['dimensionKey'])
+        dimkeys.sort()
+
+        self.assertTrue(dimkeys[0] == '#CustomerId:C1#DateBin:2014-10#ProductId:P1#QtyBin:2-3#State:CA#Date:2014-10-10')
+        self.assertTrue(dimkeys[1] == '#CustomerId:C1#DateBin:2014-10#ProductId:P1#QtyBin:2-3#State:CA#Date:2014-10-11')
+        self.assertTrue(dimkeys[2] == '#CustomerId:C1#DateBin:2014-10#ProductId:P2#QtyBin:1-2#State:CA#Date:2014-10-11')
+        self.assertTrue(dimkeys[3] == '#CustomerId:C1#DateBin:2015-10#ProductId:P1#QtyBin:2-3#State:CA#Date:2015-10-10')
+        self.assertTrue(dimkeys[4] == '#CustomerId:C1#DateBin:2015-10#ProductId:P1#QtyBin:2-3#State:CA#Date:2015-10-11')
+        self.assertTrue(dimkeys[5] == '#CustomerId:C1#DateBin:2015-10#ProductId:P2#QtyBin:1-2#State:CA#Date:2015-10-11')
+        self.assertTrue(dimkeys[6] == '#CustomerId:C2#DateBin:2014-10#ProductId:P1#QtyBin:1-2#State:NY#Date:2014-10-10')
+        self.assertTrue(dimkeys[7] == '#CustomerId:C2#DateBin:2014-10#ProductId:P1#QtyBin:1-2#State:NY#Date:2014-10-11')
+        self.assertTrue(dimkeys[8] == '#CustomerId:C2#DateBin:2014-10#ProductId:P2#QtyBin:3-4#State:NY#Date:2014-10-10')
+        self.assertTrue(dimkeys[9] == '#CustomerId:C2#DateBin:2015-10#ProductId:P1#QtyBin:1-2#State:NY#Date:2015-10-10')
+        self.assertTrue(dimkeys[10] == '#CustomerId:C2#DateBin:2015-10#ProductId:P1#QtyBin:1-2#State:NY#Date:2015-10-11')
+        self.assertTrue(dimkeys[11] == '#CustomerId:C2#DateBin:2015-10#ProductId:P2#QtyBin:3-4#State:NY#Date:2015-10-10')
+        self.assertTrue(dimkeys[12] == '#CustomerId:C3#DateBin:2014-10#ProductId:P1#QtyBin:5-7#State:MA#Date:2014-10-11')
+        self.assertTrue(dimkeys[13] == '#CustomerId:C3#DateBin:2015-10#ProductId:P1#QtyBin:5-7#State:MA#Date:2015-10-11')
+
+        os.remove(cubeName + '.csv')
+
+    def testAutoBinning4(self):
+        cubeName = 'test-' + str(uuid.uuid4())
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeName + '.csv')
+        cs = CubeService('testdb')
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+
+        cs.autoBinCube(cubeName, cubeName + "_b", ["Date", "Qty"], { "Date": "weekly"})
+
+        binnedCubeRows = cs.getCubeRows(cubeName + '_b')
+        dimkeys = []
+        for binnedCubeRow in binnedCubeRows:
+            dimkeys.append(binnedCubeRow['dimensionKey'])
+        dimkeys.sort()
+
+        self.assertTrue(dimkeys[0] == '#CustomerId:C1#DateBin:2014-41#ProductId:P1#QtyBin:2-3#State:CA#Date:2014-10-10')
+        self.assertTrue(dimkeys[1] == '#CustomerId:C1#DateBin:2014-41#ProductId:P1#QtyBin:2-3#State:CA#Date:2014-10-11')
+        self.assertTrue(dimkeys[2] == '#CustomerId:C1#DateBin:2014-41#ProductId:P2#QtyBin:1-2#State:CA#Date:2014-10-11')
+        self.assertTrue(dimkeys[3] == '#CustomerId:C1#DateBin:2015-41#ProductId:P1#QtyBin:2-3#State:CA#Date:2015-10-10')
+        self.assertTrue(dimkeys[4] == '#CustomerId:C1#DateBin:2015-41#ProductId:P1#QtyBin:2-3#State:CA#Date:2015-10-11')
+        self.assertTrue(dimkeys[5] == '#CustomerId:C1#DateBin:2015-41#ProductId:P2#QtyBin:1-2#State:CA#Date:2015-10-11')
+        self.assertTrue(dimkeys[6] == '#CustomerId:C2#DateBin:2014-41#ProductId:P1#QtyBin:1-2#State:NY#Date:2014-10-10')
+        self.assertTrue(dimkeys[7] == '#CustomerId:C2#DateBin:2014-41#ProductId:P1#QtyBin:1-2#State:NY#Date:2014-10-11')
+        self.assertTrue(dimkeys[8] == '#CustomerId:C2#DateBin:2014-41#ProductId:P2#QtyBin:3-4#State:NY#Date:2014-10-10')
+        self.assertTrue(dimkeys[9] == '#CustomerId:C2#DateBin:2015-41#ProductId:P1#QtyBin:1-2#State:NY#Date:2015-10-10')
+        self.assertTrue(dimkeys[10] == '#CustomerId:C2#DateBin:2015-41#ProductId:P1#QtyBin:1-2#State:NY#Date:2015-10-11')
+        self.assertTrue(dimkeys[11] == '#CustomerId:C2#DateBin:2015-41#ProductId:P2#QtyBin:3-4#State:NY#Date:2015-10-10')
+        self.assertTrue(dimkeys[12] == '#CustomerId:C3#DateBin:2014-41#ProductId:P1#QtyBin:5-7#State:MA#Date:2014-10-11')
+        self.assertTrue(dimkeys[13] == '#CustomerId:C3#DateBin:2015-41#ProductId:P1#QtyBin:5-7#State:MA#Date:2015-10-11')
+
+        os.remove(cubeName + '.csv')
+
+    def testAutoBinning5(self):
+        cubeName = 'test-' + str(uuid.uuid4())
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeName + '.csv')
+        cs = CubeService('testdb')
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+
+        cs.autoBinCube(cubeName, cubeName + "_b", ["Date", "Qty"], { "Date": "yearly"})
+
+        binnedCubeRows = cs.getCubeRows(cubeName + '_b')
+        dimkeys = []
+        for binnedCubeRow in binnedCubeRows:
+            dimkeys.append(binnedCubeRow['dimensionKey'])
+        dimkeys.sort()
+
+        #for dimkey in dimkeys:
+        #    print dimkey
+
+        self.assertTrue(dimkeys[0] == '#CustomerId:C1#DateBin:2014#ProductId:P1#QtyBin:2-3#State:CA#Date:2014-10-10')
+        self.assertTrue(dimkeys[1] == '#CustomerId:C1#DateBin:2014#ProductId:P1#QtyBin:2-3#State:CA#Date:2014-10-11')
+        self.assertTrue(dimkeys[2] == '#CustomerId:C1#DateBin:2014#ProductId:P2#QtyBin:1-2#State:CA#Date:2014-10-11')
+        self.assertTrue(dimkeys[3] == '#CustomerId:C1#DateBin:2015#ProductId:P1#QtyBin:2-3#State:CA#Date:2015-10-10')
+        self.assertTrue(dimkeys[4] == '#CustomerId:C1#DateBin:2015#ProductId:P1#QtyBin:2-3#State:CA#Date:2015-10-11')
+        self.assertTrue(dimkeys[5] == '#CustomerId:C1#DateBin:2015#ProductId:P2#QtyBin:1-2#State:CA#Date:2015-10-11')
+        self.assertTrue(dimkeys[6] == '#CustomerId:C2#DateBin:2014#ProductId:P1#QtyBin:1-2#State:NY#Date:2014-10-10')
+        self.assertTrue(dimkeys[7] == '#CustomerId:C2#DateBin:2014#ProductId:P1#QtyBin:1-2#State:NY#Date:2014-10-11')
+        self.assertTrue(dimkeys[8] == '#CustomerId:C2#DateBin:2014#ProductId:P2#QtyBin:3-4#State:NY#Date:2014-10-10')
+        self.assertTrue(dimkeys[9] == '#CustomerId:C2#DateBin:2015#ProductId:P1#QtyBin:1-2#State:NY#Date:2015-10-10')
+        self.assertTrue(dimkeys[10] == '#CustomerId:C2#DateBin:2015#ProductId:P1#QtyBin:1-2#State:NY#Date:2015-10-11')
+        self.assertTrue(dimkeys[11] == '#CustomerId:C2#DateBin:2015#ProductId:P2#QtyBin:3-4#State:NY#Date:2015-10-10')
+        self.assertTrue(dimkeys[12] == '#CustomerId:C3#DateBin:2014#ProductId:P1#QtyBin:5-7#State:MA#Date:2014-10-11')
+        self.assertTrue(dimkeys[13] == '#CustomerId:C3#DateBin:2015#ProductId:P1#QtyBin:5-7#State:MA#Date:2015-10-11')
+
+        os.remove(cubeName + '.csv')
+
     def testAggregation(self):
         cubeName = 'test-' + str(uuid.uuid4())
         try:

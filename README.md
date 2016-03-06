@@ -308,7 +308,7 @@ We will call our new binned cube, 'purchases_autobinned_2'.
 
     binnedCube = cubify.autoBinCube('purchases', 'purchases_autobinned_2', ['TransactionDate','Qty','Price'], {'TransactionDate':'weekly'})
 
-If you examine the dimensions in binned cube, you will see the following new ones, "PriceBin", "PriceBin", "TransactionDateBin". Note that TransactionDateBin now uses weekly bins; the label is in the format [year]-[week number]:
+If you examine the dimensions in binned cube, you will see the following new ones, "PriceBin", "QtyBin", "TransactionDateBin". Note that TransactionDateBin now uses weekly bins; the label is in the format [year]-[week number]:
 
     print binnedCube['distincts']
 

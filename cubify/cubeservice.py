@@ -2,6 +2,7 @@ import csv
 import re
 import json
 import sys
+import math
 import numpy as np
 from copy import deepcopy
 from pymongo import MongoClient
@@ -478,7 +479,6 @@ class CubeService:
             dimensionKey += '#' + dateName + ":" + str(binnedCubeRow['dates'][dateName])[:10]
         binnedCubeRow['dimensionKey'] = dimensionKey
 
-
         return binnedCubeRow
 
     #
@@ -500,6 +500,129 @@ class CubeService:
         self.__updateCubeProperty__(binnedCubeName, { "$set": {"lastBinnedOn" : datetime.utcnow()}})
 
         return self.getCube(binnedCubeName)
+
+    #
+    # Determines if measure is date
+    #
+    def __isMeasureDate__(self, cubeName, measure):
+       # Get a cube row
+       cubeRows = self.getCubeRows(cubeName)
+       cubeRow = cubeRows[0];
+       for dateCol in cubeRow['dates']:
+           if dateCol == measure:
+               return True
+ 
+       return False
+
+    #
+    # Generate the binning definitions for measures to be binned
+    #
+    def __generateBinnings__(self, sourceCubeName, measuresToBeBinned, hints):
+        binnings = []
+        cube = self.getCube(sourceCubeName)
+        stats = cube['stats']
+        for measure in measuresToBeBinned:
+            if self.__isMeasureDate__(sourceCubeName, measure):
+               binning = {}
+               binnings.append(binning)
+               binning['binningName'] = measure + "Binning"
+               binning['outputField'] = {}
+               binning['outputField']['name'] = measure + "Bin"
+               binning['outputField']['displayName'] = measure + " Bin"
+               binning['sourceField'] = measure
+               binning['type'] = 'date'
+               binning['fallbackLabel'] = 'OutsideRange'
+               if measure in hints:
+                   period = hints[measure]
+                   if period == 'weekly' or period == 'monhtly' or period == 'yearly':
+                       binning['period'] = period
+                   else:
+                       binning['period'] = 'monthly' #default
+               else:
+                   binning['period'] = 'monthly' #default
+
+            else:
+               minV = stats[measure]['min']
+               minV = math.floor(minV)
+               iMinv = int(minV)
+
+               maxV = stats[measure]['max']
+               maxV = math.ceil(maxV)
+               iMaxv = int(maxV)
+
+               size =  self.getCubeRows(sourceCubeName).count()
+
+               # Rice formula
+               binSize = 2 * math.pow(size, 0.33)
+               binWidth = (iMaxv - iMinv) / binSize
+               iBinSize = int(round(binSize))
+               iBinWidth = int(round(binWidth))
+
+               binning = {}
+               binnings.append(binning)
+               binning['binningName'] = measure + "Binning"
+               binning['outputField'] = {}
+               binning['outputField']['name'] = measure + "Bin"
+               binning['outputField']['displayName'] = measure + " Bin"
+               binning['sourceField'] = measure
+               binning['type'] = 'range'
+               binning['bins'] = []
+               binning['fallbackLabel'] = 'OutsideRange'
+
+               lo = iMinv
+               for i in range(0, iBinSize):
+                   hi = lo + iBinWidth
+                   if i == iBinSize-1 and hi < iMaxv:
+                      hi = iMaxv
+                   bin = { "min" : lo, "max" : hi, "label" : str(lo) + "-" + str(hi) }
+                   binning['bins'].append(bin) 
+                   lo += iBinWidth
+
+        return binnings
+
+    #
+    #  Get all measures for binning (a measure is a numeric or date type)
+    #
+    def __getAllMeasuresForBinning__(self, cubeName):
+        measuresToBeBinned = []
+        cubeRows = self.getCubeRows(cubeName)
+        cubeRow = cubeRows[0];
+        for measure in cubeRow['measures']:
+            measuresToBeBinned.append(measure)
+        for date in cubeRow['dates']:
+            measuresToBeBinned.append(date)
+        return measuresToBeBinned
+
+    #
+    # Automatically bin a cube
+    #
+    def autoBinCube(self, sourceCubeName, binnedCubeName, measuresToBeBinned=None, hints={}):
+        if measuresToBeBinned == None:
+            measuresToBeBinned = self.__getAllMeasuresForBinning__(sourceCubeName)
+
+        binnings = self.__generateBinnings__(sourceCubeName, measuresToBeBinned, hints)
+        return self.binCube(binnings, sourceCubeName, binnedCubeName)
+
+    #
+    # Automatically re-bin a cube
+    #
+    def autoRebinCube(self, sourceCubeName, binnedCubeName):
+
+        measuresToBeBinned = []
+
+        # Get existing binning definition, if any - and get the measures to be binned from this
+        cube = self.getCube(sourceCubeName)
+        if 'binnings' in cube and cube['binnings'] != None:
+            binnings = cube['binnings']
+            for binning in binnings:
+                if binning['type'] == 'range' or binning['type'] == 'date':
+                    measuresToBeBinned.append(binning['sourceField'])
+        else:
+            # If no existing binning definition, generate the binnings automatically for all measures
+            measuresToBeBinned = self.__getAllMeasuresForBinning__(sourceCubeName)
+
+        binnings = self.__generateBinnings__(sourceCubeName, measuresToBeBinned, {})
+        return self.rebinCube(binnings, sourceCubeName, binnedCubeName)
 
     #
     # Re-bin cube

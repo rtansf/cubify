@@ -220,14 +220,21 @@ class CubeSetService:
         existing = self.getCubeSet(cubeSetName)
         if existing == None:
             raise ValueError('Cube Set with ' + cubeSetName + ' does not exist')
-        
+
         # Are we rebinning?
         if existing['binnedCube'] != None:
-            self.cubeService.rebinCube(binnings, existing['sourceCube'], existing['binnedCube'])
+            if binnings != None:
+                self.cubeService.rebinCube(binnings, existing['sourceCube'], existing['binnedCube'])
+            else:
+                self.cubeService.autoRebinCube(existing['sourceCube'], existing['binnedCube'])
         else: 
             binnedCubeName = cubeSetName + "_binned"
-            self.cubeService.binCube(binnings, binnedCubeName, binnedCubeName)
+            if binnings != None:
+                self.cubeService.binCube(binnings, binnedCubeName, binnedCubeName)
+            else:
+                self.cubeService.autoBinCube(binnedCubeName, binnedCubeName, [])
             self.__updateCubeSetProperty__(cubeSetName, { "$set": {"binnedCube" : binnedCubeName}})
+
 
     #
     # Perform one or more aggregations on binned cube. The aggregated cubes are automatically saved and identified by aggName

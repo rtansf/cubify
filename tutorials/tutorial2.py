@@ -29,59 +29,59 @@ print ""
 print "CubeSet created successfully"
 print ""
 
-cubeCells = cubify.getSourceCubeCells('purchasesCubeSet')
-binnedCubeCells = cubify.getBinnedCubeCells('purchasesCubeSet')
-agg1CubeCells = cubify.getAggregatedCubeCells('purchasesCubeSet', 'agg1')
-agg2CubeCells = cubify.getAggregatedCubeCells('purchasesCubeSet', 'agg2')
+cubeRows = cubify.getSourceCubeRows('purchasesCubeSet')
+binnedCubeRows = cubify.getBinnedCubeRows('purchasesCubeSet')
+agg1CubeRows = cubify.getAggregatedCubeRows('purchasesCubeSet', 'agg1')
+agg2CubeRows = cubify.getAggregatedCubeRows('purchasesCubeSet', 'agg2')
 
 print ""
-print "Cube cells in purchasesCubeSet's source cube:"
-for cubeCell in cubeCells:
-    print cubeCell
-print ""
-
-print ""
-print "Cube cells in purchasesCubeSet's binned cube:"
-for cubeCell in binnedCubeCells:
-    print cubeCell
+print "Cube rows in purchasesCubeSet's source cube:"
+for cubeRow in cubeRows:
+    print cubeRow
 print ""
 
 print ""
-print "Cube cells in purchasesCubeSet's agg1 cube:"
-for cubeCell in agg1CubeCells:
-    print cubeCell
+print "Cube rows in purchasesCubeSet's binned cube:"
+for cubeRow in binnedCubeRows:
+    print cubeRow
 print ""
 
 print ""
-print "Cube cells in purchasesCubeSet's agg2 cube:"
-for cubeCell in agg2CubeCells:
-    print cubeCell
+print "Cube rows in purchasesCubeSet's agg1 cube:"
+for cubeRow in agg1CubeRows:
+    print cubeRow
+print ""
+
+print ""
+print "Cube rows in purchasesCubeSet's agg2 cube:"
+for cubeRow in agg2CubeRows:
+    print cubeRow
 print ""
 
 #
-#  Add more cells to purchasesCubeSet's source cube
+#  Add more rows to purchasesCubeSet's source cube
 #
-cubify.addCellsToSourceCube('purchasesCubeSet', 'morePurchases.csv')
+cubify.addRowsToSourceCube('purchasesCubeSet', 'morePurchases.csv')
 
-binnedCubeCells = cubify.getBinnedCubeCells('purchasesCubeSet')
+binnedCubeRows = cubify.getBinnedCubeRows('purchasesCubeSet')
 print ""
-print "Cube cells in purchasesCubeSet's binned cube:"
-for cubeCell in binnedCubeCells:
-    print cubeCell
-print ""
-
-agg1CubeCells = cubify.getAggregatedCubeCells('purchasesCubeSet', 'agg1')
-print ""
-print "Cube cells in purchasesCubeSet's agg1 cube:"
-for cubeCell in agg1CubeCells:
-    print cubeCell
+print "Cube rows in purchasesCubeSet's binned cube:"
+for cubeRow in binnedCubeRows:
+    print cubeRow
 print ""
 
-agg2CubeCells = cubify.getAggregatedCubeCells('purchasesCubeSet', 'agg2')
+agg1CubeRows = cubify.getAggregatedCubeRows('purchasesCubeSet', 'agg1')
 print ""
-print "Cube cells in purchasesCubeSet's agg2 cube:"
-for cubeCell in agg2CubeCells:
-    print cubeCell
+print "Cube rows in purchasesCubeSet's agg1 cube:"
+for cubeRow in agg1CubeRows:
+    print cubeRow
+print ""
+
+agg2CubeRows = cubify.getAggregatedCubeRows('purchasesCubeSet', 'agg2')
+print ""
+print "Cube rows in purchasesCubeSet's agg2 cube:"
+for cubeRow in agg2CubeRows:
+    print cubeRow
 print ""
 
 

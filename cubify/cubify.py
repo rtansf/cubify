@@ -39,6 +39,9 @@ class Cubify:
     def binCube(self, binnings, sourceCubeName, binnedCubeName, binnedCubeDisplayName=None):
         return self.cubeService.binCube(binnings, sourceCubeName, binnedCubeName, binnedCubeDisplayName)
 
+    def autoBinCube(self, sourceCubeName, binnedCubeName, toBeBinned=None, hints={}):
+        return self.cubeService.autoBinCube(sourceCubeName, binnedCubeName, toBeBinned, hints)
+
     def rebinCube(self, binnings, sourceCubeName, binnedCubeName):
         return self.cubeService.rebinCube(binnings, sourceCubeName, binnedCubeName)
   
