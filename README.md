@@ -299,7 +299,7 @@ If you examine the dimensions in binned cube, you will see new ones, "RevenueBin
      'ProductId': {'P2': 4, 'P1': 10}
     }
 
-Note that the TransactionDateBin's values are monthly, the default binning period for dates. You will see in the next example how to give hints to cubify to use other periods such as 'weekly' or 'yearly' for the bins.
+Note that the TransactionDateBin's values are monthly, the default binning period for dates. Note that the monthly bins are in the format [year]-[month]. You will see in the next example how to give hints to cubify to use other periods such as 'weekly' or 'yearly' for the bins.
 
 Note that after binning, the number of cube rows in the binned cube are the same as the original cube. We still have a total of 14 rows in our binned cube. 
 
@@ -308,7 +308,7 @@ We will call our new binned cube, 'purchases_autobinned_2'.
 
     binnedCube = cubify.autoBinCube('purchases', 'purchases_autobinned_2', ['TransactionDate','Qty','Price'], {'TransactionDate':'weekly'})
 
-If you examine the dimensions in binned cube, you will see the following new ones, "PriceBin", "PriceBin", "TransactionDateBin". Note that TransactionDateBin now uses weekly bins; the label is in the format <year>-<week number>:
+If you examine the dimensions in binned cube, you will see the following new ones, "PriceBin", "PriceBin", "TransactionDateBin". Note that TransactionDateBin now uses weekly bins; the label is in the format [year]-[week number]:
 
     print binnedCube['distincts']
 
