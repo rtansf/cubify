@@ -578,8 +578,6 @@ A cube set is essentially a container for cubes of certain types which are linke
 There are 3 types of cubes in a cube set: "source", "binned" and "aggregated".
 A cube set consists of one and only one source cube, one and only one binned cube, and zero or more aggregated cubes.
 
-We have seen the binning definitions (binnings.json)  and aggregation definitions (aggs.json) in tutorial 1. We will now use these definitions together with the source data defined in purchases.csv to create our cube set, called "purchasesCubeSet". 
-
 In our tutorial, once createCubeSet returns successfully, our purchasesCubeSet contains a "source" cube reflecting the original data imported from purchases.csv.
 To get the source cube rows, call getSourceCubeRows like so:
 
@@ -590,7 +588,8 @@ To get the binned cube rows, call getBinnedCubeRows like so:
 
     binnedCubeRows = cubify.getBinnedCubeRows('purchasesCubeSet')
 
-Now Let's create our cube set using the createCubeSet using custom binnings and aggregations. We will call this cube set, 'purchasesCubeSet2'.
+
+Now Let's create our cube set using the createCubeSet using custom binnings and aggregations. We will call this cube set, 'purchasesCubeSet2'. We have seen the binning definitions (binnings.json)  and aggregation definitions (aggs.json) in tutorial 1. We will now use these definitions together with the source data defined in purchases.csv to create our cube set, called "purchasesCubeSet". 
 Here's the code:
 
     with open('binnings.json') as binnings_file:
