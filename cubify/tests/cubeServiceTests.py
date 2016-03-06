@@ -308,8 +308,11 @@ class cubeServiceTests(unittest.TestCase):
 
         cs.binCube(cubeName, cubeName + '_b')
 
-        # Add some new cube rows 
-        cs.appendToCubeFromCsv('./testdata-autobin.csv', cubeName)
+        # Add some new cube rows
+        try:
+            cs.appendToCubeFromCsv('./testdata-autobin.csv', cubeName)
+        except Exception:
+            cs.appendToCubeFromCsv('cubify/tests/testdata-autobin.csv', cubeName)
 
         cs.autoRebinCube(cubeName, cubeName + "_b")
 
