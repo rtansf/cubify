@@ -482,26 +482,6 @@ class CubeService:
         return binnedCubeRow
 
     #
-    # Bin cube - Returns the binned cube
-    #
-    def binCube(self, binnings, sourceCubeName, binnedCubeName, binnedCubeDisplayName=None):
-        if binnedCubeDisplayName == None:
-            binnedCubeDisplayName = binnedCubeName
-        binnedCubeRows = []
-        cubeRows = self.getCubeRows(sourceCubeName)
-        distincts = {}
-        for cubeRow in cubeRows:
-            #print cubeRow
-            binnedCubeRow = self.__performBinning__(binnings, cubeRow, distincts)
-            binnedCubeRows.append(binnedCubeRow)
-
-        stats = self.getStats(binnedCubeRows)
-        self.createCube('binned', binnedCubeName, binnedCubeDisplayName, binnedCubeRows, distincts, stats, binnings, None)
-        self.__updateCubeProperty__(binnedCubeName, { "$set": {"lastBinnedOn" : datetime.utcnow()}})
-
-        return self.getCube(binnedCubeName)
-
-    #
     # Determines if measure is date
     #
     def __isMeasureDate__(self, cubeName, measure):
@@ -596,12 +576,12 @@ class CubeService:
     #
     # Automatically bin a cube
     #
-    def autoBinCube(self, sourceCubeName, binnedCubeName, measuresToBeBinned=None, hints={}):
+    def binCube(self, sourceCubeName, binnedCubeName, measuresToBeBinned=None, hints={}):
         if measuresToBeBinned == None:
             measuresToBeBinned = self.__getAllMeasuresForBinning__(sourceCubeName)
 
         binnings = self.__generateBinnings__(sourceCubeName, measuresToBeBinned, hints)
-        return self.binCube(binnings, sourceCubeName, binnedCubeName)
+        return self.binCubeCustom(binnings, sourceCubeName, binnedCubeName)
 
     #
     # Automatically re-bin a cube
@@ -622,12 +602,33 @@ class CubeService:
             measuresToBeBinned = self.__getAllMeasuresForBinning__(sourceCubeName)
 
         binnings = self.__generateBinnings__(sourceCubeName, measuresToBeBinned, {})
-        return self.rebinCube(binnings, sourceCubeName, binnedCubeName)
+        return self.rebinCubeCustom(binnings, sourceCubeName, binnedCubeName)
 
     #
-    # Re-bin cube
+    # Bin cube with custom binnings  - Returns the binned cube
     #
-    def rebinCube(self, binnings, sourceCubeName, binnedCubeName):
+    def binCubeCustom(self, binnings, sourceCubeName, binnedCubeName, binnedCubeDisplayName=None):
+
+        if binnedCubeDisplayName == None:
+            binnedCubeDisplayName = binnedCubeName
+        binnedCubeRows = []
+        cubeRows = self.getCubeRows(sourceCubeName)
+        distincts = {}
+        for cubeRow in cubeRows:
+            #print cubeRow
+            binnedCubeRow = self.__performBinning__(binnings, cubeRow, distincts)
+            binnedCubeRows.append(binnedCubeRow)
+
+        stats = self.getStats(binnedCubeRows)
+        self.createCube('binned', binnedCubeName, binnedCubeDisplayName, binnedCubeRows, distincts, stats, binnings, None)
+        self.__updateCubeProperty__(binnedCubeName, { "$set": {"lastBinnedOn" : datetime.utcnow()}})
+
+        return self.getCube(binnedCubeName)
+
+    #
+    # Re-bin cube using custom binnings
+    #
+    def rebinCubeCustom(self, binnings, sourceCubeName, binnedCubeName):
         binnedCubeRows = []
         cubeRows = self.getCubeRows(sourceCubeName)
         distincts = {}

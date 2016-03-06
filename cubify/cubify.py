@@ -36,14 +36,17 @@ class Cubify:
     def addColumn(self, cubeName, newColumnName, type, expression=None, func=None):
         self.cubeService.addColumn(cubeName, newColumnName, type, expression, func)
 
-    def binCube(self, binnings, sourceCubeName, binnedCubeName, binnedCubeDisplayName=None):
-        return self.cubeService.binCube(binnings, sourceCubeName, binnedCubeName, binnedCubeDisplayName)
+    def binCube(self, sourceCubeName, binnedCubeName, toBeBinned=None, hints={}):
+        return self.cubeService.binCube(sourceCubeName, binnedCubeName, toBeBinned, hints)
 
-    def autoBinCube(self, sourceCubeName, binnedCubeName, toBeBinned=None, hints={}):
-        return self.cubeService.autoBinCube(sourceCubeName, binnedCubeName, toBeBinned, hints)
+    def autoRebinCube(self, sourceCubeName, binnedCubeName):
+        return self.autoRebinCube(sourceCubeName, binnedCubeName)
 
-    def rebinCube(self, binnings, sourceCubeName, binnedCubeName):
-        return self.cubeService.rebinCube(binnings, sourceCubeName, binnedCubeName)
+    def binCubeCustom(self, binnings, sourceCubeName, binnedCubeName, binnedCubeDisplayName=None):
+        return self.cubeService.binCubeCustom(binnings, sourceCubeName, binnedCubeName, binnedCubeDisplayName)
+
+    def rebinCubeCustom(self, binnings, sourceCubeName, binnedCubeName):
+        return self.cubeService.rebinCubeCustom(binnings, sourceCubeName, binnedCubeName)
   
     def aggregateCube(self, cubeName, aggs):
         return self.cubeService.aggregateCube(cubeName, aggs)     

@@ -152,7 +152,7 @@ for cubeRow in cubeRows:
 #
 
 # Perform automatic binning on cube on all measures
-binnedCube = cubify.autoBinCube('purchases', 'purchases_autobinned_1')
+binnedCube = cubify.binCube('purchases', 'purchases_autobinned_1')
 print ""
 print "Dimensions in purchases_autobinned_1 cube:"
 print binnedCube['distincts']
@@ -160,7 +160,7 @@ print binnedCube['distincts']
 cubify.exportCubeToCsv('purchases_autobinned_1', '/tmp/exportedAutoBinned1.csv')
 
 # Perform automatic binning on cube on specific measures
-binnedCube = cubify.autoBinCube('purchases', 'purchases_autobinned_2', ['TransactionDate','Qty','Price'], {'TransactionDate':'weekly'})
+binnedCube = cubify.binCube('purchases', 'purchases_autobinned_2', ['TransactionDate','Qty','Price'], {'TransactionDate':'weekly'})
 print ""
 print "Dimensions in purchases_autobinned_2 cube:"
 print binnedCube['distincts']
@@ -170,7 +170,7 @@ cubify.exportCubeToCsv('purchases_autobinned_2', '/tmp/exportedAutoBinned2.csv')
 # Perform custom Qty binning on cube
 with open('qtyBinning.json') as qtyBinning_file:
     qtyBinning = json.load(qtyBinning_file)
-binnedCube = cubify.binCube(qtyBinning, 'purchases', 'purchases_binned_1')
+binnedCube = cubify.binCubeCustom(qtyBinning, 'purchases', 'purchases_binned_1')
 print ""
 print "Dimensions in purchased_binned_1 cube:"
 print binnedCube['distincts']
@@ -180,7 +180,7 @@ cubify.exportCubeToCsv('purchases_binned_1', '/tmp/exportedBinned1.csv')
 # Perform custom Qty, Price, TransactionDate and CustomeState binnings on cube
 with open('binnings.json') as binnings_file:
     binnings = json.load(binnings_file)
-binnedCube2 = cubify.binCube(binnings, 'purchases', 'purchases_binned_2')
+binnedCube2 = cubify.binCubeCustom(binnings, 'purchases', 'purchases_binned_2')
 print ""
 print "Dimensions in purchased_binned_2 cube:"
 print binnedCube2['distincts']

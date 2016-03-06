@@ -148,7 +148,7 @@ class cubeServiceTests(unittest.TestCase):
             binningFileName = './test_binnings.json'
         with open(binningFileName) as binnings_file:
             binnings = json.load(binnings_file)
-        cs.binCube(binnings, cubeName, cubeName + '_b', cubeName + '_b')
+        cs.binCubeCustom(binnings, cubeName, cubeName + '_b', cubeName + '_b')
 
         binnedCubeRows = cs.getCubeRows(cubeName + '_b')
         dimkeys = []
@@ -186,7 +186,7 @@ class cubeServiceTests(unittest.TestCase):
             binningFileName = './test_binnings_date1.json'
         with open(binningFileName) as binnings_file:
             binnings = json.load(binnings_file)
-        cs.binCube(binnings, cubeName, cubeName + '_b', cubeName + '_b')
+        cs.binCubeCustom(binnings, cubeName, cubeName + '_b', cubeName + '_b')
 
         binnedCubeRows = cs.getCubeRows(cubeName + '_b')
         dimkeys = []
@@ -224,7 +224,7 @@ class cubeServiceTests(unittest.TestCase):
             binningFileName = './test_binnings_date2.json'
         with open(binningFileName) as binnings_file:
             binnings = json.load(binnings_file)
-        cs.binCube(binnings, cubeName, cubeName + '_b', cubeName + '_b')
+        cs.binCubeCustom(binnings, cubeName, cubeName + '_b', cubeName + '_b')
 
         binnedCubeRows = cs.getCubeRows(cubeName + '_b')
         dimkeys = []
@@ -262,7 +262,7 @@ class cubeServiceTests(unittest.TestCase):
             binningFileName = './test_binnings.json'
         with open(binningFileName) as binnings_file:
             binnings = json.load(binnings_file)
-        cs.binCube(binnings, cubeName, cubeName + '_b', cubeName + '_b')
+        cs.binCubeCustom(binnings, cubeName, cubeName + '_b', cubeName + '_b')
 
         # Change the binning
         for binning in binnings:
@@ -272,7 +272,7 @@ class cubeServiceTests(unittest.TestCase):
                 bins.append({ "label": "3+", "min" : 4, "max": 99999999})
                 binning['bins'] = bins
 
-        cs.rebinCube(binnings, cubeName, cubeName + "_b")
+        cs.rebinCubeCustom(binnings, cubeName, cubeName + "_b")
 
         binnedCubeRows = cs.getCubeRows(cubeName + '_b')
         dimkeys = []
@@ -306,7 +306,7 @@ class cubeServiceTests(unittest.TestCase):
         cs = CubeService('testdb')
         cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
 
-        cs.autoBinCube(cubeName, cubeName + '_b')
+        cs.binCube(cubeName, cubeName + '_b')
 
         # Add some new cube rows 
         cs.appendToCubeFromCsv('./testdata-autobin.csv', cubeName)
@@ -356,7 +356,7 @@ class cubeServiceTests(unittest.TestCase):
         cs = CubeService('testdb')
         cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
 
-        cs.autoBinCube(cubeName, cubeName + "_b", ["Price", "Qty"])
+        cs.binCube(cubeName, cubeName + "_b", ["Price", "Qty"])
 
         binnedCubeRows = cs.getCubeRows(cubeName + '_b')
         dimkeys = []
@@ -390,7 +390,7 @@ class cubeServiceTests(unittest.TestCase):
         cs = CubeService('testdb')
         cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
 
-        cs.autoBinCube(cubeName, cubeName + "_b")
+        cs.binCube(cubeName, cubeName + "_b")
 
         binnedCubeRows = cs.getCubeRows(cubeName + '_b')
         dimkeys = []
@@ -427,7 +427,7 @@ class cubeServiceTests(unittest.TestCase):
         cs = CubeService('testdb')
         cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
 
-        cs.autoBinCube(cubeName, cubeName + "_b", ["Date", "Qty"])
+        cs.binCube(cubeName, cubeName + "_b", ["Date", "Qty"])
 
         binnedCubeRows = cs.getCubeRows(cubeName + '_b')
         dimkeys = []
@@ -462,7 +462,7 @@ class cubeServiceTests(unittest.TestCase):
         cs = CubeService('testdb')
         cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
 
-        cs.autoBinCube(cubeName, cubeName + "_b", ["Date", "Qty"], { "Date": "monthly"})
+        cs.binCube(cubeName, cubeName + "_b", ["Date", "Qty"], { "Date": "monthly"})
 
         binnedCubeRows = cs.getCubeRows(cubeName + '_b')
         dimkeys = []
@@ -496,7 +496,7 @@ class cubeServiceTests(unittest.TestCase):
         cs = CubeService('testdb')
         cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
 
-        cs.autoBinCube(cubeName, cubeName + "_b", ["Date", "Qty"], { "Date": "weekly"})
+        cs.binCube(cubeName, cubeName + "_b", ["Date", "Qty"], { "Date": "weekly"})
 
         binnedCubeRows = cs.getCubeRows(cubeName + '_b')
         dimkeys = []
@@ -530,7 +530,7 @@ class cubeServiceTests(unittest.TestCase):
         cs = CubeService('testdb')
         cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
 
-        cs.autoBinCube(cubeName, cubeName + "_b", ["Date", "Qty"], { "Date": "yearly"})
+        cs.binCube(cubeName, cubeName + "_b", ["Date", "Qty"], { "Date": "yearly"})
 
         binnedCubeRows = cs.getCubeRows(cubeName + '_b')
         dimkeys = []
@@ -571,7 +571,7 @@ class cubeServiceTests(unittest.TestCase):
             binningFileName = './test_binnings.json'
         with open(binningFileName) as binnings_file:
             binnings = json.load(binnings_file)
-        cs.binCube(binnings, cubeName, cubeName + '_b', cubeName + '_b')
+        cs.binCubeCustom(binnings, cubeName, cubeName + '_b', cubeName + '_b')
 
         aggFileName = 'cubify/tests/test_agg.json'
         if os.path.isfile(aggFileName) == False:

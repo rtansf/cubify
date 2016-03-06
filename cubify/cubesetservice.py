@@ -44,7 +44,7 @@ class CubeSetService:
         self.cubeService.createCubeFromCsv(csvFilePath, sourceCubeName, sourceCubeName)
         if binnings != None:
             binnedCubeName = cubeSetName + "_binned"
-            self.cubeService.binCube(binnings, sourceCubeName, binnedCubeName, binnedCubeName)
+            self.cubeService.binCubeCustom(binnings, sourceCubeName, binnedCubeName, binnedCubeName)
             if aggs != None:
                 self.cubeService.aggregateCube(binnedCubeName, aggs)
         
@@ -82,7 +82,7 @@ class CubeSetService:
         if 'binnedCube' in existing:
             binnedCubeName = existing['binnedCube']
             binnedCube = self.cubeService.getCube(binnedCubeName)
-            self.cubeService.rebinCube(binnedCube['binnings'], existing['sourceCube'], existing['binnedCube'])
+            self.cubeService.rebinCubeCustom(binnedCube['binnings'], existing['sourceCube'], existing['binnedCube'])
 
             #re-aggregate
             if 'aggCubes' in existing:
@@ -105,7 +105,7 @@ class CubeSetService:
         if 'binnedCube' in existing:
             binnedCubeName = existing['binnedCube']
             binnedCube = self.cubeService.getCube(binnedCubeName)
-            self.cubeService.rebinCube(binnedCube['binnings'], existing['sourceCube'], existing['binnedCube'])
+            self.cubeService.rebinCubeCustom(binnedCube['binnings'], existing['sourceCube'], existing['binnedCube'])
 
             #re-aggregate
             if 'aggCubes' in existing:
@@ -224,15 +224,15 @@ class CubeSetService:
         # Are we rebinning?
         if existing['binnedCube'] != None:
             if binnings != None:
-                self.cubeService.rebinCube(binnings, existing['sourceCube'], existing['binnedCube'])
+                self.cubeService.rebinCubeCustom(binnings, existing['sourceCube'], existing['binnedCube'])
             else:
                 self.cubeService.autoRebinCube(existing['sourceCube'], existing['binnedCube'])
         else: 
             binnedCubeName = cubeSetName + "_binned"
             if binnings != None:
-                self.cubeService.binCube(binnings, binnedCubeName, binnedCubeName)
+                self.cubeService.binCubeCustom(binnings, binnedCubeName, binnedCubeName)
             else:
-                self.cubeService.autoBinCube(binnedCubeName, binnedCubeName, [])
+                self.cubeService.binCube(binnedCubeName, binnedCubeName, [])
             self.__updateCubeSetProperty__(cubeSetName, { "$set": {"binnedCube" : binnedCubeName}})
 
 

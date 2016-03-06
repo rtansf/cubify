@@ -281,7 +281,7 @@ It uses a variant of Sturge's algorithm for this. See https://en.wikipedia.org/w
 
 So continuing with our tutorial, we can instruct cubify to automatically bin all measures in our purchases cube to produce a new cube called "purchases_autobinned_1" like so:
 
-    binnedCube = cubify.autoBinCube('purchases', 'purchases_autobinned_1')
+    binnedCube = cubify.binCube('purchases', 'purchases_autobinned_1')
 
 If you examine the dimensions in binned cube, you will see new ones, "RevenueBin", "PriceBin", "QtyBin", "DiscountBin", "TransactionDateBin".
 
@@ -306,7 +306,7 @@ Note that after binning, the number of cube rows in the binned cube are the same
 In the next example, we instruct cubify to bin specific measures, Qty, Price and the TransactionDate. For TransactionDate, we pass in 'weekly' as the hint to cubify.
 We will call our new binned cube, 'purchases_autobinned_2'.
 
-    binnedCube = cubify.autoBinCube('purchases', 'purchases_autobinned_2', ['TransactionDate','Qty','Price'], {'TransactionDate':'weekly'})
+    binnedCube = cubify.binCube('purchases', 'purchases_autobinned_2', ['TransactionDate','Qty','Price'], {'TransactionDate':'weekly'})
 
 If you examine the dimensions in binned cube, you will see the following new ones, "PriceBin", "QtyBin", "TransactionDateBin". Note that TransactionDateBin now uses weekly bins; the label is in the format [year]-[week number]:
 
@@ -344,7 +344,7 @@ Since, we are binning a continuous measure, the type is set to "range". The fall
 
     with open('qtyBinning.json') as binnings_file:
          binnings = json.load(binnings_file)
-    binnedCube1 = cubify.binCube(binnings, 'purchases', 'purchases_binned_1')
+    binnedCube1 = cubify.binCubeCustom(binnings, 'purchases', 'purchases_binned_1')
 
 Now when you list the distinct dimension values of binnedCube1, you will see that a new dimension, QtyBin appears in the list with 12 occurrences of 0-5 bin and 2 occurrences of the 5+ bin.:
 
@@ -432,7 +432,7 @@ Now, let's apply binnings.json to our purchases cube, as in the code snippet bel
 
     with open('binnings.json') as binnings_file:
         binnings = json.load(binnings_file)
-    binnedCube2 = cubify.binCube(binnings, 'purchases', 'purchases_binned_2')
+    binnedCube2 = cubify.binCubeCustom(binnings, 'purchases', 'purchases_binned_2')
 
 Now when you export the binned cube, you will see the new columns, QtyBin, PriceBin, YearMonth and Region.
 
