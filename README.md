@@ -14,7 +14,7 @@ __PRE-REQUISITES__:
     If you are installing manually and not using Docker - you'll need to have the following installed:
         Python  https://www.python.org/downloads/
         MongoDB at: https://docs.mongodb.org/manual/installation/
-    Note: You must have MongoDB up (on default port 27107) to run the Cubify tutorials below.
+    Note: You must have MongoDB up (on listening on the default port, 27107) to run the Cubify tutorials below.
     
 __UBUNTU__:
     
@@ -26,11 +26,17 @@ __UBUNTU__:
     cd cubify
     sudo python setup.py install
 
-__MAC OS X__ / __WINDOWS__::
+__MAC OS X__:
 
     git clone https://github.com/rtansf/cubify.git
     cd cubify
     sudo python setup.py install
+
+__WINDOWS__:
+
+    git clone https://github.com/rtansf/cubify.git
+    cd cubify
+    python setup.py install
  
 __DOCKER__:
    
@@ -266,8 +272,59 @@ Then call addColumn as in:
 
 ![alt text](http://pluralconcepts.com/images/BinnedDataCube.png "Binned Cube")
 
-From our source cube, we can create a "binned cube". The process of binning creates new dimensions in the cube. 
-Follow along in the next example as we bin the measures and dimensions in our purchases cube. This is done with cubify's binning DSL which allows you specify defintions for a binning.
+From our source cube, we can create a "binned cube". The process of binning creates new dimensions in the cube.
+For example in our purchases cube, we have a measure called "Price" which is a continuous numeric value. By binning this measure, we create a label for the range in which the price value falls. For example if the price falls between 1 and 10, the label is "1-10", and if it is between 10 and 20, the label is "10-20". These labels
+become the values of a dimension called "PriceBin" in our cube.
+
+Cubify can automatically bin a measure by introspecting the distribution of values occurring in that measure to determine the number of bins and the range of each bin.
+It uses a variant of Sturge's algorithm for this. See https://en.wikipedia.org/wiki/Histogram
+
+So continuing with our tutorial, we can instruct cubify to automatically bin all measures in our purchases cube to produce a new cube called "purchases_autobinned_1" like so:
+
+    binnedCube = cubify.autoBinCube('purchases', 'purchases_autobinned_1')
+
+If you examine the dimensions in binned cube, you will see new ones, "RevenueBin", "PriceBin", "QtyBin", "DiscountBin", "TransactionDateBin".
+
+    print binnedCube['distincts']
+
+    {'CustomerState': {'NY': 6, 'CA': 6, 'MA': 2}, 
+     'RevenueBin': {'15-41': 4, '41-67': 7, '67-93': 1, '119-145': 2}, 
+     'PriceBin': {'15-16': 2, '18-19': 1, '19-22': 10, '16-17': 1}, 
+     'ProductCategory': {'Category1': 10, 'Category2': 4}, 
+     'PackageSize': {'SMALL': 10, 'LARGE': 4}, 
+     'DiscountBin': {'3-4': 6, '3-3': 8}, 
+     'TransactionDateBin': {'2015-11': 7, '2015-10': 7}, 
+     'QtyBin': {'2-3': 4, '5-7': 2, '1-2': 6, '3-4': 2}, 
+     'CustomerId': {'C3': 2, 'C2': 6, 'C1': 6},
+     'ProductId': {'P2': 4, 'P1': 10}
+    }
+
+Note that the TransactionDateBin's values are monthly, the default binning period for dates. You will see in the next example how to give hints to cubify to use other periods such as 'weekly' or 'yearly' for the bins.
+
+Note that after binning, the number of cube rows in the binned cube are the same as the original cube. We still have a total of 14 rows in our binned cube. 
+
+In the next example, we instruct cubify to bin specific measures, Qty, Price and the TransactionDate. For TransactionDate, we pass in 'weekly' as the hint to cubify.
+We will call our new binned cube, 'purchases_autobinned_2'.
+
+    binnedCube = cubify.autoBinCube('purchases', 'purchases_autobinned_2', ['TransactionDate','Qty','Price'], {'TransactionDate':'weekly'})
+
+If you examine the dimensions in binned cube, you will see the following new ones, "PriceBin", "PriceBin", "TransactionDateBin". Note that TransactionDateBin now uses weekly bins; the label is in the format <year>-<week number>:
+
+    print binnedCube['distincts']
+
+    {'CustomerState': {'NY': 6, 'CA': 6, 'MA': 2}, 
+     'PriceBin': {'15-16': 2, '18-19': 1, '19-22': 10, '16-17': 1}, 
+     'ProductCategory': {'Category1': 10, 'Category2': 4},
+     'PackageSize': {'SMALL': 10, 'LARGE': 4}, 
+     'TransactionDateBin': {'2015-41': 7, '2015-46': 6, '2015-45': 1}, 
+     'QtyBin': {'2-3': 4, '5-7': 2, '1-2': 6, '3-4': 2}, 
+     'CustomerId': {'C3': 2, 'C2': 6, 'C1': 6},
+     'ProductId': {'P2': 4, 'P1': 10}
+    }
+
+Cubify also support custom binning definitions. This gives you complete flexibility in defining the bin size and bin width.
+
+Custom binning is done with cubify's binning DSL which allows you specify defintions for a binning.
 For example, let's say we would like to bin the Qty measure in our cube. We define for simplicity's sake, two bins:  0-5 and 5+
 The binning definition for the Qty column (stored in the file qtyBinning.json) is show below:
 
@@ -294,8 +351,6 @@ Now when you list the distinct dimension values of binnedCube1, you will see tha
     print binnedCube1['distincts']
 
     'QtyBin': {'0-5': 12, '5+': 2}  ....
-
-Note that after binning, the number of cube rows in the cube do not change. We still have a total of 14 rows in our binned cube. 
 
 If you export purchases_binned_1 to csv, you should see a new column, QtyBin.
 
