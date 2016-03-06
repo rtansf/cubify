@@ -47,6 +47,30 @@ class cubeSetServiceTests(unittest.TestCase):
 
         os.remove(csvFilePath)
 
+    def testCreateCubeSetWithAutoBinning(self):
+        cubeSetName = 'test-' + str(uuid.uuid4())
+        csvFilePath =  cubeSetName + '.csv'
+
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeSetName + '.csv')
+
+        cs = CubeSetService('testdb')
+        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFilePath)
+
+        cubeSet = cs.getCubeSet(cubeSetName)
+        self.assertTrue(cubeSet != None)
+        self.assertTrue(cubeSet['name'] == cubeSetName)
+        self.assertTrue(cubeSet['displayName'] == cubeSetName)
+        self.assertTrue(cubeSet['owner'] == 'testOwner')
+        self.assertTrue(cubeSet['csvFilePath'] == csvFilePath)
+        self.assertTrue(cubeSet['sourceCube'] == cubeSetName + '_source')
+        self.assertTrue(cubeSet['binnedCube'] == cubeSetName + '_binned')
+        self.assertFalse("aggs" in cubeSet)
+
+        os.remove(csvFilePath)
+
     def testUpdateCubeSetDisplayName(self):
         cubeSetName = 'test-' + str(uuid.uuid4())
         csvFilePath =  cubeSetName + '.csv'

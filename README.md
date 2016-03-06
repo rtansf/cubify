@@ -557,47 +557,53 @@ Cube Set Tutorial
 
 ![alt text](http://pluralconcepts.com/images/cubeset.png "Cube Set")
 
-The above diagram illustrates the concept of a cube set. A cube set consists of a source cube, a binned cube and one or more aggregated cubes.
+The above diagram illustrates the concept of a cube set. A cube set consists of a source cube, a binned cube and zero or more aggregated cubes.
 As raw data is ingested into the source cube over time, the state of the downstream binned and aggregated cubes are always kept in synch with one another.
-
-We have seen the binning definitions (binnings.json)  and aggregation definitions (aggs.json) in tutorial 1. We will now use these definitions together with the source data defined in purchases.csv to create our cube set, called "purchasesCubeSet". 
 
 Open the file, "__tutorials2.py__" in the tutorials folder and follow along with the commentary below. You can execute the tutorial by typing:
    
     python tutorial2.py
 
-Let's create our cube set using the createCubeSet method in cubify like so:
+Let's create our cube set using the createCubeSet method in cubify like so. In this first example, we keep things simple and let cubify perform automatic
+binning for us and we will not define any aggregations.
 
-    with open('binnings.json') as binnings_file:
-        binnings = json.load(binnings_file)
-
-    with open('aggs.json') as aggs_file:
-        aggs = json.load(aggs_file)
-
-    cubeSet = cubify.createCubeSet('tutorial', 'purchasesCubeSet', 'Purchases Cube Set', 'purchases.csv', binnings, aggs)
-     
+    cubeSet = cubify.createCubeSet('tutorial', 'purchasesCubeSet', 'Purchases Cube Set', 'purchases.csv')
+    
 The first argument to createCubeSet is the owner of the cube set. This can be any string. In our example, the owner of the cube set is "tutorial".
 The second argument is the name of the cube set. 
 The third argument is the display name of the cube set.
 The fourth argument is the name of the CSV file that contains our data.
-The fifth argument is our binnings definition.
-The sixth argument is our aggregations definition.
 
 A cube set is essentially a container for cubes of certain types which are linked together. 
 There are 3 types of cubes in a cube set: "source", "binned" and "aggregated".
-A cube set consists of one and only one source cube, one and only one binned cube, and one or more aggregated cubes.
+A cube set consists of one and only one source cube, one and only one binned cube, and zero or more aggregated cubes.
+
+We have seen the binning definitions (binnings.json)  and aggregation definitions (aggs.json) in tutorial 1. We will now use these definitions together with the source data defined in purchases.csv to create our cube set, called "purchasesCubeSet". 
 
 In our tutorial, once createCubeSet returns successfully, our purchasesCubeSet contains a "source" cube reflecting the original data imported from purchases.csv.
 To get the source cube rows, call getSourceCubeRows like so:
 
     cubeRows = cubify.getSourceCubeRows('purchasesCubeSet')
- 
-Our cube set also contains a binned cube - with the binnings defined in binnings.json applied to the source cube.
+
+Our cube set also contains a binned cube - with the binnings automatically determined by cubify.
 To get the binned cube rows, call getBinnedCubeRows like so:
 
     binnedCubeRows = cubify.getBinnedCubeRows('purchasesCubeSet')
 
-Finally our cube set also contains 2 aggregated cubes (resulting from the 2 aggregation definitions defined in aggs.json).
+Now Let's create our cube set using the createCubeSet using custom binnings and aggregations. We will call this cube set, 'purchasesCubeSet2'.
+Here's the code:
+
+    with open('binnings.json') as binnings_file:
+        binnings = json.load(binnings_file)
+
+    with open('aggs.json') as aggs_file:
+        aggs = json.load(aggs_file)e
+
+    cubeSet = cubify.createCubeSet('tutorial', 'purchasesCubeSet2', 'Purchases Cube Set 2', 'purchases.csv', binnings, aggs)
+
+Note that we now pass in the binnings and aggregations to the createCubeSet method.    
+
+Our cube set now contains 2 aggregated cubes (resulting from the 2 aggregation definitions defined in aggs.json).
 To refresh your memory, here is aggs.json:
 
     [
@@ -627,13 +633,13 @@ To refresh your memory, here is aggs.json:
 
 You can retrieve the cube rows of the aggregated cubes by referring to the aggregation names like so:
 
-    agg1CubeRows = cubify.getAggregatedCubeRows('purchasesCubeSet', 'agg1')
-    agg2CubeRows = cubify.getAggregatedCubeRows('purchasesCubeSet', 'agg2')
+    agg1CubeRows = cubify.getAggregatedCubeRows('purchasesCubeSet2', 'agg1')
+    agg2CubeRows = cubify.getAggregatedCubeRows('purchasesCubeSet2', 'agg2')
 
 All is well with our cube set thus far. But now let's say we are in a new month and we have more purchases data to add to our cube set.
 Let's assume the new purchases data is in a file called "morePurchases.csv". To add the rows to our source cube in our cube set, simply call:
 
-    cubify.addRowsToSourceCube('purchasesCubeSet', 'morePurchases.csv')
+    cubify.addRowsToSourceCube('purchasesCubeSet2', 'morePurchases.csv')
 
 This method adds the new rows to our source cube, as well as updates the binned cube and aggregated cubes. Thus our binned and aggregated cubes are kept in synch with 
 the data in our source cube. You can verify that this is so by examining the rows of the binned cube and aggregated cubes.

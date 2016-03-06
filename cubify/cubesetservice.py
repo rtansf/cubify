@@ -31,9 +31,9 @@ class CubeSetService:
 
 
     #
-    # Create a cube set including optionally performing binning and aggregation
+    # Create a cube set including binning and optionally aggregation
     #
-    def createCubeSet(self, owner, cubeSetName, cubeSetDisplayName, csvFilePath, binnings, aggs):
+    def createCubeSet(self, owner, cubeSetName, cubeSetDisplayName, csvFilePath, binnings=None, aggs=None):
 
         # Make sure cubeSetName is unique
         existing = self.getCubeSet(cubeSetName)
@@ -42,12 +42,15 @@ class CubeSetService:
 
         sourceCubeName = cubeSetName + "_source"
         self.cubeService.createCubeFromCsv(csvFilePath, sourceCubeName, sourceCubeName)
+        binnedCubeName = cubeSetName + "_binned"
         if binnings != None:
-            binnedCubeName = cubeSetName + "_binned"
             self.cubeService.binCubeCustom(binnings, sourceCubeName, binnedCubeName, binnedCubeName)
-            if aggs != None:
+        else:
+            self.cubeService.binCube(sourceCubeName, binnedCubeName)
+
+        if aggs != None:
                 self.cubeService.aggregateCube(binnedCubeName, aggs)
-        
+
         # Now save the cubeSet
         cubeSet = {}
         cubeSet['name'] = cubeSetName
@@ -56,13 +59,12 @@ class CubeSetService:
         cubeSet['csvFilePath'] = csvFilePath
         cubeSet['createdOn'] = datetime.utcnow()
         cubeSet['sourceCube'] = sourceCubeName
-        if binnings != None:
-            cubeSet['binnedCube'] = binnedCubeName
-            if aggs != None:
-                aggCubeNames = []
-                for agg in aggs:
-                    aggCubeNames.append(binnedCubeName + "_" + agg['name'])
-                cubeSet['aggCubes'] = aggCubeNames
+        cubeSet['binnedCube'] = binnedCubeName
+        if aggs != None:
+            aggCubeNames = []
+            for agg in aggs:
+                aggCubeNames.append(binnedCubeName + "_" + agg['name'])
+            cubeSet['aggCubes'] = aggCubeNames
     
         self.db['cubeset'].insert_one(cubeSet)        
         

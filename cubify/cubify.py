@@ -53,7 +53,7 @@ class Cubify:
 
     ####  CubeSets
 
-    def createCubeSet (self, owner, cubeSetName, cubeSetDisplayName, csvFilePath, binnings, aggs):
+    def createCubeSet (self, owner, cubeSetName, cubeSetDisplayName, csvFilePath, binnings=None, aggs=None):
         return self.cubeSetService.createCubeSet(owner, cubeSetName, cubeSetDisplayName, csvFilePath, binnings, aggs)
 
     def deleteCubeSet(self, cubeSetName):
