@@ -654,9 +654,72 @@ class CubeService:
         return self.getCube(binnedCubeName)
 
     #
+    # Get agg name
+    #
+    def __getAggName__(self, dimensions):
+        aggName = ''
+        for dimension in dimensions:
+            if aggName == '':
+                aggName = dimension
+            else:
+                aggName = aggName + '-' + dimension
+        return aggName
+
+    #
+    # Generate aggregation definitions
+    #
+    def __generateAggs__(self, cubeName, groupByDimensionsList, measures):
+        aggs = []
+        for groupByDimensions in groupByDimensionsList:
+            agg = {}
+            aggName = self.__getAggName__(groupByDimensions)
+            agg['name'] = aggName
+            agg['dimensions'] = groupByDimensions
+            measuresList = []
+            for measure in measures:
+                m = {}
+                m['outputField'] = { 'name' : "Average_" + measure,  'displayName' : 'Average ' + measure }
+                m['formula'] = { 'numerator' : '{"$avg": "$measures.' + measure + '"}', 'denominator' : ''}
+                measuresList.append(m)
+                m = {}
+                m['outputField'] = { 'name' : "Total_" + measure,  'displayName' : 'Total ' + measure }
+                m['formula'] = { 'numerator' : '{"$sum": "$measures.' + measure + '"}', 'denominator' : ''}
+                measuresList.append(m)
+            agg['measures'] = measuresList
+            aggs.append(agg)
+        return aggs
+
+    #
     # Aggregate cube
     #
-    def aggregateCube(self, cubeName, aggs):
+    def aggregateCube(self, cubeName, groupByDimensionsList, measures=None):
+        if measures == None:
+            allMeasures = []
+            cubeRows = self.getCubeRows(cubeName)
+            cubeRow = cubeRows[0];
+            for measure in cubeRow['measures']:
+                allMeasures.append(measure)
+            aggs = self.__generateAggs__(cubeName, groupByDimensionsList, allMeasures)
+        else:
+            aggs = self.__generateAggs__(cubeName, groupByDimensionsList, measures)
+
+        return self.aggregateCubeCustom(cubeName, aggs)
+
+    #
+    #  Is a group-by dimension a date?
+    #
+    def __isDateDimension__(self, cubeName, dimension):
+        cubeRows = self.getCubeRows(cubeName)
+        cubeRow = cubeRows[0]
+        for date in cubeRow['dates']:
+            if dimension == date:
+                return True
+        return False
+
+    #
+    # Aggregate cube using custom aggregation definitions
+    #
+    def aggregateCubeCustom(self, cubeName, aggs):
         resultCubes = []
         for agg in aggs:
             aggName = agg['name']
@@ -670,7 +733,10 @@ class CubeService:
             groupPipelineItem['$group'] = group
             group['_id'] = idContent
             for dimension in agg['dimensions']:
-                idContent[dimension] = '$dimensions.' + dimension
+                if self.__isDateDimension__(cubeName, dimension):
+                    idContent[dimension] = '$dates.' + dimension
+                else:
+                    idContent[dimension] = '$dimensions.' + dimension
 
             hasProjection = False
             project = {}
@@ -715,14 +781,20 @@ class CubeService:
                 for k, v in aggResult.items():
                    if k == '_id':
                       for dimName, dimValue in v.items():
-                         cubeRow['dimensions'][dimName] = dimValue
-                         self.__addToDistincts__(distincts, dimName, dimValue)
+                          if self.__is_date__(str(dimValue)):
+                             cubeRow['dates'][dimName] = str(dimValue)
+                          else:
+                             cubeRow['dimensions'][dimName] = dimValue
+                          self.__addToDistincts__(distincts, dimName, str(dimValue))
                    else:
                        cubeRow['measures'][k] = v
                    dimensionKey = ''
                    for dim in sorted(cubeRow['dimensions']):
                        dimensionKey += '#' + dim + ':' + cubeRow['dimensions'][dim]
-                       cubeRow['dimensionKey'] = dimensionKey
+                   for datedim in sorted(cubeRow['dates']):
+                       dimensionKey += '#' + datedim + ':' + cubeRow['dates'][datedim]
+                   cubeRow['dimensionKey'] = dimensionKey
+
                 aggCubeRows.append(cubeRow)
 
             aggCubeName = cubeName + "_" + aggName

@@ -49,7 +49,7 @@ class CubeSetService:
             self.cubeService.binCube(sourceCubeName, binnedCubeName)
 
         if aggs != None:
-                self.cubeService.aggregateCube(binnedCubeName, aggs)
+                self.cubeService.aggregateCubeCustom(binnedCubeName, aggs)
 
         # Now save the cubeSet
         cubeSet = {}
@@ -92,7 +92,7 @@ class CubeSetService:
                    aggCube = self.cubeService.getCube(aggCubeName)
                    aggs = []
                    aggs.append(aggCube['agg'])
-                   self.cubeService.aggregateCube(binnedCubeName, aggs)
+                   self.cubeService.aggregateCubeCustom(binnedCubeName, aggs)
 
     #
     # Remove rows from source
@@ -115,7 +115,7 @@ class CubeSetService:
                    aggCube = self.cubeService.getCube(aggCubeName)
                    aggs = []
                    aggs.append(aggCube['agg'])
-                   self.cubeService.aggregateCube(binnedCubeName, aggs)
+                   self.cubeService.aggregateCubeCustom(binnedCubeName, aggs)
 
     #
     # Update cubeset display name
@@ -247,7 +247,7 @@ class CubeSetService:
             raise ValueError('Cube Set with ' + cubeSetName + ' does not exist')
 
         binnedCubeName = existing['binnedCube']
-        self.cubeService.aggregateCube(binnedCubeName, aggs)
+        self.cubeService.aggregateCubeCustom(binnedCubeName, aggs)
 
         aggCubeNames = []
         for agg in aggs:

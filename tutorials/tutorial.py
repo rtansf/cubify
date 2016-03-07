@@ -191,10 +191,55 @@ cubify.exportCubeToCsv('purchases_binned_2', '/tmp/exportedBinned2.csv')
 # Section 6: Aggregating a cube
 #
 
-# Aggregate cube - example 1
+# Aggregate cube - simple example 1
+#   Group-by dimensions are: ['CustomerId']
+#   Use default cubify aggregation operators sum and average over all measures
+aggCubes = cubify.aggregateCube('purchases_binned_2', [['CustomerId']], ['Qty', 'Price'])
+aggCube = aggCubes[0]
+print ""
+print "Cube rows of aggregated cube: " + aggCube['name']
+aggCubeRows = cubify.getCubeRows(aggCube['name'])
+for aggCubeRow in aggCubeRows:
+   print aggCubeRow
+cubify.exportCubeToCsv(aggCube['name'], '/tmp/aggregatedCubeByCustomerId.csv')
+
+# Aggregate cube - simple example 2
+#   Group-by dimensions are: ['CustomerState','ProductCategory']
+#   Use cubify aggregation operators sum and average over all measures
+aggCubes = cubify.aggregateCube('purchases_binned_2', [['CustomerState', 'ProductCategory']])
+aggCube = aggCubes[0]
+print ""
+print "Cube rows of aggregated cube: " + aggCube['name']
+aggCubeRows = cubify.getCubeRows(aggCube['name'])
+for aggCubeRow in aggCubeRows:
+   print aggCubeRow
+cubify.exportCubeToCsv(aggCube['name'], '/tmp/aggregatedCubeByCustomerStateAndProductCategory.csv')
+
+# Aggregate cube - simple example 3
+#   Group-by dimensions are: [['ProductId'],['TransactionDate']]
+#   Use cubify aggregation operators sum and average over all measures
+aggCubes = cubify.aggregateCube('purchases_binned_2', [['ProductId'], ['TransactionDate']])
+aggCube = aggCubes[0]
+print ""
+print "Cube rows of aggregated cube: " + aggCube['name']
+aggCubeRows = cubify.getCubeRows(aggCube['name'])
+for aggCubeRow in aggCubeRows:
+   print aggCubeRow
+cubify.exportCubeToCsv(aggCube['name'], '/tmp/aggregatedCubeByProductId.csv')
+
+aggCube = aggCubes[1]
+print ""
+print "Cube rows of aggregated cube: " + aggCube['name']
+aggCubeRows = cubify.getCubeRows(aggCube['name'])
+for aggCubeRow in aggCubeRows:
+   print aggCubeRow
+cubify.exportCubeToCsv(aggCube['name'], '/tmp/aggregatedCubeByTransactionDate.csv')
+
+
+# Aggregate cube - example 1 using custom aggregation definitions
 with open('agg1.json') as agg_file:
     agg = json.load(agg_file)
-aggCubes = cubify.aggregateCube('purchases_binned_2', agg)
+aggCubes = cubify.aggregateCubeCustom('purchases_binned_2', agg)
 aggCube = aggCubes[0]
 
 print ""
@@ -205,10 +250,10 @@ for aggCubeRow in aggCubeRows:
 
 cubify.exportCubeToCsv(aggCube['name'], '/tmp/aggCube1.csv')
 
-# Aggregate cube - example 2
+# Aggregate cube - example 2 using custom aggregation definitions
 with open('agg2.json') as agg_file:
     agg = json.load(agg_file)
-aggCubes = cubify.aggregateCube('purchases_binned_2', agg)
+aggCubes = cubify.aggregateCubeCustom('purchases_binned_2', agg)
 aggCube = aggCubes[0]
 
 print ""

@@ -569,6 +569,96 @@ class cubeServiceTests(unittest.TestCase):
             shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
         cs.createCubeFromCsv(cubeName + '.csv',cubeName, cubeName)
+
+        resultCubes = cs.aggregateCube(cubeName, [['ProductId', 'State'], ['CustomerId'], ['Date', 'State']])
+        self.assertEquals(len(resultCubes), 3)
+
+        #for resultCube in resultCubes:
+        #    print resultCube
+
+        aggCubeRows = cs.getCubeRows(cubeName + '_ProductId-State')
+        self.assertEquals(aggCubeRows.count(), 5)
+        for aggCubeRow in aggCubeRows:
+            dimensionKey = aggCubeRow['dimensionKey']
+            measures = aggCubeRow['measures']
+            if dimensionKey == '#ProductId:P1#State:CA':
+                self.assertEquals(measures['Total_Qty'], 12)
+                self.assertEquals(measures['Total_Price'], 51)
+                self.assertEquals(measures['Average_Qty'], 3)
+                self.assertEquals(measures['Average_Price'], 12.75)
+            elif dimensionKey == '#ProductId:P1#State:MA':
+                self.assertEquals(measures['Total_Qty'], 14)
+                self.assertEquals(measures['Total_Price'], 25)
+                self.assertEquals(measures['Average_Qty'], 7)
+                self.assertEquals(measures['Average_Price'], 12.5)
+            elif dimensionKey == '#ProductId:P1#State:NY':
+                self.assertEquals(measures['Total_Qty'], 8)
+                self.assertEquals(measures['Total_Price'], 39)
+                self.assertEquals(measures['Average_Qty'], 2)
+                self.assertEquals(measures['Average_Price'], 9.75)
+            elif dimensionKey == '#ProductId:P2#State:CA':
+                self.assertEquals(measures['Total_Qty'], 2)
+                self.assertEquals(measures['Total_Price'], 31)
+                self.assertEquals(measures['Average_Qty'], 1)
+                self.assertEquals(measures['Average_Price'], 15.5)
+            elif dimensionKey == '#ProductId:P2#State:NY':
+                self.assertEquals(measures['Total_Qty'], 8)
+                self.assertEquals(measures['Total_Price'], 18)
+                self.assertEquals(measures['Average_Qty'], 4)
+                self.assertEquals(measures['Average_Price'], 9)
+
+        aggCubeRows = cs.getCubeRows(cubeName + '_CustomerId')
+        self.assertEquals(aggCubeRows.count(), 3)
+        for aggCubeRow in aggCubeRows:
+            #print aggCubeRow
+            dimensionKey = aggCubeRow['dimensionKey']
+            measures = aggCubeRow['measures']
+            if dimensionKey == '#C1':
+                self.assertEquals(measures['Total_Qty'], 14)
+                self.assertEqualsself.assertEquals(measures['Total_Qty'], 14)
+                self.assertEquals(measures['Total_Price'], 82)
+                self.assertAlmostEquals(measures['Average_Qty'], 2.333)
+                self.assertAlmostEquals(measures['Average_Price'], 13.667)(measures['Total_Price'], 82)
+                self.assertAlmostEquals(measures['Average_Qty'], 2.333)
+                self.assertAlmostEquals(measures['Average_Price'], 13.667)
+            elif dimensionKey == '#C2':
+                self.assertEquals(measures['Total_Qty'], 16)
+                self.assertEquals(measures['Total_Price'], 57)
+                self.assertAlmostEquals(measures['Average_Qty'], 2.667)
+                self.assertAlmostEquals(measures['Average_Price'], 9.5)
+            elif dimensionKey == '#C3':
+                self.assertEquals(measures['Total_Qty'], 14)
+                self.assertEquals(measures['Total_Price'], 25)
+                self.assertAlmostEquals(measures['Average_Qty'], 7)
+                self.assertAlmostEquals(measures['Average_Price'], 12.5)
+
+        aggCubeRows = cs.getCubeRows(cubeName + '_Date-State')
+        self.assertEquals(aggCubeRows.count(), 10)
+        for aggCubeRow in aggCubeRows:
+            #print aggCubeRow['dimensionKey'], aggCubeRow
+            dimensionKey = aggCubeRow['dimensionKey']
+            measures = aggCubeRow['measures']
+            if dimensionKey == '#State:NY#Date:2015-10-11 00:00:00':
+                self.assertEquals(measures['Total_Qty'], 2)
+                self.assertEquals(measures['Total_Price'], 1.5)
+                self.assertAlmostEquals(measures['Average_Qty'], 2)
+                self.assertAlmostEquals(measures['Average_Price'], 1.5)
+            elif dimensionKey == '#State:NY#Date:2014-10-10 00:00:00':
+                self.assertEquals(measures['Total_Qty'], 6)
+                self.assertEquals(measures['Total_Price'], 27)
+                self.assertAlmostEquals(measures['Average_Qty'], 3)
+                self.assertAlmostEquals(measures['Average_Price'], 13.5)
+
+        os.remove(cubeName + '.csv')
+
+    def testCustomAggregation(self):
+        cubeName = 'test-' + str(uuid.uuid4())
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeName + '.csv')
+        cs = CubeService('testdb')
+        cs.createCubeFromCsv(cubeName + '.csv',cubeName, cubeName)
         binningFileName = 'cubify/tests/test_binnings.json'
         if (os.path.isfile(binningFileName) == False):
             binningFileName = './test_binnings.json'
@@ -582,7 +672,7 @@ class cubeServiceTests(unittest.TestCase):
         with open(aggFileName) as agg_file:
             aggs = json.load(agg_file)
 
-        cs.aggregateCube(cubeName + '_b', aggs)
+        cs.aggregateCubeCustom(cubeName + '_b', aggs)
 
         aggCubeRows = cs.getCubeRows(cubeName + '_b_agg1')
         self.assertTrue (aggCubeRows.count() == 4)
