@@ -491,11 +491,11 @@ The aggregateCube method returns a list of cubes and in our example, the list co
 
 We get the following csv output:
 
-|S:CustomerId|N:Average_Price|N:Average_Qty|N:Total_Price|N:Total_Qty|
-|------------|---------------|-------------|-------------|-----------|
-|C3|19.25|7.0|38.5|14.0|
-|C2|19.416666666666668|2.6666666666666665|116.5|16.0|
-|C1|20.333333333333332|2.3333333333333335|122.0|14.0|
+|S:CustomerId|N:Average_Price|N:Average_Qty|N:Count|N:Total_Price|N:Total_Qty|
+|------------|---------------|-------------|-------|-------------|-----------|
+|C3|19.25|7.0|2|38.5|14.0|
+|C2|19.416666666666668|2.6666666666666665|6|116.5|16.0|
+|C1|20.333333333333332|2.3333333333333335|6|122.0|14.0|
 
 In our next example, we aggregate our cube using the group-by dimensions, CustomerState and ProductCategory. We will aggregate all measures in the cube using the
 default formulae, 'Average' and 'Sum'.
@@ -505,13 +505,13 @@ default formulae, 'Average' and 'Sum'.
 Note that we are omitting the 3rd argument for measures in our call to aggregateCube above. cubify interprets this as aggregating all measures.
 The output of the aggregated cube now contains the average and total of all measures in the cube like so:
 
-|S:CustomerState|S:ProductCategory|N:Average_Discount|N:Average_Price|N:Average_Qty|N:Average_Revenue|N:Total_Discount|N:Total_Price|N:Total_Qty|N:Total_Revenue|
-|---------------|-----------------|------------------|---------------|-------------|-----------------|----------------|-------------|-----------|---------------|
-|MA|Category1|3.0|19.25|7.0|134.75|6.0|38.5|14.0|269.5|
-|NY|Category2|3.0|16.5|4.0|66.0|6.0|33.0|8.0|132.0|
-|NY|Category1|3.0|20.875|2.0|41.75|12.0|83.5|8.0|167.0|
-|CA|Category2|3.5|18.75|1.0|18.75|7.0|37.5|2.0|37.5|
-|CA|Category1|3.5|21.125|3.0|63.375|14.0|84.5|12.0|253.5|
+|S:CustomerState|S:ProductCategory|N:Average_Discount|N:Average_Price|N:Average_Qty|N:Average_Revenue|N:Count|N:Total_Discount|N:Total_Price|N:Total_Qty|N:Total_Revenue|
+|---------------|-----------------|------------------|---------------|-------------|-----------------|-------|----------------|-------------|-----------|---------------|
+|MA|Category1|3.0|19.25|7.0|134.75|2|6.0|38.5|14.0|269.5|
+|NY|Category2|3.0|16.5|4.0|66.0|2|6.0|33.0|8.0|132.0|
+|NY|Category1|3.0|20.875|2.0|41.75|4|12.0|83.5|8.0|167.0|
+|CA|Category2|3.5|18.75|1.0|18.75|2|7.0|37.5|2.0|37.5|
+|CA|Category1|3.5|21.125|3.0|63.375|4|14.0|84.5|12.0|253.5|
 
 In the third simple, example, we will perform multiple aggregations on our cube. The first uses the group-by dimension, ProductId and the second uses TransactionDate.
 We will aggregate on all measures using Average and Sum.
@@ -520,21 +520,21 @@ We will aggregate on all measures using Average and Sum.
 
 The returned aggCubes list now contains 2 aggregated cubes. The first one is called "purchases_binned_2_ProductId" and the looks like:
 
-|S:ProductId|N:Average_Discount|N:Average_Price|N:Average_Qty|N:Average_Revenue|N:Total_Discount|N:Total_Price|N:Total_Qty|N:Total_Revenue|
-|-----------|------------------|---------------|-------------|-----------------|----------------|-------------|-----------|---------------|
-|P2|3.25|17.625|2.5|42.375|13.0|70.5|10.0|169.5|
-|P1|3.2|20.65|3.4|69.0|32.0|206.5|34.0|690.0|
+|S:ProductId|N:Average_Discount|N:Average_Price|N:Average_Qty|N:Average_Revenue|N:Count|N:Total_Discount|N:Total_Price|N:Total_Qty|N:Total_Revenue|
+|-----------|------------------|---------------|-------------|-----------------|-------|----------------|-------------|-----------|---------------|
+|P2|3.25|17.625|2.5|42.375|4|13.0|70.5|10.0|169.5|
+|P1|3.2|20.65|3.4|69.0|10|32.0|206.5|34.0|690.0|
 
 The second one is called "purchases_binned_2_TransactionDate" and looks like:
 
-|D:TransactionDate|N:Average_Discount|N:Average_Price|N:Average_Qty|N:Average_Revenue|N:Total_Discount|N:Total_Price|N:Total_Qty|N:Total_Revenue|
-|-----------------|------------------|---------------|-------------|-----------------|----------------|-------------|-----------|---------------|
-|2015-11-13|3.0|19.666666666666668|4.333333333333333|84.0|9.0|59.0|13.0|252.0|
-|2015-11-12|3.25|22.0|1.5|33.0|6.5|44.0|3.0|66.0|
-|2015-11-10|3.5|22.0|3.0|66.0|3.5|22.0|3.0|66.0|
-|2015-11-03|3.5|21.5|3.0|64.5|3.5|21.5|3.0|64.5|
-|2015-10-11|3.0|19.0|4.5|84.25|6.0|38.0|9.0|168.5|
-|2015-10-10|3.3|18.5|2.6|48.5|16.5|92.5|13.0|242.5|
+|D:TransactionDate|N:Average_Discount|N:Average_Price|N:Average_Qty|N:Average_Revenue|N:Count|N:Total_Discount|N:Total_Price|N:Total_Qty|N:Total_Revenue|
+|-----------------|------------------|---------------|-------------|-----------------|-------|----------------|-------------|-----------|---------------|
+|2015-11-13|3.0|19.666666666666668|4.333333333333333|84.0|3|9.0|59.0|13.0|252.0|
+|2015-11-12|3.25|22.0|1.5|33.0|2|6.5|44.0|3.0|66.0|
+|2015-11-10|3.5|22.0|3.0|66.0|1|3.5|22.0|3.0|66.0|
+|2015-11-03|3.5|21.5|3.0|64.5|1|3.5|21.5|3.0|64.5|
+|2015-10-11|3.0|19.0|4.5|84.25|2|6.0|38.0|9.0|168.5|
+|2015-10-10|3.3|18.5|2.6|48.5|5|16.5|92.5|13.0|242.5|
 
 Now let's turn to more complex aggregations using custom formulae. This is done with cubify's aggregation DSL.
 For example, let's say we want a cube containing the average price grouped by product and region.  
