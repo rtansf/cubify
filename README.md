@@ -2,7 +2,7 @@
 
 <h1>Cubify - "Data Cubes On Steroids" </h1>
 
-Cubify is a tool written in python for data analysts who require "data agility". If you need to experiment with different ways of binning data, and viewing data at various levels of granularity, Cubify is for you! With Cubify, you can easily create a data cube from CSV and then transform the cube into other cubes by binning and aggregation.  
+Cubify is a tool written in python for data analysts who require "data agility". If you need to experiment with different ways of binning data, and viewing data at various levels of granularity, Cubify is for you! With Cubify, you can easily create a data cube from CSV and then transform the cube into other cubes by binning and aggregation with just a few calls to the Cubify API.  
 
 So what is a data cube? It is simply a structure that organizes data into dimensions and measures, concepts used in data warehouse systems.
 
@@ -472,10 +472,13 @@ For example, if we aggregate the cube, binnedCube2 (created in the previous exam
 Average and Sum as the aggregation formula, the result would be a new cube with the following columns:
 
     CustomerId
+    Count
     AverageQty
     TotalQty
     AveragePrice
     TotalPrice
+
+Note that every aggregated cube will have a Count column showing the number of occurrences for a given group-by dimension tuple.
 
 Going back to our tutorial, we will aggregate the cube, binnedCube2 as described above. To do this, simply invoke cubify's aggregateCube method like so:
 
@@ -574,13 +577,13 @@ Now when we list the cube rows of our aggregated cube you will see the aggregate
  
 And when we export the cube, the CVS file contains the following:
 
-|S:ProductId|S:Region|N:AveragePrice|
-|-----------|--------|--------------|
-|P1|Other|19.25|
-|P2|NorthEast|16.5|
-|P1|NorthEast|20.875|
-|P2|West|18.75|
-|P1|West|21.125|
+|S:ProductId|S:Region|N:AveragePrice|N:Count|
+|-----------|--------|--------------|-------|
+|P1|Other|19.25|2|
+|P2|NorthEast|16.5|2|
+|P1|NorthEast|20.875|4|
+|P2|West|18.75|2|
+|P1|West|21.125|4|
 
 Now let's apply a more complex aggregation to our binnedCube2. Take a look at agg2.json. 
 
@@ -616,10 +619,10 @@ Now when we list the cube rows for the aggregated cube we get our two new measur
 
 And the exported CSV file looks like so:
 
-|S:ProductId|N:AverageRevenue|N:TotalQty|
-|-----------|----------------|----------|
-|P2|16.95|10.0|
-|P1|20.294117647058822|34.0|
+|S:ProductId|N:AverageRevenue|N:Count|N:TotalQty|
+|-----------|----------------|-------|----------|
+|P2|16.95|4|10.0|
+|P1|20.294117647058822|10|34.0|
 
 We have come to end of the first part of our tutorial. 
 
