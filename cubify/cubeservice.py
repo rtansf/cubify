@@ -732,6 +732,7 @@ class CubeService:
             group = {}
             groupPipelineItem['$group'] = group
             group['_id'] = idContent
+            group['count'] = { '$sum' : 1 }
             for dimension in agg['dimensions']:
                 if self.__isDateDimension__(cubeName, dimension):
                     idContent[dimension] = '$dates.' + dimension
@@ -786,6 +787,8 @@ class CubeService:
                           else:
                              cubeRow['dimensions'][dimName] = dimValue
                           self.__addToDistincts__(distincts, dimName, str(dimValue))
+                   elif k == 'count':
+                       cubeRow['measures']['Count'] = v
                    else:
                        cubeRow['measures'][k] = v
                    dimensionKey = ''

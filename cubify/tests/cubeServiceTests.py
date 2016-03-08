@@ -586,26 +586,31 @@ class cubeServiceTests(unittest.TestCase):
                 self.assertEquals(measures['Total_Price'], 51)
                 self.assertEquals(measures['Average_Qty'], 3)
                 self.assertEquals(measures['Average_Price'], 12.75)
+                self.assertEquals(measures['Count'], 4)
             elif dimensionKey == '#ProductId:P1#State:MA':
                 self.assertEquals(measures['Total_Qty'], 14)
                 self.assertEquals(measures['Total_Price'], 25)
                 self.assertEquals(measures['Average_Qty'], 7)
                 self.assertEquals(measures['Average_Price'], 12.5)
+                self.assertEquals(measures['Count'], 2)
             elif dimensionKey == '#ProductId:P1#State:NY':
                 self.assertEquals(measures['Total_Qty'], 8)
                 self.assertEquals(measures['Total_Price'], 39)
                 self.assertEquals(measures['Average_Qty'], 2)
                 self.assertEquals(measures['Average_Price'], 9.75)
+                self.assertEquals(measures['Count'], 4)
             elif dimensionKey == '#ProductId:P2#State:CA':
                 self.assertEquals(measures['Total_Qty'], 2)
                 self.assertEquals(measures['Total_Price'], 31)
                 self.assertEquals(measures['Average_Qty'], 1)
                 self.assertEquals(measures['Average_Price'], 15.5)
+                self.assertEquals(measures['Count'], 2)
             elif dimensionKey == '#ProductId:P2#State:NY':
                 self.assertEquals(measures['Total_Qty'], 8)
                 self.assertEquals(measures['Total_Price'], 18)
                 self.assertEquals(measures['Average_Qty'], 4)
                 self.assertEquals(measures['Average_Price'], 9)
+                self.assertEquals(measures['Count'], 2)
 
         aggCubeRows = cs.getCubeRows(cubeName + '_CustomerId')
         self.assertEquals(aggCubeRows.count(), 3)
@@ -615,7 +620,7 @@ class cubeServiceTests(unittest.TestCase):
             measures = aggCubeRow['measures']
             if dimensionKey == '#C1':
                 self.assertEquals(measures['Total_Qty'], 14)
-                self.assertEqualsself.assertEquals(measures['Total_Qty'], 14)
+                self.assertEquals(measures['Total_Qty'], 14)
                 self.assertEquals(measures['Total_Price'], 82)
                 self.assertAlmostEquals(measures['Average_Qty'], 2.333)
                 self.assertAlmostEquals(measures['Average_Price'], 13.667)(measures['Total_Price'], 82)
