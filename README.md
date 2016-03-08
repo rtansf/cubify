@@ -74,21 +74,22 @@ Our simple data set contains the following columns:
 
 The contents of the file, purchases.csv are shown below:
 
-    TransactionDate,CustomerId,CustomerState,ProductId,Qty,Price
-    2015-10-10,C1,CA,P1,3,20.5
-    2015-10-10,C1,CA,P1,3,20.5
-    2015-10-10,C1,CA,P2,1,15.5
-    2015-10-10,C2,NY,P1,2,20.0
-    2015-10-10,C2,NY,P2,4,16.0
-    2015-10-11,C2,NY,P1,2,19.5
-    2015-10-11,C3,MA,P1,7,18.5
-    2015-11-03,C1,CA,P1,3,21.5
-    2015-11-10,C1,CA,P1,3,22.0
-    2015-11-12,C1,CA,P2,1,22.0
-    2015-11-12,C2,NY,P1,2,22.0
-    2015-11-13,C2,NY,P2,4,17.0
-    2015-11-13,C2,NY,P1,2,22.0
-    2015-11-13,C3,MA,P1,7,20.0
+|TransactionDate|CustomerId|CustomerState|ProductId|Qty|Price|
+|---------------|----------|-------------|---------|---|-----|
+|2015-10-10|C1|CA|P1|3|20.5|
+|2015-10-10|C1|CA|P1|3|20.5|
+|2015-10-10|C1|CA|P2|1|15.5|
+|2015-10-10|C2|NY|P1|2|20.0|
+|2015-10-10|C2|NY|P2|4|16.0|
+|2015-10-11|C2|NY|P1|2|19.5|
+|2015-10-11|C3|MA|P1|7|18.5|
+|2015-11-03|C1|CA|P1|3|21.5|
+|2015-11-10|C1|CA|P1|3|22.0|
+|2015-11-12|C1|CA|P2|1|22.0|
+|2015-11-12|C2|NY|P1|2|22.0|
+|2015-11-13|C2|NY|P2|4|17.0|
+|2015-11-13|C2|NY|P1|2|22.0|
+|2015-11-13|C3|MA|P1|7|20.0|
 
 In the dataset above, the columns Transaction Date, CustomerId, CustomerState and ProductId are the **dimensions** and Qty and Price are the **measures**. 
 
