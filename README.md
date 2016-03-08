@@ -91,7 +91,7 @@ The contents of the file, purchases.csv are shown below:
 |2015-11-13|C2|NY|P1|2|22.0|
 |2015-11-13|C3|MA|P1|7|20.0|
 
-In the dataset above, the columns Transaction Date, CustomerId, CustomerState and ProductId are the **dimensions** and Qty and Price are the **measures**. 
+In the dataset above, the columns TransactionDate, CustomerId, CustomerState and ProductId are the **dimensions** and Qty and Price are the **measures**. 
 
 1. Creating a cube
 ------------------
@@ -357,21 +357,22 @@ If you export purchases_binned_1 to csv, you should see a new column, QtyBin.
 
     cubify.exportCubeToCsv('purchases_binned_1', '/tmp/exportedBinned1.csv')
 
-    S:CustomerId,S:CustomerState,S:ProductId,S:QtyBin,D:TransactionDate,N:Price,N:Qty
-    C1,CA,P1,0-5,2015-10-10 00:00:00,20.5,3.0
-    C1,CA,P1,0-5,2015-10-10 00:00:00,20.5,3.0
-    C1,CA,P2,0-5,2015-10-10 00:00:00,15.5,1.0
-    C2,NY,P1,0-5,2015-10-10 00:00:00,20.0,2.0
-    C2,NY,P2,0-5,2015-10-10 00:00:00,16.0,4.0
-    C2,NY,P1,0-5,2015-10-11 00:00:00,19.5,2.0
-    C3,MA,P1,5+,2015-10-11 00:00:00,18.5,7.0
-    C1,CA,P1,0-5,2015-11-03 00:00:00,21.5,3.0
-    C1,CA,P1,0-5,2015-11-10 00:00:00,22.0,3.0
-    C1,CA,P2,0-5,2015-11-12 00:00:00,22.0,1.0
-    C2,NY,P1,0-5,2015-11-12 00:00:00,22.0,2.0
-    C2,NY,P2,0-5,2015-11-13 00:00:00,17.0,4.0
-    C2,NY,P1,0-5,2015-11-13 00:00:00,22.0,2.0
-    C3,MA,P1,5+,2015-11-13 00:00:00,20.0,7.0
+|S:CustomerId|S:CustomerState|S:ProductId|S:QtyBin|D:TransactionDate|N:Price|N:Qty|
+|------------|---------------|-----------|--------|-----------------|-------|-----|
+|C1|CA|P1|0-5|2015-10-10 00:00:00|20.5|3.0|
+|C1|CA|P1|0-5|2015-10-10 00:00:00|20.5|3.0|
+|C1|CA|P2|0-5|2015-10-10 00:00:00|15.5|1.0|
+|C2|NY|P1|0-5|2015-10-10 00:00:00|20.0|2.0|
+|C2|NY|P2|0-5|2015-10-10 00:00:00|16.0|4.0|
+|C2|NY|P1|0-5|2015-10-11 00:00:00|19.5|2.0|
+|C3|MA|P1|5+|2015-10-11 00:00:00|18.5|7.0|
+|C1|CA|P1|0-5|2015-11-03 00:00:00|21.5|3.0|
+|C1|CA|P1|0-5|2015-11-10 00:00:00|22.0|3.0|
+|C1|CA|P2|0-5|2015-11-12 00:00:00|22.0|1.0|
+|C2|NY|P1|0-5|2015-11-12 00:00:00|22.0|2.0|
+|C2|NY|P2|0-5|2015-11-13 00:00:00|17.0|4.0|
+|C2|NY|P1|0-5|2015-11-13 00:00:00|22.0|2.0|
+|C3|MA|P1|5+|2015-11-13 00:00:00|20.0|7.0|
 
 Note that in the exported csv, the column names are prefixed with the data type of the column, S: for string, D: for date and N for numeric type.
      
@@ -441,21 +442,22 @@ Now when you export the binned cube, you will see the new columns, QtyBin, Price
 
 The binned cube's contents:
 
-    S:CustomerId,S:CustomerState,S:PriceBin,S:ProductId,S:QtyBin,S:Region,S:YearMonth,D:TransactionDate,N:Price,N:Qty
-    C1,CA,10+,P1,0-5,West,Oct-2015,2015-10-10 00:00:00,20.5,3.0
-    C1,CA,10+,P1,0-5,West,Oct-2015,2015-10-10 00:00:00,20.5,3.0
-    C1,CA,10+,P2,0-5,West,Oct-2015,2015-10-10 00:00:00,15.5,1.0
-    C2,NY,10+,P1,0-5,NorthEast,Oct-2015,2015-10-10 00:00:00,20.0,2.0
-    C2,NY,10+,P2,0-5,NorthEast,Oct-2015,2015-10-10 00:00:00,16.0,4.0
-    C2,NY,10+,P1,0-5,NorthEast,Oct-2015,2015-10-11 00:00:00,19.5,2.0
-    C3,MA,10+,P1,5+,Other,Oct-2015,2015-10-11 00:00:00,18.5,7.0
-    C1,CA,10+,P1,0-5,West,Nov-2015,2015-11-03 00:00:00,21.5,3.0
-    C1,CA,10+,P1,0-5,West,Nov-2015,2015-11-10 00:00:00,22.0,3.0
-    C1,CA,10+,P2,0-5,West,Nov-2015,2015-11-12 00:00:00,22.0,1.0
-    C2,NY,10+,P1,0-5,NorthEast,Nov-2015,2015-11-12 00:00:00,22.0,2.0
-    C2,NY,10+,P2,0-5,NorthEast,Nov-2015,2015-11-13 00:00:00,17.0,4.0
-    C2,NY,10+,P1,0-5,NorthEast,Nov-2015,2015-11-13 00:00:00,22.0,2.0
-    C3,MA,10+,P1,5+,Other,Nov-2015,2015-11-13 00:00:00,20.0,7.0
+|S:CustomerId|S:CustomerState|S:PriceBin|S:ProductId|S:QtyBin|S:Region|S:YearMonth|D:TransactionDate|N:Price|N:Qty|
+|------------|---------------|----------|-----------|--------|--------|-----------|-----------------|-------|-----|
+|C1|CA|10+|P1|0-5|West|Oct-2015|2015-10-10 00:00:00|20.5|3.0|
+|C1|CA|10+|P1|0-5|West|Oct-2015|2015-10-10 00:00:00|20.5|3.0|
+|C1|CA|10+|P2|0-5|West|Oct-2015|2015-10-10 00:00:00|15.5|1.0|
+|C2|NY|10+|P1|0-5|NorthEast|Oct-2015|2015-10-10 00:00:00|20.0|2.0|
+|C2|NY|10+|P2|0-5|NorthEast|Oct-2015|2015-10-10 00:00:00|16.0|4.0|
+|C2|NY|10+|P1|0-5|NorthEast|Oct-2015|2015-10-11 00:00:00|19.5|2.0|
+|C3|MA|10+|P1|5+|Other|Oct-2015|2015-10-11 00:00:00|18.5|7.0|
+|C1|CA|10+|P1|0-5|West|Nov-2015|2015-11-03 00:00:00|21.5|3.0|
+|C1|CA|10+|P1|0-5|West|Nov-2015|2015-11-10 00:00:00|22.0|3.0|
+|C1|CA|10+|P2|0-5|West|Nov-2015|2015-11-12 00:00:00|22.0|1.0|
+|C2|NY|10+|P1|0-5|NorthEast|Nov-2015|2015-11-12 00:00:00|22.0|2.0|
+|C2|NY|10+|P2|0-5|NorthEast|Nov-2015|2015-11-13 00:00:00|17.0|4.0|
+|C2|NY|10+|P1|0-5|NorthEast|Nov-2015|2015-11-13 00:00:00|22.0|2.0|
+|C3|MA|10+|P1|5+|Other|Nov-2015|2015-11-13 00:00:00|20.0|7.0|
 
 
 6. Aggregating a cube
@@ -489,10 +491,11 @@ The aggregateCube method returns a list of cubes and in our example, the list co
 
 We get the following csv output:
 
-    S:CustomerId,N:Average_Price,N:Average_Qty,N:Total_Price,N:Total_Qty
-    C3,19.25,7.0,38.5,14.0
-    C2,19.416666666666668,2.6666666666666665,116.5,16.0
-    C1,20.333333333333332,2.3333333333333335,122.0,14.0
+|S:CustomerId|N:Average_Price|N:Average_Qty|N:Total_Price|N:Total_Qty|
+|------------|---------------|-------------|-------------|-----------|
+|C3|19.25|7.0|38.5|14.0|
+|C2|19.416666666666668|2.6666666666666665|116.5|16.0|
+|C1|20.333333333333332|2.3333333333333335|122.0|14.0|
 
 In our next example, we aggregate our cube using the group-by dimensions, CustomerState and ProductCategory. We will aggregate all measures in the cube using the
 default formulae, 'Average' and 'Sum'.
@@ -502,12 +505,13 @@ default formulae, 'Average' and 'Sum'.
 Note that we are omitting the 3rd argument for measures in our call to aggregateCube above. cubify interprets this as aggregating all measures.
 The output of the aggregated cube now contains the average and total of all measures in the cube like so:
 
-    S:CustomerState,S:ProductCategory,N:Average_Discount,N:Average_Price,N:Average_Qty,N:Average_Revenue,N:Total_Discount,N:Total_Price,N:Total_Qty,N:Total_Revenue
-    MA,Category1,3.0,19.25,7.0,134.75,6.0,38.5,14.0,269.5
-    NY,Category2,3.0,16.5,4.0,66.0,6.0,33.0,8.0,132.0
-    NY,Category1,3.0,20.875,2.0,41.75,12.0,83.5,8.0,167.0
-    CA,Category2,3.5,18.75,1.0,18.75,7.0,37.5,2.0,37.5
-    CA,Category1,3.5,21.125,3.0,63.375,14.0,84.5,12.0,253.5
+|S:CustomerState|S:ProductCategory|N:Average_Discount|N:Average_Price|N:Average_Qty|N:Average_Revenue|N:Total_Discount|N:Total_Price|N:Total_Qty|N:Total_Revenue|
+|---------------|-----------------|------------------|---------------|-------------|-----------------|----------------|-------------|-----------|---------------|
+|MA|Category1|3.0|19.25|7.0|134.75|6.0|38.5|14.0|269.5|
+|NY|Category2|3.0|16.5|4.0|66.0|6.0|33.0|8.0|132.0|
+|NY|Category1|3.0|20.875|2.0|41.75|12.0|83.5|8.0|167.0|
+|CA|Category2|3.5|18.75|1.0|18.75|7.0|37.5|2.0|37.5|
+|CA|Category1|3.5|21.125|3.0|63.375|14.0|84.5|12.0|253.5|
 
 In the third simple, example, we will perform multiple aggregations on our cube. The first uses the group-by dimension, ProductId and the second uses TransactionDate.
 We will aggregate on all measures using Average and Sum.
@@ -522,13 +526,14 @@ The returned aggCubes list now contains 2 aggregated cubes. The first one is cal
 
 The second one is called "purchases_binned_2_TransactionDate" and looks like:
 
-    D:TransactionDate,N:Average_Discount,N:Average_Price,N:Average_Qty,N:Average_Revenue,N:Total_Discount,N:Total_Price,N:Total_Qty,N:Total_Revenue
-    2015-11-13 00:00:00,3.0,19.666666666666668,4.333333333333333,84.0,9.0,59.0,13.0,252.0
-    2015-11-12 00:00:00,3.25,22.0,1.5,33.0,6.5,44.0,3.0,66.0
-    2015-11-10 00:00:00,3.5,22.0,3.0,66.0,3.5,22.0,3.0,66.0
-    2015-11-03 00:00:00,3.5,21.5,3.0,64.5,3.5,21.5,3.0,64.5
-    2015-10-11 00:00:00,3.0,19.0,4.5,84.25,6.0,38.0,9.0,168.5
-    2015-10-10 00:00:00,3.3,18.5,2.6,48.5,16.5,92.5,13.0,242.5
+|D:TransactionDate|N:Average_Discount|N:Average_Price|N:Average_Qty|N:Average_Revenue|N:Total_Discount|N:Total_Price|N:Total_Qty|N:Total_Revenue|
+|-----------------|------------------|---------------|-------------|-----------------|----------------|-------------|-----------|---------------|
+|2015-11-13 00:00:00|3.0|19.666666666666668|4.333333333333333|84.0|9.0|59.0|13.0|252.0|
+|2015-11-12 00:00:00|3.25|22.0|1.5|33.0|6.5|44.0|3.0|66.0|
+|2015-11-10 00:00:00|3.5|22.0|3.0|66.0|3.5|22.0|3.0|66.0|
+|2015-11-03 00:00:00|3.5|21.5|3.0|64.5|3.5|21.5|3.0|64.5|
+|2015-10-11 00:00:00|3.0|19.0|4.5|84.25|6.0|38.0|9.0|168.5|
+|2015-10-10 00:00:00|3.3|18.5|2.6|48.5|16.5|92.5|13.0|242.5|
 
 Now let's turn to more complex aggregations using custom formulae. This is done with cubify's aggregation DSL.
 For example, let's say we want a cube containing the average price grouped by product and region.  
@@ -568,12 +573,13 @@ Now when we list the cube rows of our aggregated cube you will see the aggregate
  
 And when we export the cube, the CVS file contains the following:
 
-    S:ProductId,S:Region,N:AveragePrice
-    P1,Other,19.25
-    P2,NorthEast,16.5
-    P1,NorthEast,20.875
-    P2,West,18.75
-    P1,West,21.125
+|S:ProductId|S:Region|N:AveragePrice|
+|-----------|--------|--------------|
+|P1|Other|19.25|
+|P2|NorthEast|16.5|
+|P1|NorthEast|20.875|
+|P2|West|18.75|
+|P1|West|21.125|
 
 Now let's apply a more complex aggregation to our binnedCube2. Take a look at agg2.json. 
 
@@ -609,9 +615,10 @@ Now when we list the cube rows for the aggregated cube we get our two new measur
 
 And the exported CSV file looks like so:
 
-    S:ProductId,N:AverageRevenue,N:TotalQty
-    P2,16.95,10.0
-    P1,20.294117647058822,34.0
+|S:ProductId|N:AverageRevenue|N:TotalQty|
+|-----------|----------------|----------|
+|P2|16.95|10.0|
+|P1|20.294117647058822|34.0|
 
 We have come to end of the first part of our tutorial. 
 
