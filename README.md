@@ -294,13 +294,13 @@ If you examine the dimensions in binned cube, you will see new ones, "RevenueBin
      'ProductCategory': {'Category1': 10, 'Category2': 4}, 
      'PackageSize': {'SMALL': 10, 'LARGE': 4}, 
      'DiscountBin': {'3-4': 6, '3-3': 8}, 
-     'TransactionDateBin': {'2015-11': 7, '2015-10': 7}, 
+     'TransactionDateBin': {'201511': 7, '201510': 7}, 
      'QtyBin': {'2-3': 4, '5-7': 2, '1-2': 6, '3-4': 2}, 
      'CustomerId': {'C3': 2, 'C2': 6, 'C1': 6},
      'ProductId': {'P2': 4, 'P1': 10}
     }
 
-Note that the TransactionDateBin's values are monthly, the default binning period for dates. Note that the monthly bins are in the format [year]-[month]. You will see in the next example how to give hints to cubify to use other periods such as 'weekly' or 'yearly' for the bins.
+Note that the TransactionDateBin's values are monthly, the default binning period for dates. Note that the monthly bins are in the format [yyyy][mm] where yyyy is the year and mm is the month. You will see in the next example how to give hints to cubify to use other periods such as 'weekly' or 'yearly' for the bins.
 
 Note that after binning, the number of cube rows in the binned cube are the same as the original cube. We still have a total of 14 rows in our binned cube. 
 
@@ -309,7 +309,7 @@ We will call our new binned cube, 'purchases_autobinned_2'.
 
     binnedCube = cubify.binCube('purchases', 'purchases_autobinned_2', ['TransactionDate','Qty','Price'], {'TransactionDate':'weekly'})
 
-If you examine the dimensions in binned cube, you will see the following new ones, "PriceBin", "QtyBin", "TransactionDateBin". Note that TransactionDateBin now uses weekly bins; the label is in the format [year]-[week number]:
+If you examine the dimensions in binned cube, you will see the following new ones, "PriceBin", "QtyBin", "TransactionDateBin". Note that TransactionDateBin now uses weekly bins; the label is in the format [yyyy][ww] where yyyy is the year and ww is the week number is 0 to 51:
 
     print binnedCube['distincts']
 
@@ -317,7 +317,7 @@ If you examine the dimensions in binned cube, you will see the following new one
      'PriceBin': {'15-16': 2, '18-19': 1, '19-22': 10, '16-17': 1}, 
      'ProductCategory': {'Category1': 10, 'Category2': 4},
      'PackageSize': {'SMALL': 10, 'LARGE': 4}, 
-     'TransactionDateBin': {'2015-41': 7, '2015-46': 6, '2015-45': 1}, 
+     'TransactionDateBin': {'201541': 7, '201546': 6, '201545': 1}, 
      'QtyBin': {'2-3': 4, '5-7': 2, '1-2': 6, '3-4': 2}, 
      'CustomerId': {'C3': 2, 'C2': 6, 'C1': 6},
      'ProductId': {'P2': 4, 'P1': 10}

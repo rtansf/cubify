@@ -417,14 +417,19 @@ class CubeService:
         d = Date(v)
         if 'period' in db:
            period = db['period']
+           zeroFill = ''
            if period == 'weekly':
                dt = datetime(d.year, d.month, d.day)
                isoCalendar = dt.isocalendar()
                yearNum = isoCalendar[0]
                weekNum = isoCalendar[1]
-               return str(yearNum) + "-" + str(weekNum)
+               if weekNum < 10:
+                   zeroFill = '0'
+               return str(yearNum) + zeroFill + str(weekNum)
            elif period == 'monthly':
-               return str(d.year) + "-" + str(d.month)
+               if d.month < 10:
+                   zeroFill = '0'
+               return str(d.year) + zeroFill + str(d.month)
            elif period == 'yearly':
                return str(d.year)
            else:
