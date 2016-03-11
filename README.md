@@ -468,7 +468,7 @@ The binned cube's contents:
 The diagram above shows that you can aggregate a source or a binned cube to produce one or more aggregated cubes. 
 
 Inputs to aggregation are: the "group-by" dimensions, the measures which are to be aggregated and the aggregation formula to apply to each measure. 
-For example, if we aggregate the cube, binnedCube2 (created in the previous example) using CustomerId as the group-by dimension and Qty and Price as the measures and 
+For example, if we aggregate the cube, "purchases_binned_2" (created in the previous example) using CustomerId as the group-by dimension and Qty and Price as the measures and 
 Average and Sum as the aggregation formula, the result would be a new cube with the following columns:
 
     CustomerId
@@ -480,7 +480,7 @@ Average and Sum as the aggregation formula, the result would be a new cube with 
 
 Note that every aggregated cube will have a Count column showing the number of occurrences for a given group-by dimension tuple.
 
-Going back to our tutorial, we will aggregate the cube, binnedCube2 as described above. To do this, simply invoke cubify's aggregateCube method like so:
+Going back to our tutorial, we will aggregate the cube, "purchases_binned_2" as described above. To do this, simply invoke cubify's aggregateCube method like so:
 
     aggCube = cubify.aggregateCube('purchases_binned_2', ['CustomerId'], ['Qty', 'Price'])
 
@@ -562,7 +562,7 @@ In the definition above, we specify our group-by dimensions, ProductId and Regio
 In the outputField, we specify "AveragePrice" as the name of the new column which will hold the aggregated values. Then we define the aggregation formula.
 An aggregation formula contains a numerator and denominator. For now, in our simple example, we will only define the numerator as taking the "$avg" operator and applying it to "$measures.Price".  The denominator is used for more complex aggregations such as computing weighted average as we shall see later. (For details of the formula syntax, refer to the Cubify Reference).
 
-Now let's load the aggregation DSL file, agg1.json and call the aggregateCube method to aggregate binnedCube2.
+Now let's load the aggregation DSL file, agg1.json and call the aggregateCube method to aggregate "purchases_binned_2".
 
     with open('agg1.json') as agg_file:
         agg = json.load(agg_file)
@@ -590,7 +590,7 @@ And when we export the cube, the CVS file contains the following:
 |P2|West|18.75|2|
 |P1|West|21.125|4|
 
-Now let's apply a more complex aggregation to our binnedCube2. Take a look at agg2.json. 
+Now let's apply a more complex aggregation to our "purchases_binned_2" cube. Take a look at agg2.json. 
 
     [{
        "name" : "agg2",
@@ -610,7 +610,7 @@ Our aggregation definition is called "agg2". Here we are grouping by one dimensi
 This will create a cube which shows the total quantity and average revenue per product.
 The formula for TotalQty is self-explanatory. The formula for AverageRevenue uses both numerator and denominator. In the numerator we take the sum of Qty multiplied by Price. In the denominator, we sum Qty. The average revenue is therefore simply the numerator divided by the denominator. Average revenue is an example of a weighted average where we are getting the average price using quantity as a weight.
 
-Now let's load the aggregation DSL file, agg2.json and call the aggregateCube method to aggregate binnedCube2.
+Now let's load the aggregation DSL file, agg2.json and call the aggregateCube method to aggregate the cube, "purchases_binned_2".
 
     with open('agg2.json') as agg_file:
         agg = json.load(agg_file)
