@@ -300,7 +300,7 @@ If you examine the dimensions in binned cube, you will see new ones, "RevenueBin
      'ProductId': {'P2': 4, 'P1': 10}
     }
 
-Note that the TransactionDateBin's values are monthly, the default binning period for dates. Note that the monthly bins are in the format [yyyy][mm] where yyyy is the year and mm is the month. You will see in the next example how to give hints to cubify to use other periods such as 'weekly' or 'yearly' for the bins.
+Note that the TransactionDateBin's values are monthly, the default binning period for dates. Note that the monthly bins are in the format [yyyy][mm] where yyyy is the year and mm is the month in the range 1 - 12. You will see in the next example how to give hints to cubify to use other periods such as 'weekly' or 'yearly' for the bins.
 
 Note that after binning, the number of cube rows in the binned cube are the same as the original cube. We still have a total of 14 rows in our binned cube. 
 
@@ -309,7 +309,7 @@ We will call our new binned cube, 'purchases_autobinned_2'.
 
     binnedCube = cubify.binCube('purchases', 'purchases_autobinned_2', ['TransactionDate','Qty','Price'], {'TransactionDate':'weekly'})
 
-If you examine the dimensions in binned cube, you will see the following new ones, "PriceBin", "QtyBin", "TransactionDateBin". Note that TransactionDateBin now uses weekly bins; the label is in the format [yyyy][ww] where yyyy is the year and ww is the week number is 0 to 51:
+If you examine the dimensions in binned cube, you will see the following new ones, "PriceBin", "QtyBin", "TransactionDateBin". Note that TransactionDateBin now uses weekly bins; the label is in the format [yyyy][ww] where yyyy is the year and ww is the week number is 1 to 52:
 
     print binnedCube['distincts']
 
@@ -482,14 +482,14 @@ Note that every aggregated cube will have a Count column showing the number of o
 
 Going back to our tutorial, we will aggregate the cube, binnedCube2 as described above. To do this, simply invoke cubify's aggregateCube method like so:
 
-    aggCubes = cubify.aggregateCube('purchases_binned_2', [['CustomerId']], ['Qty', 'Price'])
+    aggCube = cubify.aggregateCube('purchases_binned_2', ['CustomerId'], ['Qty', 'Price'])
 
 Note that we did not pass in the aggregation formulae for the measures. Cubify uses the default aggregation formulae, 'Average' and 'Sum'.
 (In later examples, we will see how to use custom formulae for our aggregations.)
 
-The aggregateCube method returns a list of cubes and in our example, the list contains one cube. If we export the aggregated cube:
+The aggregateCube method returns an aggregated cube. cubify will automatically name the cube by appending the group-by dimensions to the name of the original cube.
+In our example, the aggregated cube will be called 'purchases_binned_2_CustomerId'. If we export the aggregated cube:
 
-    aggCube = aggCubes[0]
     cubify.exportCubeToCsv(aggCube['name'], '/tmp/aggregatedCubeByCustomerId.csv')
 
 We get the following csv output:
@@ -503,9 +503,10 @@ We get the following csv output:
 In our next example, we aggregate our cube using the group-by dimensions, CustomerState and ProductCategory. We will aggregate all measures in the cube using the
 default formulae, 'Average' and 'Sum'.
 
-    aggCubes = cubify.aggregateCube('purchases_binned_2', [['CustomerState', 'ProductCategory']])
+    aggCube = cubify.aggregateCube('purchases_binned_2', ['CustomerState', 'ProductCategory'])
 
 Note that we are omitting the 3rd argument for measures in our call to aggregateCube above. cubify interprets this as aggregating all measures.
+The name of the aggregated cube is 'purchases_binned_2_CustomerState-ProductCategory'.
 The output of the aggregated cube now contains the average and total of all measures in the cube like so:
 
 |S:CustomerState|S:ProductCategory|N:Average_Discount|N:Average_Price|N:Average_Qty|N:Average_Revenue|N:Count|N:Total_Discount|N:Total_Price|N:Total_Qty|N:Total_Revenue|
@@ -519,25 +520,29 @@ The output of the aggregated cube now contains the average and total of all meas
 In the third simple, example, we will perform multiple aggregations on our cube. The first uses the group-by dimension, ProductId and the second uses TransactionDate.
 We will aggregate on all measures using Average and Sum.
 
-    aggCubes = cubify.aggregateCube('purchases_binned_2', [['ProductId'], ['TransactionDate']])
+    aggCubes = cubify.aggregateCubeComplex('purchases_binned_2', [['ProductId'], ['ProductId','TransactionDate']])
 
 The returned aggCubes list now contains 2 aggregated cubes. The first one is called "purchases_binned_2_ProductId" and the looks like:
 
 |S:ProductId|N:Average_Discount|N:Average_Price|N:Average_Qty|N:Average_Revenue|N:Count|N:Total_Discount|N:Total_Price|N:Total_Qty|N:Total_Revenue|
 |-----------|------------------|---------------|-------------|-----------------|-------|----------------|-------------|-----------|---------------|
-|P2|3.25|17.625|2.5|42.375|4|13.0|70.5|10.0|169.5|
 |P1|3.2|20.65|3.4|69.0|10|32.0|206.5|34.0|690.0|
+|P2|3.25|17.625|2.5|42.375|4|13.0|70.5|10.0|169.5|
 
-The second one is called "purchases_binned_2_TransactionDate" and looks like:
+The second one is called "purchases_binned_2_ProductId-TransactionDate" and looks like:
 
 |D:TransactionDate|N:Average_Discount|N:Average_Price|N:Average_Qty|N:Average_Revenue|N:Count|N:Total_Discount|N:Total_Price|N:Total_Qty|N:Total_Revenue|
 |-----------------|------------------|---------------|-------------|-----------------|-------|----------------|-------------|-----------|---------------|
-|2015-11-13|3.0|19.666666666666668|4.333333333333333|84.0|3|9.0|59.0|13.0|252.0|
-|2015-11-12|3.25|22.0|1.5|33.0|2|6.5|44.0|3.0|66.0|
-|2015-11-10|3.5|22.0|3.0|66.0|1|3.5|22.0|3.0|66.0|
-|2015-11-03|3.5|21.5|3.0|64.5|1|3.5|21.5|3.0|64.5|
-|2015-10-11|3.0|19.0|4.5|84.25|2|6.0|38.0|9.0|168.5|
-|2015-10-10|3.3|18.5|2.6|48.5|5|16.5|92.5|13.0|242.5|
+|P1|2015-10-10|3.3333333333333335|20.333333333333332|2.6666666666666665|54.333333333333336|3|10.0|61.0|8.0|163.0|
+|P1|2015-10-11|3.0|19.0|4.5|84.25|2|6.0|38.0|9.0|168.5|
+|P1|2015-11-03|3.5|21.5|3.0|64.5|1|3.5|21.5|3.0|64.5|
+|P1|2015-11-10|3.5|22.0|3.0|66.0|1|3.5|22.0|3.0|66.0|
+|P1|2015-11-12|3.0|22.0|2.0|44.0|1|3.0|22.0|2.0|44.0|
+|P1|2015-11-13|3.0|21.0|4.5|92.0|2|6.0|42.0|9.0|184.0|
+|P2|2015-10-10|3.25|15.75|2.5|39.75|2|6.5|31.5|5.0|79.5|
+|P2|2015-11-12|3.5|22.0|1.0|22.0|1|3.5|22.0|1.0|22.0|
+|P2|2015-11-13|3.0|17.0|4.0|68.0|1|3.0|17.0|4.0|68.0|
+
 
 Now let's turn to more complex aggregations using custom formulae. This is done with cubify's aggregation DSL.
 For example, let's say we want a cube containing the average price grouped by product and region.  

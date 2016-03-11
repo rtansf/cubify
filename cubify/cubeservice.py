@@ -695,9 +695,16 @@ class CubeService:
         return aggs
 
     #
-    # Aggregate cube
+    #  Aggregate a cube on a single group-by dimensions list
     #
-    def aggregateCube(self, cubeName, groupByDimensionsList, measures=None):
+    def aggregateCube(self, cubeName, groupByDimensions, measures=None):
+        aggCubes = self.aggregateCubeComplex(cubeName, [groupByDimensions], measures)
+        return aggCubes[0]
+
+    #
+    # Aggregate cube with multiple group-by dimensions list
+    #
+    def aggregateCubeComplex(self, cubeName, groupByDimensionsList, measures=None):
         if measures == None:
             allMeasures = []
             cubeRows = self.getCubeRows(cubeName)

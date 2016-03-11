@@ -570,7 +570,7 @@ class cubeServiceTests(unittest.TestCase):
         cs = CubeService('testdb')
         cs.createCubeFromCsv(cubeName + '.csv',cubeName, cubeName)
 
-        resultCubes = cs.aggregateCube(cubeName, [['ProductId', 'State'], ['CustomerId'], ['Date', 'State']])
+        resultCubes = cs.aggregateCubeComplex(cubeName, [['ProductId', 'State'], ['CustomerId'], ['Date', 'State']])
         self.assertEquals(len(resultCubes), 3)
 
         #for resultCube in resultCubes:

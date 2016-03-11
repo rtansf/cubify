@@ -48,8 +48,11 @@ class Cubify:
     def rebinCubeCustom(self, binnings, sourceCubeName, binnedCubeName):
         return self.cubeService.rebinCubeCustom(binnings, sourceCubeName, binnedCubeName)
 
-    def aggregateCube(self, cubeName, groupByDimensionsList, measures=None):
-        return self.cubeService.aggregateCube(cubeName, groupByDimensionsList, measures)
+    def aggregateCube(self, cubeName, groupByDimensions, measures=None):
+        return self.cubeService.aggregateCube(cubeName, groupByDimensions, measures)
+
+    def aggregateCubeComplex(self, cubeName, groupByDimensionsList, measures=None):
+        return self.cubeService.aggregateCubeComplex(cubeName, groupByDimensionsList, measures)
 
     def aggregateCubeCustom(self, cubeName, aggs):
         return self.cubeService.aggregateCubeCustom(cubeName, aggs)
