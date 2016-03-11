@@ -2,7 +2,7 @@
 
 <h1>Cubify - "Data Cubes On Steroids" </h1>
 
-Cubify is a tool written in python for data analysts who require "data agility". If you need to experiment with different ways of binning data, and viewing data at various levels of granularity, Cubify is for you! With Cubify, you can easily create a data cube from CSV and then transform the cube into other cubes by binning and aggregation with just a few calls to the Cubify API. In almost no time, you will gain insights into your data.
+Cubify is a tool written in python for data analysts who require "data agility". If you need to experiment with different ways of binning data, and viewing data at various levels of granularity, Cubify is for you! With Cubify, you can easily create a data cube from CSV and then transform the cube into other cubes by binning and aggregation. With just a few calls to the Cubify API, and in almost no time, you will start gaining insights into your data. 
 
 So what is a data cube? It is simply a structure that organizes data into dimensions and measures, concepts used in data warehouse systems.
 
@@ -302,8 +302,26 @@ If you examine the dimensions in binned cube, you will see new ones, "RevenueBin
 
 Note that the TransactionDateBin's values are monthly, the default binning period for dates. Note that the monthly bins are in the format [yyyy][mm] where yyyy is the year and mm is the month in the range 1 - 12. You will see in the next example how to give hints to cubify to use other periods such as 'weekly' or 'yearly' for the bins.
 
-Note that after binning, the number of cube rows in the binned cube are the same as the original cube. We still have a total of 14 rows in our binned cube. 
+Note that after binning, the number of cube rows in the binned cube are the same as the original cube. We still have a total of 14 rows in our binned cube. When we export our binned cube, it will 
+look like so:
 
+|S:CustomerId|S:CustomerState|S:DiscountBin|S:PackageSize|S:PriceBin|S:ProductCategory|S:ProductId|S:QtyBin|S:RevenueBin|S:TransactionDateBin|D:TransactionDate|N:Discount|N:Price|N:Qty|N:Revenue|
+|------------|---------------|-------------|-------------|----------|-----------------|-----------|--------|------------|--------------------|-----------------|----------|-------|-----|---------|
+|C1|CA|3-4|SMALL|15-16|Category2|P2|1-2|15-41|201510|2015-10-10|3.5|15.5|1.0|15.5|
+|C1|CA|3-4|SMALL|19-22|Category1|P1|2-3|41-67|201510|2015-10-10|3.5|20.5|3.0|61.5|
+|C1|CA|3-4|SMALL|19-22|Category1|P1|2-3|41-67|201510|2015-10-10|3.5|20.5|3.0|61.5|
+|C1|CA|3-4|SMALL|19-22|Category1|P1|2-3|41-67|201511|2015-11-03|3.5|21.5|3.0|64.5|
+|C1|CA|3-4|SMALL|19-22|Category1|P1|2-3|41-67|201511|2015-11-10|3.5|22.0|3.0|66.0|
+|C1|CA|3-4|SMALL|19-22|Category2|P2|1-2|15-41|201511|2015-11-12|3.5|22.0|1.0|22.0|
+|C2|NY|3-3|LARGE|15-16|Category2|P2|3-4|41-67|201510|2015-10-10|3.0|16.0|4.0|64.0|
+|C2|NY|3-3|LARGE|16-17|Category2|P2|3-4|67-93|201511|2015-11-13|3.0|17.0|4.0|68.0|
+|C2|NY|3-3|SMALL|19-22|Category1|P1|1-2|15-41|201510|2015-10-10|3.0|20.0|2.0|40.0|
+|C2|NY|3-3|SMALL|19-22|Category1|P1|1-2|15-41|201510|2015-10-11|3.0|19.5|2.0|39.0|
+|C2|NY|3-3|SMALL|19-22|Category1|P1|1-2|41-67|201511|2015-11-12|3.0|22.0|2.0|44.0|
+|C2|NY|3-3|SMALL|19-22|Category1|P1|1-2|41-67|201511|2015-11-13|3.0|22.0|2.0|44.0|
+|C3|MA|3-3|LARGE|18-19|Category1|P1|5-7|119-145|201510|2015-10-11|3.0|18.5|7.0|129.5|
+|C3|MA|3-3|LARGE|19-22|Category1|P1|5-7|119-145|201511|2015-11-13|3.0|20.0|7.0|140.0|
+    
 In the next example, we instruct cubify to bin specific measures, Qty, Price and the TransactionDate. For TransactionDate, we pass in 'weekly' as the hint to cubify.
 We will call our new binned cube, 'purchases_autobinned_2'.
 
