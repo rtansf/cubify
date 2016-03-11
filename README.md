@@ -2,7 +2,7 @@
 
 <h1>Cubify - "Data Cubes On Steroids" </h1>
 
-Cubify is a tool written in python for data analysts who require "data agility". If you need to experiment with different ways of binning data, and viewing data at various levels of granularity, Cubify is for you! With Cubify, you can easily create a data cube from CSV and then transform the cube into other cubes by binning and aggregation with just a few calls to the Cubify API. Almost immediately, you will gain insights into your data.
+Cubify is a tool written in python for data analysts who require "data agility". If you need to experiment with different ways of binning data, and viewing data at various levels of granularity, Cubify is for you! With Cubify, you can easily create a data cube from CSV and then transform the cube into other cubes by binning and aggregation with just a few calls to the Cubify API. In almost no time, you will gain insights into your data.
 
 So what is a data cube? It is simply a structure that organizes data into dimensions and measures, concepts used in data warehouse systems.
 
@@ -467,7 +467,7 @@ The binned cube's contents:
 
 The diagram above shows that you can aggregate a source or a binned cube to produce one or more aggregated cubes. 
 
-Inputs to aggregation are: the "group-by" dimensions, the measures which are to be aggregated and the aggregation formula to apply to each measure. 
+Inputs to aggregation are: (1) the "group-by" dimensions, (2) the measures which are to be aggregated and (3) the aggregation formula to apply to each measure. 
 For example, if we aggregate the cube, "purchases_binned_2" (created in the previous example) using CustomerId as the group-by dimension and Qty and Price as the measures and 
 Average and Sum as the aggregation formula, the result would be a new cube with the following columns:
 
