@@ -357,8 +357,8 @@ If you export purchases_binned_1 to csv, you should see a new column, QtyBin.
 
     cubify.exportCubeToCsv('purchases_binned_1', '/tmp/exportedBinned1.csv')
 
-|S:CustomerId|S:CustomerState|S:ProductId|S:QtyBin|D:TransactionDate|N:Price|N:Qty|
-|------------|---------------|-----------|--------|-----------------|-------|-----|
+|S:CustomerId|S:CustomerState|S:PackageSize|S:ProductCategory|S:ProductId|S:QtyBin|D:TransactionDate|N:Discount|N:Price|N:Qty|N:Revenue|
+|------------|---------------|-------------|-----------------|-----------|--------|-----------------|----------|-------|-----|---------|
 |C1|CA|SMALL|Category1|P1|0-5|2015-10-10|3.5|20.5|3.0|61.5|
 |C1|CA|SMALL|Category1|P1|0-5|2015-10-10|3.5|20.5|3.0|61.5|
 |C1|CA|SMALL|Category1|P1|0-5|2015-11-03|3.5|21.5|3.0|64.5|
@@ -442,8 +442,8 @@ Now when you export the binned cube, you will see the new columns, QtyBin, Price
 
 The binned cube's contents:
 
-|S:CustomerId|S:CustomerState|S:PriceBin|S:ProductId|S:QtyBin|S:Region|S:YearMonth|D:TransactionDate|N:Price|N:Qty|
-|------------|---------------|----------|-----------|--------|--------|-----------|-----------------|-------|-----|
+|S:CustomerId|S:CustomerState|S:PackageSize|S:PriceBin|S:ProductCategory|S:ProductId|S:QtyBin|S:Region|S:YearMonth|D:TransactionDate|N:Discount|N:Price|N:Qty|N:Revenue|
+|------------|---------------|-------------|----------|-----------------|-----------|--------|--------|-----------|-----------------|----------|-------|-----|---------|
 |C1|CA|SMALL|10+|Category1|P1|0-5|West|Nov-2015|2015-11-03|3.5|21.5|3.0|64.5|
 |C1|CA|SMALL|10+|Category1|P1|0-5|West|Nov-2015|2015-11-10|3.5|22.0|3.0|66.0|
 |C1|CA|SMALL|10+|Category1|P1|0-5|West|Oct-2015|2015-10-10|3.5|20.5|3.0|61.5|
