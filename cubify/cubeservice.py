@@ -4,6 +4,7 @@ import json
 import sys
 import math
 import numpy as np
+import pymongo
 from copy import deepcopy
 from pymongo import MongoClient
 from datetime import datetime
@@ -365,7 +366,7 @@ class CubeService:
     #  Get all cube rows
     #
     def getCubeRows(self, cubeName):
-        return self.queryCubeRows(cubeName, {})
+        return self.queryCubeRows(cubeName, {}).sort("dimensionKey", pymongo.ASCENDING)
 
 
     #

@@ -496,9 +496,9 @@ We get the following csv output:
 
 |S:CustomerId|N:Average_Price|N:Average_Qty|N:Count|N:Total_Price|N:Total_Qty|
 |------------|---------------|-------------|-------|-------------|-----------|
-|C3|19.25|7.0|2|38.5|14.0|
-|C2|19.416666666666668|2.6666666666666665|6|116.5|16.0|
 |C1|20.333333333333332|2.3333333333333335|6|122.0|14.0|
+|C2|19.416666666666668|2.6666666666666665|6|116.5|16.0|
+|C3|19.25|7.0|2|38.5|14.0|
 
 In our next example, we aggregate our cube using the group-by dimensions, CustomerState and ProductCategory. We will aggregate all measures in the cube using the
 default formulae, 'Average' and 'Sum'.
@@ -511,11 +511,11 @@ The output of the aggregated cube now contains the average and total of all meas
 
 |S:CustomerState|S:ProductCategory|N:Average_Discount|N:Average_Price|N:Average_Qty|N:Average_Revenue|N:Count|N:Total_Discount|N:Total_Price|N:Total_Qty|N:Total_Revenue|
 |---------------|-----------------|------------------|---------------|-------------|-----------------|-------|----------------|-------------|-----------|---------------|
-|MA|Category1|3.0|19.25|7.0|134.75|2|6.0|38.5|14.0|269.5|
-|NY|Category2|3.0|16.5|4.0|66.0|2|6.0|33.0|8.0|132.0|
-|NY|Category1|3.0|20.875|2.0|41.75|4|12.0|83.5|8.0|167.0|
-|CA|Category2|3.5|18.75|1.0|18.75|2|7.0|37.5|2.0|37.5|
 |CA|Category1|3.5|21.125|3.0|63.375|4|14.0|84.5|12.0|253.5|
+|CA|Category2|3.5|18.75|1.0|18.75|2|7.0|37.5|2.0|37.5|
+|MA|Category1|3.0|19.25|7.0|134.75|2|6.0|38.5|14.0|269.5|
+|NY|Category1|3.0|20.875|2.0|41.75|4|12.0|83.5|8.0|167.0|
+|NY|Category2|3.0|16.5|4.0|66.0|2|6.0|33.0|8.0|132.0|
 
 In the third simple, example, we will perform multiple aggregations on our cube. The first uses the group-by dimension, ProductId and the second uses TransactionDate.
 We will aggregate on all measures using Average and Sum.
@@ -584,11 +584,11 @@ And when we export the cube, the CVS file contains the following:
 
 |S:ProductId|S:Region|N:AveragePrice|N:Count|
 |-----------|--------|--------------|-------|
-|P1|Other|19.25|2|
-|P2|NorthEast|16.5|2|
 |P1|NorthEast|20.875|4|
-|P2|West|18.75|2|
+|P1|Other|19.25|2|
 |P1|West|21.125|4|
+|P2|NorthEast|16.5|2|
+|P2|West|18.75|2|
 
 Now let's apply a more complex aggregation to our "purchases_binned_2" cube. Take a look at agg2.json. 
 
@@ -626,8 +626,8 @@ And the exported CSV file looks like so:
 
 |S:ProductId|N:AverageRevenue|N:Count|N:TotalQty|
 |-----------|----------------|-------|----------|
-|P2|16.95|4|10.0|
 |P1|20.294117647058822|10|34.0|
+|P2|16.95|4|10.0|
 
 We have come to end of the first part of our tutorial. 
 
