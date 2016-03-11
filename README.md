@@ -359,20 +359,20 @@ If you export purchases_binned_1 to csv, you should see a new column, QtyBin.
 
 |S:CustomerId|S:CustomerState|S:ProductId|S:QtyBin|D:TransactionDate|N:Price|N:Qty|
 |------------|---------------|-----------|--------|-----------------|-------|-----|
-|C1|CA|P1|0-5|2015-10-10|20.5|3.0|
-|C1|CA|P1|0-5|2015-10-10|20.5|3.0|
-|C1|CA|P2|0-5|2015-10-10|15.5|1.0|
-|C2|NY|P1|0-5|2015-10-10|20.0|2.0|
-|C2|NY|P2|0-5|2015-10-10|16.0|4.0|
-|C2|NY|P1|0-5|2015-10-11|19.5|2.0|
-|C3|MA|P1|5+|2015-10-11|18.5|7.0|
-|C1|CA|P1|0-5|2015-11-03|21.5|3.0|
-|C1|CA|P1|0-5|2015-11-10|22.0|3.0|
-|C1|CA|P2|0-5|2015-11-12|22.0|1.0|
-|C2|NY|P1|0-5|2015-11-12|22.0|2.0|
-|C2|NY|P2|0-5|2015-11-13|17.0|4.0|
-|C2|NY|P1|0-5|2015-11-13|22.0|2.0|
-|C3|MA|P1|5+|2015-11-13|20.0|7.0|
+|C1|CA|SMALL|Category1|P1|0-5|2015-10-10|3.5|20.5|3.0|61.5|
+|C1|CA|SMALL|Category1|P1|0-5|2015-10-10|3.5|20.5|3.0|61.5|
+|C1|CA|SMALL|Category1|P1|0-5|2015-11-03|3.5|21.5|3.0|64.5|
+|C1|CA|SMALL|Category1|P1|0-5|2015-11-10|3.5|22.0|3.0|66.0|
+|C1|CA|SMALL|Category2|P2|0-5|2015-10-10|3.5|15.5|1.0|15.5|
+|C1|CA|SMALL|Category2|P2|0-5|2015-11-12|3.5|22.0|1.0|22.0|
+|C2|NY|LARGE|Category2|P2|0-5|2015-10-10|3.0|16.0|4.0|64.0|
+|C2|NY|LARGE|Category2|P2|0-5|2015-11-13|3.0|17.0|4.0|68.0|
+|C2|NY|SMALL|Category1|P1|0-5|2015-10-10|3.0|20.0|2.0|40.0|
+|C2|NY|SMALL|Category1|P1|0-5|2015-10-11|3.0|19.5|2.0|39.0|
+|C2|NY|SMALL|Category1|P1|0-5|2015-11-12|3.0|22.0|2.0|44.0|
+|C2|NY|SMALL|Category1|P1|0-5|2015-11-13|3.0|22.0|2.0|44.0|
+|C3|MA|LARGE|Category1|P1|5+|2015-10-11|3.0|18.5|7.0|129.5|
+|C3|MA|LARGE|Category1|P1|5+|2015-11-13|3.0|20.0|7.0|140.0|
 
 Note that in the exported csv, the column names are prefixed with the data type of the column, S: for string, D: for date and N for numeric type.
      
@@ -444,20 +444,20 @@ The binned cube's contents:
 
 |S:CustomerId|S:CustomerState|S:PriceBin|S:ProductId|S:QtyBin|S:Region|S:YearMonth|D:TransactionDate|N:Price|N:Qty|
 |------------|---------------|----------|-----------|--------|--------|-----------|-----------------|-------|-----|
-|C1|CA|10+|P1|0-5|West|Oct-2015|2015-10-10|20.5|3.0|
-|C1|CA|10+|P1|0-5|West|Oct-2015|2015-10-10|20.5|3.0|
-|C1|CA|10+|P2|0-5|West|Oct-2015|2015-10-10|15.5|1.0|
-|C2|NY|10+|P1|0-5|NorthEast|Oct-2015|2015-10-10|20.0|2.0|
-|C2|NY|10+|P2|0-5|NorthEast|Oct-2015|2015-10-10|16.0|4.0|
-|C2|NY|10+|P1|0-5|NorthEast|Oct-2015|2015-10-11|19.5|2.0|
-|C3|MA|10+|P1|5+|Other|Oct-2015|2015-10-11|18.5|7.0|
-|C1|CA|10+|P1|0-5|West|Nov-2015|2015-11-03|21.5|3.0|
-|C1|CA|10+|P1|0-5|West|Nov-2015|2015-11-10|22.0|3.0|
-|C1|CA|10+|P2|0-5|West|Nov-2015|2015-11-12|22.0|1.0|
-|C2|NY|10+|P1|0-5|NorthEast|Nov-2015|2015-11-12|22.0|2.0|
-|C2|NY|10+|P2|0-5|NorthEast|Nov-2015|2015-11-13|17.0|4.0|
-|C2|NY|10+|P1|0-5|NorthEast|Nov-2015|2015-11-13|22.0|2.0|
-|C3|MA|10+|P1|5+|Other|Nov-2015|2015-11-13|20.0|7.0|
+|C1|CA|SMALL|10+|Category1|P1|0-5|West|Nov-2015|2015-11-03|3.5|21.5|3.0|64.5|
+|C1|CA|SMALL|10+|Category1|P1|0-5|West|Nov-2015|2015-11-10|3.5|22.0|3.0|66.0|
+|C1|CA|SMALL|10+|Category1|P1|0-5|West|Oct-2015|2015-10-10|3.5|20.5|3.0|61.5|
+|C1|CA|SMALL|10+|Category1|P1|0-5|West|Oct-2015|2015-10-10|3.5|20.5|3.0|61.5|
+|C1|CA|SMALL|10+|Category2|P2|0-5|West|Nov-2015|2015-11-12|3.5|22.0|1.0|22.0|
+|C1|CA|SMALL|10+|Category2|P2|0-5|West|Oct-2015|2015-10-10|3.5|15.5|1.0|15.5|
+|C2|NY|LARGE|10+|Category2|P2|0-5|NorthEast|Nov-2015|2015-11-13|3.0|17.0|4.0|68.0|
+|C2|NY|LARGE|10+|Category2|P2|0-5|NorthEast|Oct-2015|2015-10-10|3.0|16.0|4.0|64.0|
+|C2|NY|SMALL|10+|Category1|P1|0-5|NorthEast|Nov-2015|2015-11-12|3.0|22.0|2.0|44.0|
+|C2|NY|SMALL|10+|Category1|P1|0-5|NorthEast|Nov-2015|2015-11-13|3.0|22.0|2.0|44.0|
+|C2|NY|SMALL|10+|Category1|P1|0-5|NorthEast|Oct-2015|2015-10-10|3.0|20.0|2.0|40.0|
+|C2|NY|SMALL|10+|Category1|P1|0-5|NorthEast|Oct-2015|2015-10-11|3.0|19.5|2.0|39.0|
+|C3|MA|LARGE|10+|Category1|P1|5+|Other|Nov-2015|2015-11-13|3.0|20.0|7.0|140.0|
+|C3|MA|LARGE|10+|Category1|P1|5+|Other|Oct-2015|2015-10-11|3.0|18.5|7.0|129.5|
 
 
 6. Aggregating a cube
