@@ -16,7 +16,7 @@ cubify= Cubify()
 cubify.deleteCubeSet('purchasesCubeSet')
 cubify.deleteCubeSet('purchasesCubeSet2')
 
-# Create a cube set called 'purchasesCubeSet' (with automatic binning and no aggregations)
+# Create a cube set called 'purchasesCubeSet' (with automatic binning)
 cubeSet = cubify.createCubeSet('tutorial', 'purchasesCubeSet', 'Purchases Cube Set', 'purchases.csv')
 
 print ""
@@ -38,6 +38,29 @@ for cubeRow in binnedCubeRows:
     print cubeRow
 print ""
 
+# Export the binned cube
+cubify.exportBinnedCubeToCsv('purchasesCubeSet', '/tmp/purchasesCubeSetBinnedCube.csv')
+
+# Now lets aggregate the cube set with the following dimensions ['CustomerState', 'ProductId']
+cubify.performAggregation('purchasesCubeSet', ['CustomerState', 'ProductId'])
+
+agg1CubeRows = cubify.getAggregatedCubeRows('purchasesCubeSet', 'CustomerState-ProductId')
+print ""
+print "Cube rows in purchasesCubeSet's cube aggregated by CustomerState-ProductId:"
+for cubeRow in agg1CubeRows:
+    print cubeRow
+print ""
+
+agg2CubeRows = cubify.getAggregatedCubeRows('purchasesCubeSet', 'CustomerState')
+print ""
+print "Cube rows in purchasesCubeSet's cube aggregated by CustomerState"
+for cubeRow in agg2CubeRows:
+    print cubeRow
+print ""
+
+# Export the aggregated cubes above
+cubify.exportAggCubeToCsv('purchasesCubeSet', '/tmp/purchasesCubeSet-aggregated-by-CustomerState-ProductId.csv', 'CustomerState-ProductId')
+cubify.exportAggCubeToCsv('purchasesCubeSet', '/tmp/purchasesCubeSet-aggregated-by-CustomerState.csv', 'CustomerState')
 
 # Create a cube set called 'purchasesCubeSet2' with custom binnings defined in binning.json and aggregations defined in aggs.json
 

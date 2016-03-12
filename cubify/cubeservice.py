@@ -592,7 +592,7 @@ class CubeService:
     #
     # Automatically re-bin a cube
     #
-    def autoRebinCube(self, sourceCubeName, binnedCubeName):
+    def rebinCube(self, sourceCubeName, binnedCubeName):
 
         measuresToBeBinned = []
 
@@ -817,7 +817,7 @@ class CubeService:
             existingAggCube = self.getCube(aggCubeName)
             stats = self.getStats(aggCubeRows)
 
-            # Does agg cube already exist? If so delete it and reccreate the agg cube
+            # Does agg cube already exist? If so delete it and recreate the agg cube
             if existingAggCube != None:
                 self.deleteCube(aggCubeName)
 

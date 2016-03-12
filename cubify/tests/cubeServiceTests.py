@@ -314,7 +314,7 @@ class cubeServiceTests(unittest.TestCase):
         except Exception:
             cs.appendToCubeFromCsv('cubify/tests/testdata-autobin.csv', cubeName)
 
-        cs.autoRebinCube(cubeName, cubeName + "_b")
+        cs.rebinCube(cubeName, cubeName + "_b")
 
         binnedCubeRows = cs.getCubeRows(cubeName + '_b')
         dimkeys = []

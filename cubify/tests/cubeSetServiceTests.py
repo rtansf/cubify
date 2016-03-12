@@ -311,6 +311,38 @@ class cubeSetServiceTests(unittest.TestCase):
             shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
         except Exception:
             shutil.copyfile('./testdata.csv', cubeSetName + '.csv')
+
+        cs = CubeSetService('testdb')
+        cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFilePath, None, None)
+        aggCubes = cs.performAggregation(cubeSetName, ['State','ProductId'])
+        self.assertTrue (len(aggCubes) == 2)
+
+        aggCubeRows = cs.getAggregatedCubeRows(cubeSetName, 'State-ProductId')
+        self.assertTrue (aggCubeRows.count(False) == 5)
+        for aggCubeRow in aggCubeRows:
+            self.assertTrue(len(aggCubeRow['dimensions']) == 2)
+            print aggCubeRow
+
+        print '---------'
+
+        aggCubeRows = cs.getAggregatedCubeRows(cubeSetName, 'State')
+        self.assertTrue (aggCubeRows.count(False) == 3)
+        for aggCubeRow in aggCubeRows:
+            self.assertTrue(len(aggCubeRow['dimensions']) == 1)
+            print aggCubeRow
+
+        print '---------'
+
+        os.remove(cubeSetName + '.csv')
+
+    def testPerformAggregationCustom(self):
+
+        cubeSetName = 'test-' + str(uuid.uuid4())
+        csvFilePath =  cubeSetName + '.csv'
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeSetName + '.csv')
         binningFileName = 'cubify/tests/test_binnings.json'
         if (os.path.isfile(binningFileName) == False):
             binningFileName = './test_binnings.json'
@@ -324,7 +356,7 @@ class cubeSetServiceTests(unittest.TestCase):
 
         cs = CubeSetService('testdb')
         cs.createCubeSet("testOwner", cubeSetName, cubeSetName, csvFilePath, binnings, None)
-        cs.performAggregation(cubeSetName, aggs)
+        cs.performAggregationCustom(cubeSetName, aggs)
 
         agg = aggs[0]
         aggCubeRows = cs.getAggregatedCubeRows(cubeSetName, agg['name'])

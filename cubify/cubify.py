@@ -39,8 +39,8 @@ class Cubify:
     def binCube(self, sourceCubeName, binnedCubeName, toBeBinned=None, hints={}):
         return self.cubeService.binCube(sourceCubeName, binnedCubeName, toBeBinned, hints)
 
-    def autoRebinCube(self, sourceCubeName, binnedCubeName):
-        return self.autoRebinCube(sourceCubeName, binnedCubeName)
+    def rebinCube(self, sourceCubeName, binnedCubeName):
+        return self.rebinCube(sourceCubeName, binnedCubeName)
 
     def binCubeCustom(self, binnings, sourceCubeName, binnedCubeName, binnedCubeDisplayName=None):
         return self.cubeService.binCubeCustom(binnings, sourceCubeName, binnedCubeName, binnedCubeDisplayName)
@@ -78,10 +78,13 @@ class Cubify:
         self.cubeSetService.updateCubeSetDisplayName(cubeSetName, displayName)
 
     def performBinning(self, cubeSetName, binnings):
-        self.cubeSetService.performBinning(self, cubeSetName, binnings)
+        self.cubeSetService.performBinning(cubeSetName, binnings)
 
-    def performAggregation(self, cubeSetName, aggs):
-        self.cubeSetService.performAggregation(self, cubeSetName, aggs)
+    def performAggregation(self, cubeSetName, dimensions):
+        self.cubeSetService.performAggregation(cubeSetName, dimensions)
+
+    def performAggregationCustom(self, cubeSetName, aggs):
+        self.cubeSetService.performAggregationCustom(cubeSetName, aggs)
 
     def getSourceCubeRows(self, cubeSetName):
         return self.cubeSetService.getSourceCubeRows(cubeSetName)

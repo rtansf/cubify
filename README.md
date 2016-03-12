@@ -656,15 +656,17 @@ Cube Set Tutorial
 
 ![alt text](http://pluralconcepts.com/images/cubeset.png "Cube Set")
 
-The above diagram illustrates the concept of a cube set. A cube set consists of a source cube, a binned cube and zero or more aggregated cubes.
-As raw data is ingested into the source cube over time, the state of the downstream binned and aggregated cubes are always kept in synch with one another.
+The above diagram illustrates the concept of a cube set. A cube set is essentially a container for cubes which are linked together. 
+There are 3 types of cubes in a cube set: "source", "binned" and "aggregated". A cube set consists of one and only one source cube, one and only one binned cube, and zero or more aggregated cubes. As raw data is ingested into the source cube over time, the state of the downstream binned and aggregated cubes are always kept in synch with one another.
 
 Open the file, "__tutorials2.py__" in the tutorials folder and follow along with the commentary below. You can execute the tutorial by typing:
    
     python tutorial2.py
 
+1. Creating a cube set
+----------------------
 Let's create our cube set using the createCubeSet method in cubify like so. In this first example, we keep things simple and let cubify perform automatic
-binning for us and we will not define any aggregations.
+binning for us and we will not define any aggregations initially. 
 
     cubeSet = cubify.createCubeSet('tutorial', 'purchasesCubeSet', 'Purchases Cube Set', 'purchases.csv')
     
@@ -672,10 +674,6 @@ The first argument to createCubeSet is the owner of the cube set. This can be an
 The second argument is the name of the cube set. 
 The third argument is the display name of the cube set.
 The fourth argument is the name of the CSV file that contains our data.
-
-A cube set is essentially a container for cubes of certain types which are linked together. 
-There are 3 types of cubes in a cube set: "source", "binned" and "aggregated".
-A cube set consists of one and only one source cube, one and only one binned cube, and zero or more aggregated cubes.
 
 In our tutorial, once createCubeSet returns successfully, our purchasesCubeSet contains a "source" cube reflecting the original data imported from purchases.csv.
 To get the source cube rows, call getSourceCubeRows like so:
@@ -687,7 +685,50 @@ To get the binned cube rows, call getBinnedCubeRows like so:
 
     binnedCubeRows = cubify.getBinnedCubeRows('purchasesCubeSet')
 
+We can export the binned cube from our cubeset like so:
 
+    cubify.exportBinnedCubeToCsv('purchasesCubeSet', '/tmp/purchasesCubeSetBinnedCube.csv')
+
+2. Aggregating a cube set (simple)
+----------------------------------
+Now let's aggregate our cube set with the following dimensions, ['CustomerState', 'ProductId']:
+    
+    aggCubes = cubify.performAggregation('purchasesCubeSet', ['CustomerState', 'ProductId'])
+
+The above method will perform 2 aggregations on the binned cube in our cube set to produce 2 aggregated cubes. The first aggregation will group by 'CustomerState' and 'ProductId' and the second aggregation will group by 'CustomerState'. Now to get the cube rows of the first aggregated cube, we simple call the method getAggregatedCubeRows passing in the
+name of our cube set and the reference to the aggregated cube, 'CustomerState-ProductId' like so:
+
+    agg1CubeRows = cubify.getAggregatedCubeRows('purchasesCubeSet', 'CustomerState-ProductId')
+
+Note that the reference name of an aggregated cube is a concatenation of the group-by dimension names. In the example above it is, 'CustomerState-ProductId'.
+The reference name of the second aggregated cube is simply 'CustomerState'.
+
+We can export the aggreated cubes by calling the exportAggregateCubeToCsv method like so.
+
+    cubify.exportAggCubeToCsv('purchasesCubeSet', '/tmp/purchasesCubeSet-aggregated-by-CustomerState-ProductId.csv', 'CustomerState-ProductId')
+    cubify.exportAggCubeToCsv('purchasesCubeSet', '/tmp/purchasesCubeSet-aggregated-by-CustomerState.csv, 'CustomerState')
+
+The exported cubes would look like:
+
+|S:CustomerState|S:ProductId|N:Average_Price|N:Average_Qty|N:Count|N:Total_Price|N:Total_Qty|
+|---------------|-----------|---------------|-------------|-------|-------------|-----------|
+|CA|P1|21.125|3.0|4|84.5|12.0|
+|CA|P2|18.75|1.0|2|37.5|2.0|
+|MA|P1|19.25|7.0|2|38.5|14.0|
+|NY|P1|20.875|2.0|4|83.5|8.0|
+|NY|P2|16.5|4.0|2|33.0|8.0|
+
+and
+
+|S:CustomerState|N:Average_Price|N:Average_Qty|N:Count|N:Total_Price|N:Total_Qty|
+|---------------|---------------|-------------|-------|-------------|-----------|
+|CA|20.333333333333332|2.3333333333333335|6|122.0|14.0|
+|MA|19.25|7.0|2|38.5|14.0|
+|NY|19.416666666666668|2.6666666666666665|6|116.5|16.0|
+
+
+3. Aggregating a cube set (custom)
+----------------------------------
 Now Let's create our cube set using the createCubeSet using custom binnings and aggregations. We will call this cube set, 'purchasesCubeSet2'. We have seen the binning definitions (binnings.json)  and aggregation definitions (aggs.json) in tutorial 1. We will now use these definitions together with the source data defined in purchases.csv to create our cube set, called "purchasesCubeSet". 
 Here's the code:
 
@@ -734,13 +775,15 @@ You can retrieve the cube rows of the aggregated cubes by referring to the aggre
     agg1CubeRows = cubify.getAggregatedCubeRows('purchasesCubeSet2', 'agg1')
     agg2CubeRows = cubify.getAggregatedCubeRows('purchasesCubeSet2', 'agg2')
 
+4. Adding cube rows to cube set
+-------------------------------
 All is well with our cube set thus far. But now let's say we are in a new month and we have more purchases data to add to our cube set.
 Let's assume the new purchases data is in a file called "morePurchases.csv". To add the rows to our source cube in our cube set, simply call:
 
     cubify.addRowsToSourceCube('purchasesCubeSet2', 'morePurchases.csv')
 
 This method adds the new rows to our source cube, as well as updates the binned cube and aggregated cubes. Thus our binned and aggregated cubes are kept in synch with 
-the data in our source cube. You can verify that this is so by examining the rows of the binned cube and aggregated cubes.
+the data in our source cube. You can verify that this is so by examining the rows of the binned cube and aggregated cubes (left as an exercise).
 
 
 

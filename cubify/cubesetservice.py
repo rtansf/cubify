@@ -237,17 +237,57 @@ class CubeSetService:
                 self.cubeService.binCube(binnedCubeName, binnedCubeName, [])
             self.__updateCubeSetProperty__(cubeSetName, { "$set": {"binnedCube" : binnedCubeName}})
 
+    #
+    #  Given a list of dimensions, return a list of n lists of dimensions, each a unique combination of the original list
+    #  For example, if the input is ['d1','d2','d3'] this returns a list of 3 lists [['d1','d2','d3'],['d1','d2'],['d1']]
+    #
+    def __getGroupByDimensionsList__(self, dimensions):
+        result = []
+        groupByList = []
+        done = False
+        while done==False:
+            for d in dimensions:
+               groupByList.append(d)
+            result.append(groupByList)
+            groupByList = []
+            dimensions = dimensions[:-1]
+            if len(dimensions) == 0:
+               done = True
+        return result
 
-    #
-    # Perform one or more aggregations on binned cube. The aggregated cubes are automatically saved and identified by aggName
-    #
-    def performAggregation(self, cubeSetName, aggs):
+    # 
+    # Aggregate the binned cube with an ordered list of dimensions.
+    # For example if the dimensions list is ['d1', 'd2', 'd3'] the aggregation will be performed 3 times on the 
+    # binned cube with group-by dimensions, ['d1', 'd2', 'd3'], ['d1', 'd2'], ['d1'] 
+    #  
+    def performAggregation(self, cubeSetName, dimensions):
         existing = self.getCubeSet(cubeSetName)
         if existing == None:
             raise ValueError('Cube Set with ' + cubeSetName + ' does not exist')
 
         binnedCubeName = existing['binnedCube']
-        self.cubeService.aggregateCubeCustom(binnedCubeName, aggs)
+        groupByDimensionsList = self.__getGroupByDimensionsList__(dimensions)
+        aggCubes = self.cubeService.aggregateCubeComplex(binnedCubeName, groupByDimensionsList)
+
+        aggCubeNames = []
+        for aggCube in aggCubes:
+            aggCubeNames.append(aggCube['name'])
+
+        self.__updateCubeSetProperty__(cubeSetName, { "$set": {"aggCubes" : aggCubeNames}})
+
+        return aggCubes
+       
+    #
+    # Perform one or more aggregations on binned cube using custom aggs.
+    # The aggregated cubes are automatically saved and identified by aggName
+    #
+    def performAggregationCustom(self, cubeSetName, aggs):
+        existing = self.getCubeSet(cubeSetName)
+        if existing == None:
+            raise ValueError('Cube Set with ' + cubeSetName + ' does not exist')
+
+        binnedCubeName = existing['binnedCube']
+        aggCubes = self.cubeService.aggregateCubeCustom(binnedCubeName, aggs)
 
         aggCubeNames = []
         for agg in aggs:
@@ -255,6 +295,4 @@ class CubeSetService:
  
         self.__updateCubeSetProperty__(cubeSetName, { "$set": {"aggCubes" : aggCubeNames}})
         
-
-
-
+        return aggCubes
