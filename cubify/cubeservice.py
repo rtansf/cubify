@@ -9,7 +9,8 @@ from copy import deepcopy
 from pymongo import MongoClient
 from datetime import datetime
 from time import strptime
-from timestring import Date, TimestringInvalid
+from timestring import Date
+from simpleeval import simple_eval
 
 class CubeService:
     def __init__(self, dbName="cubify"):
@@ -674,7 +675,7 @@ class CubeService:
     #
     # Generate aggregation definitions
     #
-    def __generateAggs__(self, cubeName, groupByDimensionsList, measures):
+    def __generateAggsOld__(self, cubeName, groupByDimensionsList, measures):
         aggs = []
         for groupByDimensions in groupByDimensionsList:
             agg = {}
@@ -694,6 +695,53 @@ class CubeService:
             agg['measures'] = measuresList
             aggs.append(agg)
         return aggs
+
+    #
+    # Generate aggregation definitions
+    #
+    def __generateAggs__(self, cubeName, groupByDimensionsList, measures):
+        aggs = []
+        for groupByDimensions in groupByDimensionsList:
+            agg = {}
+            aggName = self.__getAggName__(groupByDimensions)
+            agg['name'] = aggName
+            agg['dimensions'] = groupByDimensions
+            measuresList = []
+            for measure in measures:
+                m = {}
+                m['outputField'] = { 'name' : "Average_" + measure,  'displayName' : 'Average ' + measure }
+                m['formula'] = { 'numerator' : { 'aggOperator': 'avg', 'expression': measure }, 'denominator' : {}}
+                measuresList.append(m)
+                m = {}
+                m['outputField'] = { 'name' : "Total_" + measure,  'displayName' : 'Total ' + measure }
+                m['formula'] = { 'numerator' : { 'aggOperator': 'sum', 'expression': measure }, 'denominator' : {}}
+                measuresList.append(m)
+            agg['measures'] = measuresList
+            aggs.append(agg)
+        return aggs
+
+    #
+    #  Aggregate a cube on a single group-by dimensions list
+    #
+    def aggregateCubeOld(self, cubeName, groupByDimensions, measures=None):
+        aggCubes = self.aggregateCubeComplexOld(cubeName, [groupByDimensions], measures)
+        return aggCubes[0]
+
+    #
+    # Aggregate cube with multiple group-by dimensions list
+    #
+    def aggregateCubeComplexOld(self, cubeName, groupByDimensionsList, measures=None):
+        if measures == None:
+            allMeasures = []
+            cubeRows = self.getCubeRows(cubeName)
+            cubeRow = cubeRows[0];
+            for measure in cubeRow['measures']:
+                allMeasures.append(measure)
+            aggs = self.__generateAggsOld__(cubeName, groupByDimensionsList, allMeasures)
+        else:
+            aggs = self.__generateAggsOld__(cubeName, groupByDimensionsList, measures)
+
+        return self.aggregateCubeCustomOld(cubeName, aggs)
 
     #
     #  Aggregate a cube on a single group-by dimensions list
@@ -729,10 +777,208 @@ class CubeService:
                 return True
         return False
 
+    def __getExpressionValue__(self, dict, expression):
+        expressionValue = simple_eval(expression, names=dict)
+        return expressionValue
+
+    def __flatten__(self, cubeRow):
+        dict = {}
+        for dim in cubeRow['dimensions']:
+            dict[dim] = cubeRow['dimensions'][dim]
+        for date in cubeRow['dates']:
+            dict[date] = cubeRow['dates'][date]
+        for measure in cubeRow['measures']:
+            dict[measure] = cubeRow['measures'][measure]
+        return dict
+
     #
     # Aggregate cube using custom aggregation definitions
     #
     def aggregateCubeCustom(self, cubeName, aggs):
+        cubeRows = self.getCubeRows(cubeName)
+        results = {}
+        nameToAggMap = {}
+
+        for cubeRow in cubeRows:
+            for agg in aggs:
+                aggName = agg['name']
+                nameToAggMap[aggName] = agg
+                if aggName not in results:
+                    results[aggName] = {}
+
+                result = results[aggName]
+
+                groupByDims = agg['dimensions']
+                aggDimKey = ''
+                for groupByDim in groupByDims:
+                    aggDimKey = aggDimKey + '#'
+                    aggDimKey = aggDimKey + groupByDim
+                    aggDimKey = aggDimKey + ':'
+                    if groupByDim in cubeRow['dimensions']:
+                        aggDimKey = aggDimKey + cubeRow['dimensions'][groupByDim]
+                    elif groupByDim in cubeRow['dates']:
+                        dateDimVal = cubeRow['dates'][groupByDim]
+                        aggDimKey = aggDimKey + str(dateDimVal)[:10]
+                    # TODO else throw exception
+
+                if (aggDimKey not in result):
+                    accums = {}
+                    result[aggDimKey] = accums
+
+                for measure in agg['measures']:
+                    outputField = measure['outputField']
+                    outputFieldName = outputField['name']
+                    formula = measure['formula']
+
+                    numerator = formula['numerator']
+                    numAggOperator = numerator['aggOperator']
+                    numExpression = numerator['expression']
+                    numExpressionValue = self.__getExpressionValue__(self.__flatten__(cubeRow), numExpression)
+
+                    denominator = formula['denominator']
+                    if denominator:
+                        denAggOperator = denominator['aggOperator']
+                        denExpression = denominator['expression']
+                        denExpressionValue = self.__getExpressionValue__(self.__flatten__(cubeRow), denExpression)
+
+                    accums = result[aggDimKey]
+                    if outputFieldName in accums:
+                        accum = accums[outputFieldName]
+                        accumNum = accum['numerator']
+                        accumNum['count'] = accumNum['count'] + 1
+                        accumNum['sum'] = accumNum['sum'] + numExpressionValue
+                        accumNum['avg'] = accumNum['sum'] / accumNum['count']
+                        if numExpressionValue < accumNum['min']:
+                            accumNum['min'] = numExpressionValue
+                        if numExpressionValue > accumNum['max']:
+                            accumNum['max'] = numExpressionValue
+               
+                        if denominator:
+                            accumDen = accum['denominator']
+                            accumDen['count'] = accumDen['count'] + 1
+                            accumDen['sum'] = accumDen['sum'] + denExpressionValue
+                            accumDen['avg'] = accumDen['sum'] / accumDen['count']
+                            if denExpressionValue < accumDen['min']:
+                                accumDen['min'] = denExpressionValue
+                            if denExpressionValue > accumDen['max']:
+                                accumDen['max'] = denExpressionValue
+                    else:
+                        accum = {}
+                        accums[outputFieldName] = accum        
+                        accumNum = {}
+                        accum['numerator'] = accumNum
+                        accumNum['operator'] = numAggOperator
+                        accumNum['count'] = 1
+                        accumNum['sum'] = numExpressionValue
+                        accumNum['avg'] = numExpressionValue
+                        accumNum['min'] = numExpressionValue
+                        accumNum['max'] = numExpressionValue
+                        if denominator:
+                            accumDen = {}
+                            accum['denominator'] = accumDen
+                            accumDen['operator'] = denAggOperator
+                            accumDen['count'] = 1
+                            accumDen['sum'] = denExpressionValue
+                            accumDen['avg'] = denExpressionValue
+                            accumDen['min'] = denExpressionValue
+                            accumDen['max'] = denExpressionValue
+
+        # Now process results
+        resultCubes = []
+
+        for aggName in results:
+            result = results[aggName]
+            agg = nameToAggMap[aggName]
+            #print aggName
+
+            aggCubeRows = []
+            distincts = {}
+            aggCubeRowId = 0
+
+            for dimKey in result:
+                #print dimKey
+
+                aggCubeRowId += 1
+                aggCubeRow = { 'dimensions': {}, 'dates': {}, 'measures': {}, "id": aggCubeRowId }
+                aggCubeRows.append(aggCubeRow)
+
+                dims = dimKey.split('#')
+                for dim in dims:
+                    if len(dim) > 0:
+                        dimToks = dim.split(':')
+                        dimName = dimToks[0]
+                        dimName = dimName.encode('ascii', 'ignore')
+                        dimValue = dimToks[1]
+                        dimValue = dimValue.encode('ascii', 'ignore')
+                        aggCubeRow['dimensions'][dimName] = dimValue
+
+                outputFields = result[dimKey]
+                for outputFieldName in outputFields:
+                    outputFieldName = outputFieldName.encode('ascii', 'ignore')
+                    #print outputFieldName
+
+                    numOutput = outputFields[outputFieldName]['numerator']
+                    numOperator = numOutput['operator']
+                    numMeasureValue = 0
+                    if numOperator == 'sum':
+                        numMeasureValue = numOutput['sum']
+                    elif numOperator == 'avg':
+                        numMeasureValue = numOutput['avg']
+                    elif numOperator == 'min':
+                        numMeasureValue = numOutput['min']
+                    elif numOperator == 'max':
+                        numMeasureValue = numOutput['max']
+                    finalMeasureValue = numMeasureValue
+
+                    if 'denominator' in outputFields[outputFieldName]:
+                        denOutput = outputFields[outputFieldName]['denominator']
+                        #print "   ", "denominator", denOutput['operator']
+                        denOperator = denOutput['operator']
+                        if denOperator == 'sum':
+                            denMeasureValue = denOutput['sum']
+                        elif denOperator == 'avg':
+                            denMeasureValue = denOutput['avg']
+                        elif denOperator == 'min':
+                            denMeasureValue = denOutput['min']
+                        elif denOperator == 'max':
+                            denMeasureValue = denOutput['max']
+                        if denMeasureValue > 0:
+                            finalMeasureValue = numMeasureValue / denMeasureValue
+
+                    # Useful for debugging
+                    #print "   ", "numerator", numOutput['operator']
+                    #print "    Value", finalMeasureValue
+                    #print "    Count", numOutput['count']
+
+                    aggCubeRow['measures'][outputFieldName] = finalMeasureValue
+                    aggCubeRow['measures']['Count'] = numOutput['count']
+
+                    # Re-create dimensionkey
+                    dimensionKey = ''
+                    for dim in sorted(aggCubeRow['dimensions']):
+                        dimensionKey += '#' + dim + ':' + aggCubeRow['dimensions'][dim]
+                        self.__addToDistincts__(distincts, dim, aggCubeRow['dimensions'][dim])
+
+                    aggCubeRow['dimensionKey'] = dimensionKey
+
+            # Create the aggregated cube    
+            aggCubeName = cubeName + "_" + aggName
+            existingAggCube = self.getCube(aggCubeName)
+            stats = self.getStats(aggCubeRows)
+
+            # Does agg cube already exist? If so delete it and recreate the agg cube
+            if existingAggCube != None:
+                self.deleteCube(aggCubeName)
+
+            self.createCube('agg', aggCubeName, aggCubeName, aggCubeRows, distincts, stats, None, agg)
+            resultCubes.append(self.getCube(aggCubeName))
+    
+        return resultCubes        
+
+    #
+    # Aggregate cube using custom aggregation definitions
+    #
+    def aggregateCubeCustomOld(self, cubeName, aggs):
         resultCubes = []
         for agg in aggs:
             aggName = agg['name']

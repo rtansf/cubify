@@ -4,7 +4,7 @@
        "dimensions": ["ProductId", "Region"],
        "measures" : [
            { "outputField" : {"name":"AveragePrice", "displayName": "Average Price"},
-             "formula" : { "numerator" : "{ '$avg': '$measures.Price' }", "denominator" : "" }
+             "formula" : { "numerator" : { "aggOperator" : "avg", "expression" : "Price" }, "denominator" : {} }
            }
        ]
     },
@@ -13,11 +13,11 @@
        "dimensions": ["ProductId"],
        "measures" : [
            { "outputField" : {"name":"TotalQty", "displayName": "Total Qty"},
-             "formula" : {"numerator" : "{ '$sum': '$measures.Qty' }", "denominator" : "" }
+             "formula" : {"numerator" : { "aggOperator": "sum", "expression" : "Qty" }, "denominator" : {} }
            },
            { "outputField" : {"name":"AverageRevenue", "displayName": "Average Revenue"},
-             "formula" : { "numerator"   : "{ '$sum': { '$multiply': ['$measures.Qty', '$measures.Price'] }}", 
-                           "denominator" : "{ '$sum': '$measures.Qty' }" }
+             "formula" : { "numerator"   : { "aggOperator": "sum", "expression": "Qty * Price" }, 
+                           "denominator" : { "aggOperator": "sum", "expression": "Qty" }}
            }
        ]
     }

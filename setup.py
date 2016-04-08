@@ -11,7 +11,8 @@ setup(name='cubify',
       install_requires=[
           'numpy',
           'pymongo',
-          'timestring'
+          'timestring',
+          'simpleeval'
       ],
       zip_safe=False,
       test_suite='nose.collector',
