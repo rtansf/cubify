@@ -563,22 +563,22 @@ The second one is called "purchases_binned_2_ProductId-TransactionDate" and look
 
 
 Now let's turn to more complex aggregations using custom formulae. This is done with cubify's aggregation DSL.
-For example, let's say we want a cube containing the average price grouped by product and region.  
+For example, let's say we want a cube containing the average price grouped by Product and Region.  
 The aggregation definition (in the file agg1.json) is show below:
 
     [{
        "name" : "agg1",
        "dimensions": ["ProductId", "Region"],
        "measures" : [
-           { "outputField" : {"name":"AveragePrice", "displayName": "Average Price"},
-             "formula" : { "numerator" : "{ '$avg': '$measures.Price' }", "denominator" : "" }
+           { "outputField" : { "name" : "AveragePrice", "displayName" : "Average Price" },
+             "formula" : { "numerator" : { "aggOperator" : "avg", "expression" : "Price" }, "denominator" : {} }
            }
        ]
     }]
 
-In the definition above, we specify our group-by dimensions, ProductId and Region. Then we define one or more measures which we wish to aggregate - in this case we are only aggregating one measure, Price.
+In the definition above, we specify our group-by dimensions, ProductId and Region. Then we define one or more measures which we wish to aggregate - in this case we are aggregating one measure, Price.
 In the outputField, we specify "AveragePrice" as the name of the new column which will hold the aggregated values. Then we define the aggregation formula.
-An aggregation formula contains a numerator and denominator. For now, in our simple example, we will only define the numerator as taking the "$avg" operator and applying it to "$measures.Price".  The denominator is used for more complex aggregations such as computing weighted average as we shall see later. (For details of the formula syntax, refer to the Cubify Reference).
+An aggregation formula contains a numerator and denominator. For now, in our simple example, we will only define the numerator as taking the "avg" aggregation operator and applying it to the expression, "Price". The denominator is empty. Is used for more complex aggregations such as computing weighted average as we shall see later. (For details of the formula syntax, refer to the Cubify Reference).
 
 Now let's load the aggregation DSL file, agg1.json and call the aggregateCube method to aggregate "purchases_binned_2".
 
@@ -614,12 +614,12 @@ Now let's apply a more complex aggregation to our "purchases_binned_2" cube. Tak
        "name" : "agg2",
        "dimensions": ["ProductId"],
        "measures" : [
-           { "outputField" : {"name":"TotalQty", "displayName": "Total Qty"},
-             "formula" : {"numerator" : "{ '$sum': '$measures.Qty' }", "denominator" : "" }
+           { "outputField" : { "name":"TotalQty", "displayName": "Total Qty"},
+             "formula" : { "numerator" : { "aggOperator" : "sum", "expression" : "Qty" }, "denominator" : {} }
            },
            { "outputField" : {"name":"AverageRevenue", "displayName": "Average Revenue"},
-             "formula" : { "numerator"   : "{ '$sum': { '$multiply': ['$measures.Qty', '$measures.Price'] }}", 
-                           "denominator" : "{ '$sum': '$measures.Qty' }" }
+             "formula" : { "numerator"   : { "aggOperator" : "sum", "expression" : "Qty * Price" }, 
+                           "denominator" : { "aggOperator" : "sum", "expression" : "Qty" } }
            }
        ]
     }]
@@ -746,28 +746,28 @@ Our cube set now contains 2 aggregated cubes (resulting from the 2 aggregation d
 To refresh your memory, here is aggs.json:
 
     [
-        {
-           "name" : "agg1",
-           "dimensions": ["ProductId", "Region"],
-           "measures" : [
-               { "outputField" : {"name":"AveragePrice", "displayName": "Average Price"},
-                 "formula" : { "numerator" : "{ '$avg': '$measures.Price' }", "denominator" : "" }
-               }
-           ]
-        },
-        {
-           "name" : "agg2",
-           "dimensions": ["ProductId"],
-           "measures" : [
-               { "outputField" : {"name":"TotalQty", "displayName": "Total Qty"},
-                 "formula" : {"numerator" : "{ '$sum': '$measures.Qty' }", "denominator" : "" }
-               },
-               { "outputField" : {"name":"AverageRevenue", "displayName": "Average Revenue"},
-                 "formula" : { "numerator"   : "{ '$sum': { '$multiply': ['$measures.Qty', '$measures.Price'] }}", 
-                               "denominator" : "{ '$sum': '$measures.Qty' }" }
-               }
-           ]
-        }
+       {
+          "name" : "agg1",
+          "dimensions": ["ProductId", "Region"],
+          "measures" : [
+              { "outputField" : {"name":"AveragePrice", "displayName": "Average Price"},
+                "formula" : { "numerator" : { "aggOperator" : "avg", "expression" : "Price" }, "denominator" : {} }
+              }
+          ]
+       },
+       {
+          "name" : "agg2",
+          "dimensions": ["ProductId"],
+          "measures" : [
+              { "outputField" : {"name":"TotalQty", "displayName": "Total Qty"},
+                "formula" : {"numerator" : { "aggOperator": "sum", "expression" : "Qty" }, "denominator" : {} }
+              },
+              { "outputField" : {"name":"AverageRevenue", "displayName": "Average Revenue"},
+                "formula" : { "numerator"   : { "aggOperator": "sum", "expression": "Qty * Price" }, 
+                              "denominator" : { "aggOperator": "sum", "expression": "Qty" }}
+              }
+          ]
+       }
     ]
 
 You can retrieve the cube rows of the aggregated cubes by referring to the aggregation names like so:
