@@ -117,7 +117,7 @@ So the first row of our CSV file becomes the following cube row:
         },
         "dimensions" : {
             "CustomerId" : "C1",
-	    "CustomerState" : "CA",
+            "CustomerState" : "CA",
             "ProductId" : "P1"	
         },
         "measures" : {
