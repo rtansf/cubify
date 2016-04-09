@@ -212,17 +212,9 @@ class CubeService:
     #
     # Create a cube from csv file. Returns the new cube
     #
-    def createCubeFromCsv(self, csvFilePath, cubeName):
+    def createCubeFromCsv(self, csvFilePath, cubeName, inMemory=False):
         result = self.createCubeRowsFromCsv(csvFilePath)
-        self.createCube('source', cubeName, result['cubeRows'], result['distincts'], result['stats'], None, None)
-        return self.getCube(cubeName)
-
-    #
-    # Create an in-memory cube from csv file. Returns the new cube
-    #
-    def createInMemoryCubeFromCsv(self, csvFilePath, cubeName):
-        result = self.createCubeRowsFromCsv(csvFilePath)
-        self.createCube('source', cubeName, result['cubeRows'], result['distincts'], result['stats'], None, None, True)
+        self.createCube('source', cubeName, result['cubeRows'], result['distincts'], result['stats'], None, None, inMemory)
         return self.getCube(cubeName)
 
     #
@@ -232,6 +224,8 @@ class CubeService:
         fromCube = self.getCube(fromCubeName)
         if fromCube == None:
             raise ValueError("Cube does not exist: " + fromCubeName)
+        if fromCubeName in self.inMemoryCubes:
+            raise ValueError("Cannot create cube from an in-memory cube. This feature is not yet supoorted.")
         cubeRows = self.queryCubeRows(fromCubeName, filter)
         if self.__getCubeRowCount__(fromCubeName) == 0:
             raise ValueError("Cube not created because number of rows returned by filter = 0")

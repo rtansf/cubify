@@ -9,11 +9,8 @@ class Cubify:
 
     ### Cubes
 
-    def createCubeFromCsv(self, csvFilePath, cubeName):
+    def createCubeFromCsv(self, csvFilePath, cubeName, inMemory=False):
         return self.cubeService.createCubeFromCsv(csvFilePath, cubeName)
-
-    def createInMemoryCubeFromCsv(self, csvFilePath, cubeName):
-        return self.cubeService.createInMemoryCubeFromCsv(csvFilePath, cubeName)
 
     def createCubeFromCube(self, fromCubeName, filter, toCubeName):
         return self.createCubeFromCube(fromCubeName, filter, toCubeName)
