@@ -17,7 +17,7 @@ cubify.deleteCubeSet('purchasesCubeSet')
 cubify.deleteCubeSet('purchasesCubeSet2')
 
 # Create a cube set called 'purchasesCubeSet' (with automatic binning)
-cubeSet = cubify.createCubeSet('tutorial', 'purchasesCubeSet', 'Purchases Cube Set', 'purchases.csv')
+cubeSet = cubify.createCubeSet('tutorial', 'purchasesCubeSet', 'purchases.csv')
 
 print ""
 print "CubeSet purchasesCubeSet created successfully"
@@ -70,7 +70,7 @@ with open('binnings.json') as binnings_file:
 with open('aggs.json') as aggs_file:
     aggs = json.load(aggs_file)
 
-cubeSet = cubify.createCubeSet('tutorial', 'purchasesCubeSet2', 'Purchases Cube Set 2', 'purchases.csv', binnings, aggs)
+cubeSet = cubify.createCubeSet('tutorial', 'purchasesCubeSet2', 'purchases.csv', binnings, aggs)
 
 print ""
 print "CubeSet purchasesCubeSet2 created successfully"

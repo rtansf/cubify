@@ -17,6 +17,8 @@ class CubeService:
         self.dbName = dbName
         client = MongoClient()
         self.db = client[dbName]
+        self.inMemoryCubes = {}
+        self.inMemoryCubeRows = {}
 
     def __is_number__(self, s):
         try:
@@ -114,6 +116,17 @@ class CubeService:
         return result
 
     #
+    #  Get number of rows in cube
+    #
+    def __getCubeRowCount__(self, cubeName):
+        cubeRows = self.getCubeRows(cubeName)
+
+        if isinstance(cubeRows, list):
+            return len(cubeRows)
+        else:
+            return cubeRows.count()
+
+    #
     #  Create cube rows from csv
     #
     def createCubeRowsFromCsv(self, csvFilePath):
@@ -199,24 +212,28 @@ class CubeService:
     #
     # Create a cube from csv file. Returns the new cube
     #
-    def createCubeFromCsv(self, csvFilePath, cubeName, cubeDisplayName=None):
-        if cubeDisplayName == None:
-            cubeDisplayName = cubeName
+    def createCubeFromCsv(self, csvFilePath, cubeName):
         result = self.createCubeRowsFromCsv(csvFilePath)
-        self.createCube('source', cubeName, cubeDisplayName, result['cubeRows'], result['distincts'], result['stats'], None, None)
+        self.createCube('source', cubeName, result['cubeRows'], result['distincts'], result['stats'], None, None)
+        return self.getCube(cubeName)
+
+    #
+    # Create an in-memory cube from csv file. Returns the new cube
+    #
+    def createInMemoryCubeFromCsv(self, csvFilePath, cubeName):
+        result = self.createCubeRowsFromCsv(csvFilePath)
+        self.createCube('source', cubeName, result['cubeRows'], result['distincts'], result['stats'], None, None, True)
         return self.getCube(cubeName)
 
     #
     # Create a cube by applying a filter on another cube
     #
-    def createCubeFromCube(self, fromCubeName, filter, toCubeName, toCubeDisplayName=None):
-        if toCubeDisplayName == None:
-            toCubeDisplayName = toCubeName
+    def createCubeFromCube(self, fromCubeName, filter, toCubeName):
         fromCube = self.getCube(fromCubeName)
         if fromCube == None:
             raise ValueError("Cube does not exist: " + fromCubeName)
         cubeRows = self.queryCubeRows(fromCubeName, filter)
-        if cubeRows.count() == 0:
+        if self.__getCubeRowCount__(fromCubeName) == 0:
             raise ValueError("Cube not created because number of rows returned by filter = 0")
             return
 
@@ -236,7 +253,7 @@ class CubeService:
         stats = self.getStats(rows)
 
         # Create the cube
-        self.createCube('source',toCubeName, toCubeDisplayName, rows, distincts, stats, None, None)
+        self.createCube('source', toCubeName, rows, distincts, stats, None, None)
 
 
     #
@@ -251,7 +268,8 @@ class CubeService:
 
         # Adjust ids # TODO use max(id) from cube instead of numCurrentCubeRows
         currentCubeRows = self.getCubeRows(cubeName)
-        numCurrentCubeRows = currentCubeRows.count()
+        numCurrentCubeRows = self.__getCubeRowCount__(cubeName)
+
         cubeRows = result['cubeRows']
         id = numCurrentCubeRows + 1
         for cubeRow in cubeRows:
@@ -304,12 +322,11 @@ class CubeService:
     #
     # Create cube
     #
-    def createCube(self, type, cubeName, cubeDisplayName, cubeRows, distincts, stats, binnings, agg):
+    def createCube(self, type, cubeName, cubeRows, distincts, stats, binnings, agg, inMemory=False):
 
         cube = {}
         cube['type'] = type
         cube['name'] = cubeName
-        cube['displayName'] = cubeDisplayName
         cube['distincts'] = distincts
         cube['stats'] = stats
         cube['binnings'] = binnings
@@ -321,41 +338,50 @@ class CubeService:
         #if cube != None:
         #    raise RuntimeError('createCube failed. Cube already exists: ' + cubeName)
 
-        self.db['cube'].insert_one(cube)
-
-        # Save the cube rows
-        self.db[cubeName].insert_many(cubeRows)
+        if inMemory:
+            self.inMemoryCubes[cubeName] = cube 
+            self.inMemoryCubeRows[cubeName] = cubeRows
+        else:   
+            self.db['cube'].insert_one(cube)
+            # Save the cube rows
+            self.db[cubeName].insert_many(cubeRows)
 
     #
     # Delete cube
     #
     def deleteCube(self, cubeName):
-        self.db[cubeName].drop()
-        self.db['cube'].remove({ "name": cubeName })
+        if cubeName in self.inMemoryCubes:
+            del(self.inMemoryCubes[cubeName])
+            del(self.inMemoryCubeRows[cubeName])
+        else:
+            self.db[cubeName].drop()
+            self.db['cube'].remove({ "name": cubeName })
 
-    #
-    # Update cube display name
-    #
-    def updateCubeDisplayName(self, cubeName, displayName):
-        self.__updateCubeProperty__(cubeName, { "$set": {"displayName" : displayName}})
 
     #
     # Update an arbitrary field in cube
     #
     def __updateCubeProperty__(self, cubeName, update):
-        self.db['cube'].update_one({ "name" : cubeName}, update)
+        # Handle inmemory cubes
+        if cubeName not in self.inMemoryCubes:
+            self.db['cube'].update_one({ "name" : cubeName}, update)
 
     #
     # Update an arbitrary field in a cube row
     #
     def __updateCubeRowProperty__(self, cubeName, _id, update):
-        self.db[cubeName].update_one({ "_id" : _id}, update)
+        # Handle inmemory cubes
+        if cubeName not in self.inMemoryCubes:
+            self.db[cubeName].update_one({ "_id" : _id}, update)
 
     #
     #  Get cube
     #
     def getCube(self, cubeName):
-        return self.db['cube'].find_one({ "name": cubeName })
+        if cubeName in self.inMemoryCubes:
+            return self.inMemoryCubes[cubeName]
+        else:
+            return self.db['cube'].find_one({ "name": cubeName })
 
     #
     #  Query cube rows
@@ -367,8 +393,10 @@ class CubeService:
     #  Get all cube rows
     #
     def getCubeRows(self, cubeName):
-        return self.queryCubeRows(cubeName, {}).sort("dimensionKey", pymongo.ASCENDING)
-
+        if cubeName in self.inMemoryCubeRows:
+            return self.inMemoryCubeRows[cubeName]
+        else:
+            return self.queryCubeRows(cubeName, {}).sort("dimensionKey", pymongo.ASCENDING)
 
     #
     # Compute stats on cube
@@ -537,7 +565,7 @@ class CubeService:
                maxV = math.ceil(maxV)
                iMaxv = int(maxV)
 
-               size =  self.getCubeRows(sourceCubeName).count()
+               size =  self.__getCubeRowCount__(sourceCubeName)
 
                # Rice formula
                binSize = 2 * math.pow(size, 0.33)
@@ -614,10 +642,7 @@ class CubeService:
     #
     # Bin cube with custom binnings  - Returns the binned cube
     #
-    def binCubeCustom(self, binnings, sourceCubeName, binnedCubeName, binnedCubeDisplayName=None):
-
-        if binnedCubeDisplayName == None:
-            binnedCubeDisplayName = binnedCubeName
+    def binCubeCustom(self, binnings, sourceCubeName, binnedCubeName):
         binnedCubeRows = []
         cubeRows = self.getCubeRows(sourceCubeName)
         distincts = {}
@@ -627,7 +652,10 @@ class CubeService:
             binnedCubeRows.append(binnedCubeRow)
 
         stats = self.getStats(binnedCubeRows)
-        self.createCube('binned', binnedCubeName, binnedCubeDisplayName, binnedCubeRows, distincts, stats, binnings, None)
+        inMemory = False
+        if sourceCubeName in self.inMemoryCubes:
+            inMemory = True
+        self.createCube('binned', binnedCubeName, binnedCubeRows, distincts, stats, binnings, None, inMemory)
         self.__updateCubeProperty__(binnedCubeName, { "$set": {"lastBinnedOn" : datetime.utcnow()}})
 
         return self.getCube(binnedCubeName)
@@ -970,7 +998,10 @@ class CubeService:
             if existingAggCube != None:
                 self.deleteCube(aggCubeName)
 
-            self.createCube('agg', aggCubeName, aggCubeName, aggCubeRows, distincts, stats, None, agg)
+            inMemory = False
+            if cubeName in self.inMemoryCubes:
+                inMemory = True
+            self.createCube('agg', aggCubeName, aggCubeRows, distincts, stats, None, agg, inMemory)
             resultCubes.append(self.getCube(aggCubeName))
     
         return resultCubes        
@@ -1067,7 +1098,10 @@ class CubeService:
             if existingAggCube != None:
                 self.deleteCube(aggCubeName)
 
-            self.createCube('agg', aggCubeName, aggCubeName, aggCubeRows, distincts, stats, None, agg)
+            inMemory = False
+            if cubeName in self.inMemoryCubes:
+                inMemory = True
+            self.createCube('agg', aggCubeName, aggCubeRows, distincts, stats, None, agg, inMemory)
             resultCubes.append(self.getCube(aggCubeName))
 
         return resultCubes

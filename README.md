@@ -668,12 +668,11 @@ Open the file, "__tutorials2.py__" in the tutorials folder and follow along with
 Let's create our cube set using the createCubeSet method in cubify like so. In this first example, we keep things simple and let cubify perform automatic
 binning for us and we will not define any aggregations initially. 
 
-    cubeSet = cubify.createCubeSet('tutorial', 'purchasesCubeSet', 'Purchases Cube Set', 'purchases.csv')
+    cubeSet = cubify.createCubeSet('tutorial', 'purchasesCubeSet', 'purchases.csv')
     
 The first argument to createCubeSet is the owner of the cube set. This can be any string. In our example, the owner of the cube set is "tutorial".
 The second argument is the name of the cube set. 
-The third argument is the display name of the cube set.
-The fourth argument is the name of the CSV file that contains our data.
+The third argument is the name of the CSV file that contains our data.
 
 In our tutorial, once createCubeSet returns successfully, our purchasesCubeSet contains a "source" cube reflecting the original data imported from purchases.csv.
 To get the source cube rows, call getSourceCubeRows like so:
@@ -738,7 +737,7 @@ Here's the code:
     with open('aggs.json') as aggs_file:
         aggs = json.load(aggs_file)e
 
-    cubeSet = cubify.createCubeSet('tutorial', 'purchasesCubeSet2', 'Purchases Cube Set 2', 'purchases.csv', binnings, aggs)
+    cubeSet = cubify.createCubeSet('tutorial', 'purchasesCubeSet2', 'purchases.csv', binnings, aggs)
 
 Note that we now pass in the binnings and aggregations to the createCubeSet method.    
 

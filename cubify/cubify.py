@@ -9,17 +9,17 @@ class Cubify:
 
     ### Cubes
 
-    def createCubeFromCsv(self, csvFilePath, cubeName, cubeDisplayName=None):
-        return self.cubeService.createCubeFromCsv(csvFilePath, cubeName, cubeDisplayName)
+    def createCubeFromCsv(self, csvFilePath, cubeName):
+        return self.cubeService.createCubeFromCsv(csvFilePath, cubeName)
 
-    def createCubeFromCube(self, fromCubeName, filter, toCubeName, toCubeDisplayName=None):
-        return self.createCubeFromCube(fromCubeName, filter, toCubeName, toCubeDisplayName)
+    def createInMemoryCubeFromCsv(self, csvFilePath, cubeName):
+        return self.cubeService.createInMemoryCubeFromCsv(csvFilePath, cubeName)
+
+    def createCubeFromCube(self, fromCubeName, filter, toCubeName):
+        return self.createCubeFromCube(fromCubeName, filter, toCubeName)
 
     def deleteCube(self, cubeName):
         self.cubeService.deleteCube(cubeName)
-
-    def updateCubeDisplayName(self, cubeName, cubeDisplayName):
-        self.cubeService.updateCubeDisplayName(cubeName, cubeDisplayName)
 
     def getCube(self, cubeName):
         return self.cubeService.getCube(cubeName)
@@ -42,8 +42,8 @@ class Cubify:
     def rebinCube(self, sourceCubeName, binnedCubeName):
         return self.rebinCube(sourceCubeName, binnedCubeName)
 
-    def binCubeCustom(self, binnings, sourceCubeName, binnedCubeName, binnedCubeDisplayName=None):
-        return self.cubeService.binCubeCustom(binnings, sourceCubeName, binnedCubeName, binnedCubeDisplayName)
+    def binCubeCustom(self, binnings, sourceCubeName, binnedCubeName):
+        return self.cubeService.binCubeCustom(binnings, sourceCubeName, binnedCubeName)
 
     def rebinCubeCustom(self, binnings, sourceCubeName, binnedCubeName):
         return self.cubeService.rebinCubeCustom(binnings, sourceCubeName, binnedCubeName)
@@ -59,8 +59,8 @@ class Cubify:
 
     ####  CubeSets
 
-    def createCubeSet (self, owner, cubeSetName, cubeSetDisplayName, csvFilePath, binnings=None, aggs=None):
-        return self.cubeSetService.createCubeSet(owner, cubeSetName, cubeSetDisplayName, csvFilePath, binnings, aggs)
+    def createCubeSet(self, owner, cubeSetName, csvFilePath, binnings=None, aggs=None):
+        return self.cubeSetService.createCubeSet(owner, cubeSetName, csvFilePath, binnings, aggs)
 
     def deleteCubeSet(self, cubeSetName):
         return self.cubeSetService.deleteCubeSet(cubeSetName)
@@ -73,9 +73,6 @@ class Cubify:
         
     def removeRowsFromSourceCube(self, cubeSetName, filter):
         return self.cubeSetService.removeRowsFromSourceCube(cubeSetName, filter)
-
-    def updateCubeSetDisplayName(self, cubeSetName, displayName):
-        self.cubeSetService.updateCubeSetDisplayName(cubeSetName, displayName)
 
     def performBinning(self, cubeSetName, binnings):
         self.cubeSetService.performBinning(cubeSetName, binnings)

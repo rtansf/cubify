@@ -33,7 +33,7 @@ class CubeSetService:
     #
     # Create a cube set including binning and optionally aggregation
     #
-    def createCubeSet(self, owner, cubeSetName, cubeSetDisplayName, csvFilePath, binnings=None, aggs=None):
+    def createCubeSet(self, owner, cubeSetName, csvFilePath, binnings=None, aggs=None):
 
         # Make sure cubeSetName is unique
         existing = self.getCubeSet(cubeSetName)
@@ -41,10 +41,10 @@ class CubeSetService:
             raise ValueError('Cube Set with ' + cubeSetName + ' already exists')
 
         sourceCubeName = cubeSetName + "_source"
-        self.cubeService.createCubeFromCsv(csvFilePath, sourceCubeName, sourceCubeName)
+        self.cubeService.createCubeFromCsv(csvFilePath, sourceCubeName)
         binnedCubeName = cubeSetName + "_binned"
         if binnings != None:
-            self.cubeService.binCubeCustom(binnings, sourceCubeName, binnedCubeName, binnedCubeName)
+            self.cubeService.binCubeCustom(binnings, sourceCubeName, binnedCubeName)
         else:
             self.cubeService.binCube(sourceCubeName, binnedCubeName)
 
@@ -54,7 +54,6 @@ class CubeSetService:
         # Now save the cubeSet
         cubeSet = {}
         cubeSet['name'] = cubeSetName
-        cubeSet['displayName'] = cubeSetDisplayName
         cubeSet['owner'] = owner
         cubeSet['csvFilePath'] = csvFilePath
         cubeSet['createdOn'] = datetime.utcnow()
@@ -116,13 +115,6 @@ class CubeSetService:
                    aggs = []
                    aggs.append(aggCube['agg'])
                    self.cubeService.aggregateCubeCustom(binnedCubeName, aggs)
-
-    #
-    # Update cubeset display name
-    #
-    def updateCubeSetDisplayName(self, cubeSetName, displayName):
-        self.__updateCubeSetProperty__(cubeSetName, { "$set": {"displayName" : displayName}})
-
 
     #
     # Delete a cube set

@@ -55,7 +55,7 @@ class cubeServiceTests(unittest.TestCase):
         except Exception:
             shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
-        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName)
         os.remove(cubeName + '.csv')
 
     def testCreateCubeFromCube(self):
@@ -66,8 +66,8 @@ class cubeServiceTests(unittest.TestCase):
         except Exception:
             shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
-        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
-        cs.createCubeFromCube(cubeName, { "dimensions.State" : "NY" }, toCubeName)
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName)
+        cs.createCubeFromCube(cubeName, {"dimensions.State": "NY"}, toCubeName)
 
         toCube = cs.getCube(toCubeName)
         self.assertTrue (toCube != None)
@@ -89,21 +89,8 @@ class cubeServiceTests(unittest.TestCase):
         except Exception:
             shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
-        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName)
         cs.deleteCube(cubeName)
-        os.remove(cubeName + '.csv')
-
-    def testUpdateCubeDisplayName(self):
-        cubeName = 'test-' + str(uuid.uuid4())
-        try:
-            shutil.copyfile('cubify/tests/testdata.csv', cubeName + '.csv')
-        except Exception:
-            shutil.copyfile('./testdata.csv', cubeName + '.csv')
-        cs = CubeService('testdb')
-        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
-        cs.updateCubeDisplayName(cubeName, 'newName')
-        cube = cs.getCube(cubeName)
-        self.assertTrue(cube['displayName'] == 'newName')
         os.remove(cubeName + '.csv')
 
     def testGetStats(self):
@@ -113,7 +100,7 @@ class cubeServiceTests(unittest.TestCase):
         except Exception:
             shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
-        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName)
         cubeRows = cs.getCubeRows(cubeName)
         stats = cs.getStats(cubeRows)
         for stat in stats:
@@ -142,13 +129,13 @@ class cubeServiceTests(unittest.TestCase):
         except Exception:
             shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
-        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName)
         binningFileName = 'cubify/tests/test_binnings.json'
         if (os.path.isfile(binningFileName) == False):
             binningFileName = './test_binnings.json'
         with open(binningFileName) as binnings_file:
             binnings = json.load(binnings_file)
-        cs.binCubeCustom(binnings, cubeName, cubeName + '_b', cubeName + '_b')
+        cs.binCubeCustom(binnings, cubeName, cubeName + '_b')
 
         binnedCubeRows = cs.getCubeRows(cubeName + '_b')
         dimkeys = []
@@ -180,13 +167,13 @@ class cubeServiceTests(unittest.TestCase):
         except Exception:
             shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
-        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName)
         binningFileName = 'cubify/tests/test_binnings_date1.json'
         if (os.path.isfile(binningFileName) == False):
             binningFileName = './test_binnings_date1.json'
         with open(binningFileName) as binnings_file:
             binnings = json.load(binnings_file)
-        cs.binCubeCustom(binnings, cubeName, cubeName + '_b', cubeName + '_b')
+        cs.binCubeCustom(binnings, cubeName, cubeName + '_b')
 
         binnedCubeRows = cs.getCubeRows(cubeName + '_b')
         dimkeys = []
@@ -218,13 +205,13 @@ class cubeServiceTests(unittest.TestCase):
         except Exception:
             shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
-        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName)
         binningFileName = 'cubify/tests/test_binnings_date2.json'
         if (os.path.isfile(binningFileName) == False):
             binningFileName = './test_binnings_date2.json'
         with open(binningFileName) as binnings_file:
             binnings = json.load(binnings_file)
-        cs.binCubeCustom(binnings, cubeName, cubeName + '_b', cubeName + '_b')
+        cs.binCubeCustom(binnings, cubeName, cubeName + '_b')
 
         binnedCubeRows = cs.getCubeRows(cubeName + '_b')
         dimkeys = []
@@ -256,13 +243,13 @@ class cubeServiceTests(unittest.TestCase):
         except Exception:
             shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
-        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName)
         binningFileName = 'cubify/tests/test_binnings.json'
         if (os.path.isfile(binningFileName) == False):
             binningFileName = './test_binnings.json'
         with open(binningFileName) as binnings_file:
             binnings = json.load(binnings_file)
-        cs.binCubeCustom(binnings, cubeName, cubeName + '_b', cubeName + '_b')
+        cs.binCubeCustom(binnings, cubeName, cubeName + '_b')
 
         # Change the binning
         for binning in binnings:
@@ -304,7 +291,7 @@ class cubeServiceTests(unittest.TestCase):
         except Exception:
             shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
-        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName)
 
         cs.binCube(cubeName, cubeName + '_b')
 
@@ -357,7 +344,7 @@ class cubeServiceTests(unittest.TestCase):
         except Exception:
             shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
-        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName)
 
         cs.binCube(cubeName, cubeName + "_b", ["Price", "Qty"])
 
@@ -391,7 +378,7 @@ class cubeServiceTests(unittest.TestCase):
         except Exception:
             shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
-        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName)
 
         cs.binCube(cubeName, cubeName + "_b")
 
@@ -428,7 +415,7 @@ class cubeServiceTests(unittest.TestCase):
         except Exception:
             shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
-        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName)
 
         cs.binCube(cubeName, cubeName + "_b", ["Date", "Qty"])
 
@@ -463,7 +450,7 @@ class cubeServiceTests(unittest.TestCase):
         except Exception:
             shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
-        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName)
 
         cs.binCube(cubeName, cubeName + "_b", ["Date", "Qty"], { "Date": "monthly"})
 
@@ -497,7 +484,7 @@ class cubeServiceTests(unittest.TestCase):
         except Exception:
             shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
-        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName)
 
         cs.binCube(cubeName, cubeName + "_b", ["Date", "Qty"], { "Date": "weekly"})
 
@@ -531,7 +518,7 @@ class cubeServiceTests(unittest.TestCase):
         except Exception:
             shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
-        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName)
 
         cs.binCube(cubeName, cubeName + "_b", ["Date", "Qty"], { "Date": "yearly"})
 
@@ -568,7 +555,7 @@ class cubeServiceTests(unittest.TestCase):
         except Exception:
             shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
-        cs.createCubeFromCsv(cubeName + '.csv',cubeName, cubeName)
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName)
 
         resultCubes = cs.aggregateCubeComplexOld(cubeName, [['ProductId', 'State'], ['CustomerId'], ['Date', 'State']])
         self.assertEquals(len(resultCubes), 3)
@@ -663,7 +650,7 @@ class cubeServiceTests(unittest.TestCase):
         except Exception:
             shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
-        cs.createCubeFromCsv(cubeName + '.csv',cubeName, cubeName)
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName)
 
         resultCubes = cs.aggregateCubeComplex(cubeName, [['ProductId', 'State'], ['CustomerId'], ['Date', 'State']])
         self.assertEquals(len(resultCubes), 3)
@@ -758,13 +745,13 @@ class cubeServiceTests(unittest.TestCase):
         except Exception:
             shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
-        cs.createCubeFromCsv(cubeName + '.csv',cubeName, cubeName)
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName)
         binningFileName = 'cubify/tests/test_binnings.json'
         if (os.path.isfile(binningFileName) == False):
             binningFileName = './test_binnings.json'
         with open(binningFileName) as binnings_file:
             binnings = json.load(binnings_file)
-        cs.binCubeCustom(binnings, cubeName, cubeName + '_b', cubeName + '_b')
+        cs.binCubeCustom(binnings, cubeName, cubeName + '_b')
 
         aggFileName = 'cubify/tests/test_agg_old.json'
         if os.path.isfile(aggFileName) == False:
@@ -810,13 +797,13 @@ class cubeServiceTests(unittest.TestCase):
         except Exception:
             shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
-        cs.createCubeFromCsv(cubeName + '.csv',cubeName, cubeName)
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName)
         binningFileName = 'cubify/tests/test_binnings.json'
         if (os.path.isfile(binningFileName) == False):
             binningFileName = './test_binnings.json'
         with open(binningFileName) as binnings_file:
             binnings = json.load(binnings_file)
-        cs.binCubeCustom(binnings, cubeName, cubeName + '_b', cubeName + '_b')
+        cs.binCubeCustom(binnings, cubeName, cubeName + '_b')
 
         aggFileName = 'cubify/tests/test_agg.json'
         if os.path.isfile(aggFileName) == False:
@@ -862,7 +849,7 @@ class cubeServiceTests(unittest.TestCase):
         except Exception:
             shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
-        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName)
         cs.exportCubeToCsv(cubeName, "testExported.csv")
 
         with open('testExported.csv') as csvfile:
@@ -885,7 +872,7 @@ class cubeServiceTests(unittest.TestCase):
         except Exception:
             shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
-        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName)
 
         cs.addColumn(cubeName, 'Revenue', 'numeric', "$['Qty'] * $['Price']")
         cube = cs.getCube(cubeName)
@@ -912,7 +899,7 @@ class cubeServiceTests(unittest.TestCase):
         except Exception:
             shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
-        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName)
 
         cs.addColumn(cubeName, 'Discount', 'numeric', None, funcx)
         cube = cs.getCube(cubeName)
@@ -936,7 +923,7 @@ class cubeServiceTests(unittest.TestCase):
         except Exception:
             shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
-        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName)
 
         cs.addColumn(cubeName, 'ProductCategory', 'string', "'Category1' if $['ProductId'] == 'P1' else 'Category2'", None)
         cube = cs.getCube(cubeName)
@@ -959,7 +946,7 @@ class cubeServiceTests(unittest.TestCase):
         except Exception:
             shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
-        cs.createCubeFromCsv(cubeName + '.csv', cubeName, cubeName)
+        cs.createCubeFromCsv(cubeName + '.csv', cubeName)
 
         cs.addColumn(cubeName, 'PackageSize', 'string', None, funcy)
         cube = cs.getCube(cubeName)
