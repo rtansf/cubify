@@ -50,7 +50,7 @@ print cube['stats']
 #
 
 # Export purchases cube to csv
-cubify.exportCubeToCsv('purchases', '/tmp/exported.csv')
+cubify.exportCubeToCsv(cube, '/tmp/exported.csv')
 
 
 #
@@ -58,7 +58,7 @@ cubify.exportCubeToCsv('purchases', '/tmp/exported.csv')
 #
 
 # Get all cube rows from purchases cube
-cubeRows = cubify.getCubeRows('purchases')
+cubeRows = cubify.getCubeRows(cube)
 print ""
 print "Cube rows in purchases cube:"
 for cubeRow in cubeRows:
@@ -67,19 +67,19 @@ for cubeRow in cubeRows:
 # Query cube rows where ProductId = 'P2'
 print ""
 print "Cube rows where ProductId = 'P2':"
-p2CubeRows = cubify.queryCubeRows('purchases', { 'dimensions.ProductId' : 'P2' })
+p2CubeRows = cubify.queryCubeRows(cube, { 'dimensions.ProductId' : 'P2' })
 for p2CubeRow in p2CubeRows:
     print p2CubeRow
 
 print ""
 print "Cube rows where Price >  21"
-cubeRows = cubify.queryCubeRows('purchases', { 'measures.Price' : { '$gt' : 21 }})
+cubeRows = cubify.queryCubeRows(cube, { 'measures.Price' : { '$gt' : 21 }})
 for cubeRow in cubeRows:
     print cubeRow
 
 print ""
 print "Cube rows where Price >  21 and Product = 'P2'"
-cubeRows = cubify.queryCubeRows('purchases', { '$and' : [ { 'measures.Price' : { '$gt' : 21 }},  { 'dimensions.ProductId' : 'P2' } ]})
+cubeRows = cubify.queryCubeRows(cube, { '$and' : [ { 'measures.Price' : { '$gt' : 21 }},  { 'dimensions.ProductId' : 'P2' } ]})
 for cubeRow in cubeRows:
     print cubeRow
 
@@ -91,10 +91,10 @@ for cubeRow in cubeRows:
 # Add a numeric column Revenue using an expression
 print ""
 print "Add a new numeric column called 'Revenue' to the purhases cube"
-cubify.addColumn("purchases", "Revenue", "numeric", "$['Price'] * $['Qty']")
+cubify.addColumn(cube, "Revenue", "numeric", "$['Price'] * $['Qty']")
 
 # Verify that Revenue is now present in the cube rows
-cubeRows = cubify.getCubeRows('purchases')
+cubeRows = cubify.getCubeRows(cube)
 print "Cube rows in purchases cube after adding Revenue:"
 for cubeRow in cubeRows:
     print cubeRow
@@ -107,10 +107,10 @@ def computeDiscount(cubeRow):
         return 3.0
 print ""
 print "Add a new numeric column called 'Discount' to the purhases cube"
-cubify.addColumn("purchases", "Discount", "numeric", None, computeDiscount)
+cubify.addColumn(cube, "Discount", "numeric", None, computeDiscount)
 
 # Verify that Discount is now present in the cube rows
-cubeRows = cubify.getCubeRows('purchases')
+cubeRows = cubify.getCubeRows(cube)
 print "Cube rows in purchases cube after adding Discount:"
 for cubeRow in cubeRows:
     print cubeRow
@@ -119,10 +119,10 @@ for cubeRow in cubeRows:
 # Add a string column, ProductCategory using an expression
 print ""
 print "Add a new string column called ProductCategory" 
-cubify.addColumn('purchases', 'ProductCategory', 'string', "'Category1' if $['ProductId'] == 'P1' else 'Category2'", None)
+cubify.addColumn(cube, 'ProductCategory', 'string', "'Category1' if $['ProductId'] == 'P1' else 'Category2'", None)
 
 # Verify that ProductCategory is now present in the cube rows
-cubeRows = cubify.getCubeRows('purchases')
+cubeRows = cubify.getCubeRows(cube)
 print "Cube rows in purchases cube after adding ProductCategory"
 for cubeRow in cubeRows:
     print cubeRow
@@ -143,10 +143,10 @@ def computePackageSize(cubeRow):
         return 'LARGE'
     else:
         return 'SMALL'
-cubify.addColumn('purchases', 'PackageSize', 'string', None, computePackageSize)
+cubify.addColumn(cube, 'PackageSize', 'string', None, computePackageSize)
 
 # Verify that PackageSize is now present in the cube rows
-cubeRows = cubify.getCubeRows('purchases')
+cubeRows = cubify.getCubeRows(cube)
 print "Cube rows in purchases cube after adding PackageSize"
 for cubeRow in cubeRows:
     print cubeRow
@@ -156,40 +156,40 @@ for cubeRow in cubeRows:
 #
 
 # Perform automatic binning on cube on all measures
-binnedCube = cubify.binCube('purchases', 'purchases_autobinned_1')
+binnedCube = cubify.binCube(cube, 'purchases_autobinned_1')
 print ""
 print "Dimensions in purchases_autobinned_1 cube:"
 print binnedCube['distincts']
 
-cubify.exportCubeToCsv('purchases_autobinned_1', '/tmp/exportedAutoBinned1.csv')
+cubify.exportCubeToCsv(binnedCube, '/tmp/exportedAutoBinned1.csv')
 
 # Perform automatic binning on cube on specific measures
-binnedCube = cubify.binCube('purchases', 'purchases_autobinned_2', ['TransactionDate','Qty','Price'], {'TransactionDate':'weekly'})
+binnedCube = cubify.binCube(cube, 'purchases_autobinned_2', ['TransactionDate','Qty','Price'], {'TransactionDate':'weekly'})
 print ""
 print "Dimensions in purchases_autobinned_2 cube:"
 print binnedCube['distincts']
 
-cubify.exportCubeToCsv('purchases_autobinned_2', '/tmp/exportedAutoBinned2.csv')
+cubify.exportCubeToCsv(binnedCube, '/tmp/exportedAutoBinned2.csv')
 
 # Perform custom Qty binning on cube
 with open('qtyBinning.json') as qtyBinning_file:
     qtyBinning = json.load(qtyBinning_file)
-binnedCube = cubify.binCubeCustom(qtyBinning, 'purchases', 'purchases_binned_1')
+binnedCube1 = cubify.binCubeCustom(qtyBinning, cube, 'purchases_binned_1')
 print ""
 print "Dimensions in purchased_binned_1 cube:"
-print binnedCube['distincts']
+print binnedCube1['distincts']
 
-cubify.exportCubeToCsv('purchases_binned_1', '/tmp/exportedBinned1.csv')
+cubify.exportCubeToCsv(binnedCube1, '/tmp/exportedBinned1.csv')
 
 # Perform custom Qty, Price, TransactionDate and CustomeState binnings on cube
 with open('binnings.json') as binnings_file:
     binnings = json.load(binnings_file)
-binnedCube2 = cubify.binCubeCustom(binnings, 'purchases', 'purchases_binned_2')
+binnedCube2 = cubify.binCubeCustom(binnings, cube, 'purchases_binned_2')
 print ""
 print "Dimensions in purchased_binned_2 cube:"
 print binnedCube2['distincts']
 
-cubify.exportCubeToCsv('purchases_binned_2', '/tmp/exportedBinned2.csv')
+cubify.exportCubeToCsv(binnedCube2, '/tmp/exportedBinned2.csv')
 
 #
 # Section 6: Aggregating a cube
@@ -198,73 +198,73 @@ cubify.exportCubeToCsv('purchases_binned_2', '/tmp/exportedBinned2.csv')
 # Aggregate cube - simple example 1
 #   Group-by dimensions are: ['CustomerId']
 #   Use default cubify aggregation operators sum and average over all Qty and Price measures
-aggCube = cubify.aggregateCube('purchases_binned_2', ['CustomerId'], ['Qty', 'Price'])
+aggCube = cubify.aggregateCube(binnedCube2, ['CustomerId'], ['Qty', 'Price'])
 print ""
 print "Cube rows of aggregated cube: " + aggCube['name']
-aggCubeRows = cubify.getCubeRows(aggCube['name'])
+aggCubeRows = cubify.getCubeRows(aggCube)
 for aggCubeRow in aggCubeRows:
    print aggCubeRow
-cubify.exportCubeToCsv(aggCube['name'], '/tmp/aggregatedCubeByCustomerId.csv')
+cubify.exportCubeToCsv(aggCube, '/tmp/aggregatedCubeByCustomerId.csv')
 
 # Aggregate cube - simple example 2
 #   Group-by dimensions are: ['CustomerState','ProductCategory']
 #   Use cubify aggregation operators sum and average over all measures
-aggCube = cubify.aggregateCube('purchases_binned_2', ['CustomerState', 'ProductCategory'])
+aggCube = cubify.aggregateCube(binnedCube2, ['CustomerState', 'ProductCategory'])
 print ""
 print "Cube rows of aggregated cube: " + aggCube['name']
-aggCubeRows = cubify.getCubeRows(aggCube['name'])
+aggCubeRows = cubify.getCubeRows(aggCube)
 for aggCubeRow in aggCubeRows:
    print aggCubeRow
-cubify.exportCubeToCsv(aggCube['name'], '/tmp/aggregatedCubeByCustomerStateAndProductCategory.csv')
+cubify.exportCubeToCsv(aggCube, '/tmp/aggregatedCubeByCustomerStateAndProductCategory.csv')
 
 # Aggregate cube - simple example 3
 #   Group-by dimensions are: [['ProductId'],['ProductId','TransactionDate']]
 #   Use cubify aggregation operators sum and average over all measures
-aggCubes = cubify.aggregateCubeComplex('purchases_binned_2', [['ProductId'], ['ProductId','TransactionDate']])
+aggCubes = cubify.aggregateCubeComplex(binnedCube2, [['ProductId'], ['ProductId','TransactionDate']])
 aggCube = aggCubes[0]
 print ""
 print "Cube rows of aggregated cube: " + aggCube['name']
-aggCubeRows = cubify.getCubeRows(aggCube['name'])
+aggCubeRows = cubify.getCubeRows(aggCube)
 for aggCubeRow in aggCubeRows:
    print aggCubeRow
-cubify.exportCubeToCsv(aggCube['name'], '/tmp/aggregatedCubeByProductId.csv')
+cubify.exportCubeToCsv(aggCube, '/tmp/aggregatedCubeByProductId.csv')
 
 aggCube = aggCubes[1]
 print ""
 print "Cube rows of aggregated cube: " + aggCube['name']
-aggCubeRows = cubify.getCubeRows(aggCube['name'])
+aggCubeRows = cubify.getCubeRows(aggCube)
 for aggCubeRow in aggCubeRows:
    print aggCubeRow
-cubify.exportCubeToCsv(aggCube['name'], '/tmp/aggregatedCubeByProductIdTransactionDate.csv')
+cubify.exportCubeToCsv(aggCube, '/tmp/aggregatedCubeByProductIdTransactionDate.csv')
 
 
 # Aggregate cube - example 1 using custom aggregation definitions
 with open('agg1.json') as agg_file:
     agg = json.load(agg_file)
-aggCubes = cubify.aggregateCubeCustom('purchases_binned_2', agg)
+aggCubes = cubify.aggregateCubeCustom(binnedCube2, agg)
 aggCube = aggCubes[0]
 
 print ""
 print "Cube rows of aggregated cube: " + aggCube['name']
-aggCubeRows = cubify.getCubeRows(aggCube['name'])
+aggCubeRows = cubify.getCubeRows(aggCube)
 for aggCubeRow in aggCubeRows:
    print aggCubeRow
 
-cubify.exportCubeToCsv(aggCube['name'], '/tmp/aggCube1.csv')
+cubify.exportCubeToCsv(aggCube, '/tmp/aggCube1.csv')
 
 # Aggregate cube - example 2 using custom aggregation definitions
 with open('agg2.json') as agg_file:
     agg = json.load(agg_file)
-aggCubes = cubify.aggregateCubeCustom('purchases_binned_2', agg)
+aggCubes = cubify.aggregateCubeCustom(binnedCube2, agg)
 aggCube = aggCubes[0]
 
 print ""
 print "Cube rows of aggregated cube: " + aggCube['name']
-aggCubeRows = cubify.getCubeRows(aggCube['name'])
+aggCubeRows = cubify.getCubeRows(aggCube)
 for aggCubeRow in aggCubeRows:
    print aggCubeRow
 
-cubify.exportCubeToCsv(aggCube['name'], '/tmp/aggCube2.csv')
+cubify.exportCubeToCsv(aggCube, '/tmp/aggCube2.csv')
 
 
 print ""

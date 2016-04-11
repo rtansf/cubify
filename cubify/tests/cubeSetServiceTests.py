@@ -129,8 +129,8 @@ class cubeSetServiceTests(unittest.TestCase):
             aggs = json.load(agg_file)
 
         cs = CubeSetService('testdb')
-        cs.createCubeSet("testOwner", cubeSetName, csvFilePath, binnings, aggs)
-        cubeRows = cs.getSourceCubeRows(cubeSetName)
+        cubeSet = cs.createCubeSet("testOwner", cubeSetName, csvFilePath, binnings, aggs)
+        cubeRows = cs.getSourceCubeRows(cubeSet)
         self.assertTrue(cubeRows.count() == 14)
 
         os.remove(csvFilePath)
@@ -154,8 +154,8 @@ class cubeSetServiceTests(unittest.TestCase):
             aggs = json.load(agg_file)
 
         cs = CubeSetService('testdb')
-        cs.createCubeSet("testOwner", cubeSetName, csvFilePath, binnings, aggs)
-        binnedCubeRows = cs.getBinnedCubeRows(cubeSetName)
+        cubeSet = cs.createCubeSet("testOwner", cubeSetName, csvFilePath, binnings, aggs)
+        binnedCubeRows = cs.getBinnedCubeRows(cubeSet)
 
         dimkeys = []
         for binnedCubeRow in binnedCubeRows:
@@ -198,10 +198,10 @@ class cubeSetServiceTests(unittest.TestCase):
             aggs = json.load(agg_file)
 
         cs = CubeSetService('testdb')
-        cs.createCubeSet("testOwner", cubeSetName, csvFilePath, binnings, aggs)
+        cubeSet = cs.createCubeSet("testOwner", cubeSetName, csvFilePath, binnings, aggs)
 
         agg = aggs[0]
-        aggCubeRows = cs.getAggregatedCubeRows(cubeSetName, agg['name'])
+        aggCubeRows = cs.getAggregatedCubeRows(cubeSet, agg['name'])
         self.assertTrue (aggCubeRows.count(False) == 4)
         for aggCubeRow in aggCubeRows:
             self.assertTrue(len(aggCubeRow['dimensions']) == 2)
@@ -210,7 +210,7 @@ class cubeSetServiceTests(unittest.TestCase):
         print '---------'
 
         agg = aggs[1]
-        aggCubeRows = cs.getAggregatedCubeRows(cubeSetName, agg['name'])
+        aggCubeRows = cs.getAggregatedCubeRows(cubeSet, agg['name'])
         self.assertTrue (aggCubeRows.count(False) == 2)
         for aggCubeRow in aggCubeRows:
             self.assertTrue(len(aggCubeRow['dimensions']) == 1)
@@ -219,7 +219,7 @@ class cubeSetServiceTests(unittest.TestCase):
         print '---------'
 
         agg = aggs[2]
-        aggCubeRows = cs.getAggregatedCubeRows(cubeSetName, agg['name'])
+        aggCubeRows = cs.getAggregatedCubeRows(cubeSet, agg['name'])
         self.assertTrue (aggCubeRows.count(False) == 2)
         for aggCubeRow in aggCubeRows:
             self.assertTrue(len(aggCubeRow['dimensions']) == 1)
@@ -243,7 +243,7 @@ class cubeSetServiceTests(unittest.TestCase):
             binnings = json.load(binnings_file)
 
         cs = CubeSetService('testdb')
-        cs.createCubeSet("testOwner", cubeSetName, csvFilePath, binnings, None)
+        cubeSet = cs.createCubeSet("testOwner", cubeSetName, csvFilePath, binnings, None)
 
         # Change the binning
         for binning in binnings:
@@ -253,9 +253,9 @@ class cubeSetServiceTests(unittest.TestCase):
                 bins.append({ "label": "3+", "min" : 4, "max": 99999999})
                 binning['bins'] = bins
 
-        cs.performBinning(cubeSetName, binnings)
+        cs.performBinning(cubeSet, binnings)
 
-        binnedCubeRows = cs.getBinnedCubeRows(cubeSetName)
+        binnedCubeRows = cs.getBinnedCubeRows(cubeSet)
         dimkeys = []
         for binnedCubeRow in binnedCubeRows:
             dimkeys.append(binnedCubeRow['dimensionKey'])
@@ -288,11 +288,12 @@ class cubeSetServiceTests(unittest.TestCase):
             shutil.copyfile('./testdata.csv', cubeSetName + '.csv')
 
         cs = CubeSetService('testdb')
-        cs.createCubeSet("testOwner", cubeSetName, csvFilePath, None, None)
+        cubeSet = cs.createCubeSet("testOwner", cubeSetName, csvFilePath, None, None)
         aggCubes = cs.performAggregation(cubeSetName, ['State','ProductId'])
         self.assertTrue (len(aggCubes) == 2)
 
-        aggCubeRows = cs.getAggregatedCubeRows(cubeSetName, 'State-ProductId')
+        aggCubeRows = cs.getAggregatedCubeRows(cubeSet, 'State-ProductId')
+        print aggCubeRows.count(False)
         self.assertTrue (aggCubeRows.count(False) == 5)
         for aggCubeRow in aggCubeRows:
             self.assertTrue(len(aggCubeRow['dimensions']) == 2)
@@ -300,7 +301,7 @@ class cubeSetServiceTests(unittest.TestCase):
 
         print '---------'
 
-        aggCubeRows = cs.getAggregatedCubeRows(cubeSetName, 'State')
+        aggCubeRows = cs.getAggregatedCubeRows(cubeSet, 'State')
         self.assertTrue (aggCubeRows.count(False) == 3)
         for aggCubeRow in aggCubeRows:
             self.assertTrue(len(aggCubeRow['dimensions']) == 1)
@@ -330,11 +331,11 @@ class cubeSetServiceTests(unittest.TestCase):
             aggs = json.load(agg_file)
 
         cs = CubeSetService('testdb')
-        cs.createCubeSet("testOwner", cubeSetName, csvFilePath, binnings, None)
+        cubeSet = cs.createCubeSet("testOwner", cubeSetName, csvFilePath, binnings, None)
         cs.performAggregationCustom(cubeSetName, aggs)
 
         agg = aggs[0]
-        aggCubeRows = cs.getAggregatedCubeRows(cubeSetName, agg['name'])
+        aggCubeRows = cs.getAggregatedCubeRows(cubeSet, agg['name'])
         self.assertTrue (aggCubeRows.count(False) == 4)
         for aggCubeRow in aggCubeRows:
             self.assertTrue(len(aggCubeRow['dimensions']) == 2)
@@ -343,7 +344,7 @@ class cubeSetServiceTests(unittest.TestCase):
         print '---------'
 
         agg = aggs[1]
-        aggCubeRows = cs.getAggregatedCubeRows(cubeSetName, agg['name'])
+        aggCubeRows = cs.getAggregatedCubeRows(cubeSet, agg['name'])
         self.assertTrue (aggCubeRows.count(False) == 2)
         for aggCubeRow in aggCubeRows:
             self.assertTrue(len(aggCubeRow['dimensions']) == 1)
@@ -352,7 +353,7 @@ class cubeSetServiceTests(unittest.TestCase):
         print '---------'
 
         agg = aggs[2]
-        aggCubeRows = cs.getAggregatedCubeRows(cubeSetName, agg['name'])
+        aggCubeRows = cs.getAggregatedCubeRows(cubeSet, agg['name'])
         self.assertTrue (aggCubeRows.count(False) == 2)
         for aggCubeRow in aggCubeRows:
             self.assertTrue(len(aggCubeRow['dimensions']) == 1)
@@ -382,17 +383,17 @@ class cubeSetServiceTests(unittest.TestCase):
             aggs = json.load(agg_file)
 
         cs = CubeSetService('testdb')
-        cs.createCubeSet("testOwner", cubeSetName, csvFilePath, binnings, aggs)
+        cubeSet = cs.createCubeSet("testOwner", cubeSetName, csvFilePath, binnings, aggs)
 
         incFileName = 'cubify/tests/testdataIncremental.csv'
         if (os.path.isfile(incFileName) == False):
             incFileName = './testdataIncremental.csv'
-        cs.addRowsToSourceCube(cubeSetName, incFileName)
+        cs.addRowsToSourceCube(cubeSet, incFileName)
 
-        sourceCubeRows = cs.getSourceCubeRows(cubeSetName)
+        sourceCubeRows = cs.getSourceCubeRows(cubeSet)
         self.assertTrue(sourceCubeRows.count() == 21)
 
-        binnedCubeRows = cs.getBinnedCubeRows(cubeSetName)
+        binnedCubeRows = cs.getBinnedCubeRows(cubeSet)
         dimkeys = []
         for binnedCubeRow in binnedCubeRows:
             dimkeys.append(binnedCubeRow['dimensionKey'])
@@ -421,7 +422,7 @@ class cubeSetServiceTests(unittest.TestCase):
         self.assertTrue(dimkeys[20] == '#CustomerId:C3#PriceBin:10+#ProductId:P1#QtyBin:5+#Region:NorthEast#State:MA#Year:Year2016#Date:2016-10-11')
 
         agg = aggs[0]
-        aggCubeRows = cs.getAggregatedCubeRows(cubeSetName, agg['name'])
+        aggCubeRows = cs.getAggregatedCubeRows(cubeSet, agg['name'])
         self.assertTrue (aggCubeRows.count(False) == 4)
         for aggCubeRow in aggCubeRows:
             self.assertTrue(len(aggCubeRow['dimensions']) == 2)
@@ -430,7 +431,7 @@ class cubeSetServiceTests(unittest.TestCase):
         print '---------'
 
         agg = aggs[1]
-        aggCubeRows = cs.getAggregatedCubeRows(cubeSetName, agg['name'])
+        aggCubeRows = cs.getAggregatedCubeRows(cubeSet, agg['name'])
         self.assertTrue (aggCubeRows.count(False) == 2)
         for aggCubeRow in aggCubeRows:
             self.assertTrue(len(aggCubeRow['dimensions']) == 1)
@@ -439,7 +440,7 @@ class cubeSetServiceTests(unittest.TestCase):
         print '---------'
 
         agg = aggs[2]
-        aggCubeRows = cs.getAggregatedCubeRows(cubeSetName, agg['name'])
+        aggCubeRows = cs.getAggregatedCubeRows(cubeSet, agg['name'])
         self.assertTrue (aggCubeRows.count(False) == 2)
         for aggCubeRow in aggCubeRows:
             self.assertTrue(len(aggCubeRow['dimensions']) == 1)
@@ -469,10 +470,10 @@ class cubeSetServiceTests(unittest.TestCase):
             aggs = json.load(agg_file)
 
         cs = CubeSetService('testdb')
-        cs.createCubeSet("testOwner", cubeSetName, csvFilePath, binnings, aggs)
-        cs.removeRowsFromSourceCube(cubeSetName, { "dimensions.State" : "CA"})
+        cubeSet = cs.createCubeSet("testOwner", cubeSetName, csvFilePath, binnings, aggs)
+        cs.removeRowsFromSourceCube(cubeSet, { "dimensions.State" : "CA"})
 
-        cubeRows = cs.getSourceCubeRows(cubeSetName)
+        cubeRows = cs.getSourceCubeRows(cubeSet)
         self.assertTrue(cubeRows.count() == 8)
 
         dimkeys = []
@@ -511,9 +512,9 @@ class cubeSetServiceTests(unittest.TestCase):
             aggs = json.load(agg_file)
 
         cs = CubeSetService('testdb')
-        cs.createCubeSet("testOwner", cubeSetName, csvFilePath, binnings, aggs)
+        cubeSet = cs.createCubeSet("testOwner", cubeSetName, csvFilePath, binnings, aggs)
 
-        cs.exportSourceCubeToCsv(cubeSetName, "cubeSetSourceExported.csv")
+        cs.exportSourceCubeToCsv(cubeSet, "cubeSetSourceExported.csv")
 
         with open('cubeSetSourceExported.csv') as csvfile:
             reader = csv.DictReader(csvfile)
@@ -547,9 +548,9 @@ class cubeSetServiceTests(unittest.TestCase):
             aggs = json.load(agg_file)
 
         cs = CubeSetService('testdb')
-        cs.createCubeSet("testOwner", cubeSetName, csvFilePath, binnings, aggs)
+        cubeSet = cs.createCubeSet("testOwner", cubeSetName, csvFilePath, binnings, aggs)
 
-        cs.exportBinnedCubeToCsv(cubeSetName, "cubeSetBinnedExported.csv")
+        cs.exportBinnedCubeToCsv(cubeSet, "cubeSetBinnedExported.csv")
 
         with open('cubeSetBinnedExported.csv') as csvfile:
             reader = csv.DictReader(csvfile)
@@ -583,9 +584,9 @@ class cubeSetServiceTests(unittest.TestCase):
             aggs = json.load(agg_file)
 
         cs = CubeSetService('testdb')
-        cs.createCubeSet("testOwner", cubeSetName, csvFilePath, binnings, aggs)
+        cubeSet = cs.createCubeSet("testOwner", cubeSetName, csvFilePath, binnings, aggs)
 
-        cs.exportAggCubeToCsv(cubeSetName, "cubeSetAgg" + aggs[0]['name'] + "Exported.csv", aggs[0]['name'])
+        cs.exportAggCubeToCsv(cubeSet, "cubeSetAgg" + aggs[0]['name'] + "Exported.csv", aggs[0]['name'])
         with open("cubeSetAgg" + aggs[0]['name'] + "Exported.csv") as csvfile:
             reader = csv.DictReader(csvfile)
             fieldNames = reader.fieldnames

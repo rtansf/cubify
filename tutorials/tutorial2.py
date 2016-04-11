@@ -23,8 +23,8 @@ print ""
 print "CubeSet purchasesCubeSet created successfully"
 print ""
 
-cubeRows = cubify.getSourceCubeRows('purchasesCubeSet')
-binnedCubeRows = cubify.getBinnedCubeRows('purchasesCubeSet')
+cubeRows = cubify.getSourceCubeRows(cubeSet)
+binnedCubeRows = cubify.getBinnedCubeRows(cubeSet)
 
 print ""
 print "Cube rows in purchasesCubeSet's source cube:"
@@ -39,19 +39,19 @@ for cubeRow in binnedCubeRows:
 print ""
 
 # Export the binned cube
-cubify.exportBinnedCubeToCsv('purchasesCubeSet', '/tmp/purchasesCubeSetBinnedCube.csv')
+cubify.exportBinnedCubeToCsv(cubeSet, '/tmp/purchasesCubeSetBinnedCube.csv')
 
 # Now lets aggregate the cube set with the following dimensions ['CustomerState', 'ProductId']
-cubify.performAggregation('purchasesCubeSet', ['CustomerState', 'ProductId'])
+cubify.performAggregation(cubeSet, ['CustomerState', 'ProductId'])
 
-agg1CubeRows = cubify.getAggregatedCubeRows('purchasesCubeSet', 'CustomerState-ProductId')
+agg1CubeRows = cubify.getAggregatedCubeRows(cubeSet, 'CustomerState-ProductId')
 print ""
 print "Cube rows in purchasesCubeSet's cube aggregated by CustomerState-ProductId:"
 for cubeRow in agg1CubeRows:
     print cubeRow
 print ""
 
-agg2CubeRows = cubify.getAggregatedCubeRows('purchasesCubeSet', 'CustomerState')
+agg2CubeRows = cubify.getAggregatedCubeRows(cubeSet, 'CustomerState')
 print ""
 print "Cube rows in purchasesCubeSet's cube aggregated by CustomerState"
 for cubeRow in agg2CubeRows:
@@ -59,8 +59,8 @@ for cubeRow in agg2CubeRows:
 print ""
 
 # Export the aggregated cubes above
-cubify.exportAggCubeToCsv('purchasesCubeSet', '/tmp/purchasesCubeSet-aggregated-by-CustomerState-ProductId.csv', 'CustomerState-ProductId')
-cubify.exportAggCubeToCsv('purchasesCubeSet', '/tmp/purchasesCubeSet-aggregated-by-CustomerState.csv', 'CustomerState')
+cubify.exportAggCubeToCsv(cubeSet, '/tmp/purchasesCubeSet-aggregated-by-CustomerState-ProductId.csv', 'CustomerState-ProductId')
+cubify.exportAggCubeToCsv(cubeSet, '/tmp/purchasesCubeSet-aggregated-by-CustomerState.csv', 'CustomerState')
 
 # Create a cube set called 'purchasesCubeSet2' with custom binnings defined in binning.json and aggregations defined in aggs.json
 
@@ -76,10 +76,10 @@ print ""
 print "CubeSet purchasesCubeSet2 created successfully"
 print ""
 
-cubeRows = cubify.getSourceCubeRows('purchasesCubeSet2')
-binnedCubeRows = cubify.getBinnedCubeRows('purchasesCubeSet2')
-agg1CubeRows = cubify.getAggregatedCubeRows('purchasesCubeSet2', 'agg1')
-agg2CubeRows = cubify.getAggregatedCubeRows('purchasesCubeSet2', 'agg2')
+cubeRows = cubify.getSourceCubeRows(cubeSet)
+binnedCubeRows = cubify.getBinnedCubeRows(cubeSet)
+agg1CubeRows = cubify.getAggregatedCubeRows(cubeSet, 'agg1')
+agg2CubeRows = cubify.getAggregatedCubeRows(cubeSet, 'agg2')
 
 print ""
 print "Cube rows in purchasesCubeSet2's source cube:"
@@ -108,23 +108,23 @@ print ""
 #
 #  Add more rows to purchasesCubeSet2's source cube
 #
-cubify.addRowsToSourceCube('purchasesCubeSet2', 'morePurchases.csv')
+cubify.addRowsToSourceCube(cubeSet, 'morePurchases.csv')
 
-binnedCubeRows = cubify.getBinnedCubeRows('purchasesCubeSet2')
+binnedCubeRows = cubify.getBinnedCubeRows(cubeSet)
 print ""
 print "Cube rows in purchasesCubeSet2's binned cube:"
 for cubeRow in binnedCubeRows:
     print cubeRow
 print ""
 
-agg1CubeRows = cubify.getAggregatedCubeRows('purchasesCubeSet2', 'agg1')
+agg1CubeRows = cubify.getAggregatedCubeRows(cubeSet, 'agg1')
 print ""
 print "Cube rows in purchasesCubeSet2's agg1 cube:"
 for cubeRow in agg1CubeRows:
     print cubeRow
 print ""
 
-agg2CubeRows = cubify.getAggregatedCubeRows('purchasesCubeSet2', 'agg2')
+agg2CubeRows = cubify.getAggregatedCubeRows(cubeSet, 'agg2')
 print ""
 print "Cube rows in purchasesCubeSet2's agg2 cube:"
 for cubeRow in agg2CubeRows:

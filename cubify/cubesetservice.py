@@ -41,15 +41,15 @@ class CubeSetService:
             raise ValueError('Cube Set with ' + cubeSetName + ' already exists')
 
         sourceCubeName = cubeSetName + "_source"
-        self.cubeService.createCubeFromCsv(csvFilePath, sourceCubeName)
+        sourceCube = self.cubeService.createCubeFromCsv(csvFilePath, sourceCubeName)
         binnedCubeName = cubeSetName + "_binned"
         if binnings != None:
-            self.cubeService.binCubeCustom(binnings, sourceCubeName, binnedCubeName)
+            binnedCube = self.cubeService.binCubeCustom(binnings, sourceCube, binnedCubeName)
         else:
-            self.cubeService.binCube(sourceCubeName, binnedCubeName)
+            binnedCube = self.cubeService.binCube(sourceCube, binnedCubeName)
 
         if aggs != None:
-                self.cubeService.aggregateCubeCustom(binnedCubeName, aggs)
+                self.cubeService.aggregateCubeCustom(binnedCube, aggs)
 
         # Now save the cubeSet
         cubeSet = {}
@@ -72,49 +72,51 @@ class CubeSetService:
     #
     # Add rows to source cube
     #
-    def addRowsToSourceCube(self, cubeSetName, csvFilePath):
-        existing = self.getCubeSet(cubeSetName)
-        if existing == None:
-            raise ValueError('Cube Set with ' + cubeSetName + ' does not exist')
+    def addRowsToSourceCube(self, cubeSet, csvFilePath):
+        if cubeSet == None:
+            return
 
-        self.cubeService.appendToCubeFromCsv(csvFilePath, existing['sourceCube'])
+        existingSourceCube = self.cubeService.getCube(cubeSet['sourceCube'])
+        self.cubeService.appendToCubeFromCsv(csvFilePath, existingSourceCube)
 
         #re-bin
-        if 'binnedCube' in existing:
-            binnedCubeName = existing['binnedCube']
+        if 'binnedCube' in cubeSet:
+            binnedCubeName = cubeSet['binnedCube']
             binnedCube = self.cubeService.getCube(binnedCubeName)
-            self.cubeService.rebinCubeCustom(binnedCube['binnings'], existing['sourceCube'], existing['binnedCube'])
+            self.cubeService.rebinCubeCustom(binnedCube['binnings'], existingSourceCube, cubeSet['binnedCube'])
 
             #re-aggregate
-            if 'aggCubes' in existing:
-                for aggCubeName in existing['aggCubes']:
+            if 'aggCubes' in cubeSet:
+                for aggCubeName in cubeSet['aggCubes']:
                    aggCube = self.cubeService.getCube(aggCubeName)
                    aggs = []
                    aggs.append(aggCube['agg'])
-                   self.cubeService.aggregateCubeCustom(binnedCubeName, aggs)
+                   self.cubeService.aggregateCubeCustom(binnedCube, aggs)
 
     #
     # Remove rows from source
     #
-    def removeRowsFromSourceCube(self, cubeSetName, filter):
-        existing = self.getCubeSet(cubeSetName)
-        if existing == None:
-            raise ValueError('Cube Set with ' + cubeSetName + ' does not exist')
-        self.cubeService.deleteCubeRows(existing['sourceCube'], filter)
+    def removeRowsFromSourceCube(self, cubeSet, filter):
+        if cubeSet == None:
+            return
+
+        self.cubeService.deleteCubeRows(cubeSet['sourceCube'], filter)
+
+        existingSourceCube = self.cubeService.getCube(cubeSet['sourceCube'])
 
         #re-bin
-        if 'binnedCube' in existing:
-            binnedCubeName = existing['binnedCube']
+        if 'binnedCube' in cubeSet:
+            binnedCubeName = cubeSet['binnedCube']
             binnedCube = self.cubeService.getCube(binnedCubeName)
-            self.cubeService.rebinCubeCustom(binnedCube['binnings'], existing['sourceCube'], existing['binnedCube'])
+            self.cubeService.rebinCubeCustom(binnedCube['binnings'], existingSourceCube, cubeSet['binnedCube'])
 
             #re-aggregate
-            if 'aggCubes' in existing:
-                for aggCubeName in existing['aggCubes']:
+            if 'aggCubes' in cubeSet:
+                for aggCubeName in cubeSet['aggCubes']:
                    aggCube = self.cubeService.getCube(aggCubeName)
                    aggs = []
                    aggs.append(aggCube['agg'])
-                   self.cubeService.aggregateCubeCustom(binnedCubeName, aggs)
+                   self.cubeService.aggregateCubeCustom(binnedCube, aggs)
 
     #
     # Delete a cube set
@@ -139,94 +141,119 @@ class CubeSetService:
     # 
     # Get source cube rows. Iterator to cube rows is returned.
     # 
-    def getSourceCubeRows(self, cubeSetName):
-        existing = self.getCubeSet(cubeSetName)
-        if existing == None:
-            raise ValueError('Cube Set with ' + cubeSetName + ' does not exist')
+    def getSourceCubeRows(self, cubeSet):
+        if cubeSet == None:
+            return []
 
-        return self.cubeService.getCubeRows(existing['sourceCube'])
+        return self.cubeService.getCubeRowsForCube(cubeSet['sourceCube'])
 
     # 
     # Get binned cube rows. Iterator to cube rows is returned.
     # 
-    def getBinnedCubeRows(self, cubeSetName):
-        existing = self.getCubeSet(cubeSetName)
-        if existing == None:
-            raise ValueError('Cube Set with ' + cubeSetName + ' does not exist')
+    def getBinnedCubeRows(self, cubeSet):
+        if cubeSet == None:
+            return []
 
-        if existing['binnedCube'] != None:
-            return self.cubeService.getCubeRows(existing['binnedCube'])
+        # Refresh the cube set
+        cubeSet = self.getCubeSet(cubeSet['name'])
+
+        if cubeSet['binnedCube'] != None:
+            return self.cubeService.getCubeRowsForCube(cubeSet['binnedCube'])
         else:
-            return None
+            return []
 
     # 
     # Get aggregated cube rows. Iterator to cube rows is returned.
     # 
-    def getAggregatedCubeRows(self, cubeSetName, aggName):
-        existing = self.getCubeSet(cubeSetName)
-        if existing == None:
-            raise ValueError('Cube Set with ' + cubeSetName + ' does not exist')
+    def getAggregatedCubeRows(self, cubeSet, aggName):
+        if cubeSet == None:
+            return []
 
-        if 'aggCubes' in existing:
-            for aggCube in existing['aggCubes']:
-               if existing['binnedCube'] + "_" + aggName == aggCube:
-                   return self.cubeService.getCubeRows(aggCube)
+        # Refresh the cube set
+        cubeSet = self.getCubeSet(cubeSet['name'])
 
-        return None
+        if 'aggCubes' in cubeSet:
+            for aggCube in cubeSet['aggCubes']:
+               if cubeSet['binnedCube'] + "_" + aggName == aggCube:
+                   return self.cubeService.getCubeRowsForCube(aggCube)
+
+        return []
 
     #
     # Export source cube to csv.
     #
-    def exportSourceCubeToCsv(self, cubeSetName, csvFilePath):
-        existing = self.getCubeSet(cubeSetName)
-        if existing == None:
-            raise ValueError('Cube Set with ' + cubeSetName + ' does not exist')
+    def exportSourceCubeToCsv(self, cubeSet, csvFilePath):
+        if cubeSet == None:
+            return
 
-        self.cubeService.exportCubeToCsv(existing['sourceCube'], csvFilePath)
+        sourceCubeName = cubeSet['sourceCube']
+        sourceCube = self.cubeService.getCube(sourceCubeName)
+        self.cubeService.exportCubeToCsv(sourceCube, csvFilePath)
 
     #
     # Export binned cube to csv.
     #
-    def exportBinnedCubeToCsv(self, cubeSetName, csvFilePath):
-        existing = self.getCubeSet(cubeSetName)
-        if existing == None:
-            raise ValueError('Cube Set with ' + cubeSetName + ' does not exist')
+    def exportBinnedCubeToCsv(self, cubeSet, csvFilePath):
+        if cubeSet == None:
+            return
 
-        self.cubeService.exportCubeToCsv(existing['binnedCube'], csvFilePath)
+        binnedCubeName = cubeSet['binnedCube']
+        binnedCube = self.cubeService.getCube(binnedCubeName)
+        self.cubeService.exportCubeToCsv(binnedCube, csvFilePath)
         
     #
     # Export agg cube to csv.
     #
-    def exportAggCubeToCsv(self, cubeSetName, csvFilePath, aggName):
-        existing = self.getCubeSet(cubeSetName)
-        if existing == None:
-            raise ValueError('Cube Set with ' + cubeSetName + ' does not exist')
+    def exportAggCubeToCsv(self, cubeSet, csvFilePath, aggName):
+        if cubeSet == None:
+            return
 
-        if 'aggCubes' in existing:
-            for aggCube in existing['aggCubes']:
-               if existing['binnedCube'] + "_" + aggName == aggCube:
+        # Refresh the cube set
+        cubeSet = self.getCubeSet(cubeSet['name'])
+
+        if 'aggCubes' in cubeSet:
+            for aggCubeName in cubeSet['aggCubes']:
+               if cubeSet['binnedCube'] + "_" + aggName == aggCubeName:
+                   aggCube = self.cubeService.getCube(aggCubeName)
                    self.cubeService.exportCubeToCsv(aggCube, csvFilePath)
+
+    #
+    # Export all component cubes of cube set to csv
+    #
+    def exportToCsv(self, cubeSet, directoryPath):
+        if cubeSet == None:
+            return
+        cubeSetName = cubeSet['name']
+        cubeSet = self.cubeService.getCube(cubeSetName) # Refresh
+
+        self.exportSourceCubeToCsv(cubeSet, directoryPath + "/" + cubeSetName + "_source")
+        self.exportSourceCubeToCsv(cubeSet, directoryPath + "/" + cubeSetName + "_binned")
+        for aggCubeName in cubeSet['aggCubes']:
+            aggCube = self.cubeService.getCube(aggCubeName)
+            self.cubeService.exportCubeToCsv(aggCube, directoryPath + "/" + cubeSetName + "_agg_" + aggCube['name'])
 
     #
     # Perform binning on source cube
     #
-    def performBinning(self, cubeSetName, binnings):
-        existing = self.getCubeSet(cubeSetName)
-        if existing == None:
-            raise ValueError('Cube Set with ' + cubeSetName + ' does not exist')
+    def performBinning(self, cubeSet, binnings):
+        if cubeSet == None:
+            return None
+
+        sourceCube = self.cubeService.getCube(cubeSet['sourceCube'])
 
         # Are we rebinning?
-        if existing['binnedCube'] != None:
+        if cubeSet['binnedCube'] != None:
             if binnings != None:
-                self.cubeService.rebinCubeCustom(binnings, existing['sourceCube'], existing['binnedCube'])
+                self.cubeService.rebinCubeCustom(binnings, sourceCube, cubeSet['binnedCube'])
             else:
-                self.cubeService.autoRebinCube(existing['sourceCube'], existing['binnedCube'])
-        else: 
+                self.cubeService.rebinCube(sourceCube, cubeSet['binnedCube'])
+        else:
+            cubeSetName = cubeSet['name']
             binnedCubeName = cubeSetName + "_binned"
             if binnings != None:
-                self.cubeService.binCubeCustom(binnings, binnedCubeName, binnedCubeName)
+                self.cubeService.binCubeCustom(binnings, sourceCube, binnedCubeName)
             else:
-                self.cubeService.binCube(binnedCubeName, binnedCubeName, [])
+                self.cubeService.binCube(sourceCube, binnedCubeName, [])
             self.__updateCubeSetProperty__(cubeSetName, { "$set": {"binnedCube" : binnedCubeName}})
 
     #
@@ -252,19 +279,21 @@ class CubeSetService:
     # For example if the dimensions list is ['d1', 'd2', 'd3'] the aggregation will be performed 3 times on the 
     # binned cube with group-by dimensions, ['d1', 'd2', 'd3'], ['d1', 'd2'], ['d1'] 
     #  
-    def performAggregation(self, cubeSetName, dimensions):
-        existing = self.getCubeSet(cubeSetName)
-        if existing == None:
-            raise ValueError('Cube Set with ' + cubeSetName + ' does not exist')
+    def performAggregation(self, cubeSet, dimensions):
+        if cubeSet == None:
+            return []
 
-        binnedCubeName = existing['binnedCube']
+        binnedCubeName = cubeSet['binnedCube']
+        binnedCube = self.cubeService.getCube(binnedCubeName)
         groupByDimensionsList = self.__getGroupByDimensionsList__(dimensions)
-        aggCubes = self.cubeService.aggregateCubeComplex(binnedCubeName, groupByDimensionsList)
+        aggCubes = self.cubeService.aggregateCubeComplex(binnedCube, groupByDimensionsList)
 
         aggCubeNames = []
         for aggCube in aggCubes:
             aggCubeNames.append(aggCube['name'])
 
+        cubeSet['aggCubes'] = aggCubeNames
+        cubeSetName = cubeSet['name']
         self.__updateCubeSetProperty__(cubeSetName, { "$set": {"aggCubes" : aggCubeNames}})
 
         return aggCubes
@@ -273,18 +302,20 @@ class CubeSetService:
     # Perform one or more aggregations on binned cube using custom aggs.
     # The aggregated cubes are automatically saved and identified by aggName
     #
-    def performAggregationCustom(self, cubeSetName, aggs):
-        existing = self.getCubeSet(cubeSetName)
-        if existing == None:
-            raise ValueError('Cube Set with ' + cubeSetName + ' does not exist')
+    def performAggregationCustom(self, cubeSet, aggs):
+        if cubeSet == None:
+            return []
 
-        binnedCubeName = existing['binnedCube']
-        aggCubes = self.cubeService.aggregateCubeCustom(binnedCubeName, aggs)
+        binnedCubeName = cubeSet['binnedCube']
+        binnedCube = self.cubeService.getCube(binnedCubeName)
+        aggCubes = self.cubeService.aggregateCubeCustom(binnedCube, aggs)
 
         aggCubeNames = []
         for agg in aggs:
               aggCubeNames.append(binnedCubeName + "_" + agg['name'])
- 
+
+        cubeSet['aggCubes'] = aggCubeNames
+        cubeSetName = cubeSet['name']
         self.__updateCubeSetProperty__(cubeSetName, { "$set": {"aggCubes" : aggCubeNames}})
         
         return aggCubes

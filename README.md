@@ -176,7 +176,7 @@ You can also create a cube from another cube by applying a filter to the source 
 The method is called "createCubeFromCube". For example to create a cube containing only cube rows where the CustomerState is "NY" from the 'purchases'
 cube above we can call the method like so:
 
-    cubify.createCubeFromCube('purchases', { 'dimensions.CustomerState' : 'NY' }, 'nyPurchases')
+    cube = cubify.createCubeFromCube('purchases', { 'dimensions.CustomerState' : 'NY' }, 'nyPurchases')
 
 The first argument is the name of the cube we are querying, followed by the filter, and then the name of the new cube.
 The above will result in a cube called 'nyPurchases'.
@@ -187,13 +187,13 @@ For more details about filters, refer to the Cubify Reference documentation.
 -------------------
 You can export the cube to a csv file by calling exportCubeToCsv. For example,
 
-    cubify.exportCubeToCsv('purchases', '/tmp/exported.csv')
+    cubify.exportCubeToCsv(cube, '/tmp/exported.csv')
 
 3. Querying cube rows
 -----------------------
 You can get cube rows from a cube by calling getCubeRows like so:
 
-    cubeRows = cubify.getCubeRows('purchases')
+    cubeRows = cubify.getCubeRows(cube)
     for cubeRow in cubeRows:
         print cubeRow
 
@@ -207,12 +207,12 @@ A cube row has the following basic properties:
 You can query cube rows using filters. 
 For example to get all cube rows where ProductId = 'P2', do the following:
 
-    p2CubeRows = cubify.queryCubeRows('purchases', { 'dimensions.ProductId' : 'P2' })
+    p2CubeRows = cubify.queryCubeRows(cube, { 'dimensions.ProductId' : 'P2' })
 
 Other query examples:
     
-    cubeRows = cubify.queryCubeRows('purchases', { 'measures.Price' : { '$gt' : 21 })
-    cubeRows = cubify.queryCubeRows('purchases', { '$and' : [ { 'measures.Price' : { '$gt' : 21 }},  { 'dimensions.ProductId' : 'P2' } ]})
+    cubeRows = cubify.queryCubeRows(cube, { 'measures.Price' : { '$gt' : 21 })
+    cubeRows = cubify.queryCubeRows(cube, { '$and' : [ { 'measures.Price' : { '$gt' : 21 }},  { 'dimensions.ProductId' : 'P2' } ]})
     
 
 For details about query syntax, refer to the Cubify Reference documentation.
@@ -223,7 +223,7 @@ For details about query syntax, refer to the Cubify Reference documentation.
 You can add new numeric and string columns to a cube using an expression or a function.
 For example, to add a numeric column called "Revenue" using the expression Price * Qty, you can call:
 
-    cubify.addColumn("purchases", "Revenue", "numeric", "$['Price'] * $['Qty']", None)
+    cubify.addColumn(cube, "Revenue", "numeric", "$['Price'] * $['Qty']", None)
 
 If we want to add a new numeric column called "Discount" using a function called "computeDiscount", first define the function as in the example below.
 Note that the function must have one argument which will hold the cubeRow.
@@ -236,13 +236,13 @@ Note that the function must have one argument which will hold the cubeRow.
     
 Then call addColumn as in the example below:
 
-    cubify.addColumn("purchases", "Discount", "numeric", None, computeDiscount)
+    cubify.addColumn(cube, "Discount", "numeric", None, computeDiscount)
 
 The following example shows you how to add a new string column.
 Say you want to add a new column called "ProductCategory" whose value should be "Category1" if the Product is "P1" and "Category2" for all other products.
 We can use an expression as in the following example:
 
-    cubify.addColumn('purchases', 'ProductCategory', 'string', "'Category1' if $['ProductId'] == 'P1' else 'Category2'", None)
+    cubify.addColumn(cube, 'ProductCategory', 'string', "'Category1' if $['ProductId'] == 'P1' else 'Category2'", None)
     
 Let's say we want to add another string column, PackageSize which will use a computePackageSize function to return the values 'SMALL' or 'LARGE'.
 First define the function,
@@ -265,7 +265,7 @@ First define the function,
 
 Then call addColumn as in:
 
-    cubify.addColumn('purchases', 'PackageSize', 'string', None, computePackageSize)
+    cubify.addColumn(cube, 'PackageSize', 'string', None, computePackageSize)
 
    
 5. Binning a cube
@@ -282,7 +282,7 @@ It uses a variant of Sturge's algorithm for this. See https://en.wikipedia.org/w
 
 So continuing with our tutorial, we can instruct cubify to automatically bin all measures in our purchases cube to produce a new cube called "purchases_autobinned_1" like so:
 
-    binnedCube = cubify.binCube('purchases', 'purchases_autobinned_1')
+    binnedCube = cubify.binCube(cube, 'purchases_autobinned_1')
 
 If you examine the dimensions in binned cube, you will see new ones, "RevenueBin", "PriceBin", "QtyBin", "DiscountBin", "TransactionDateBin".
 
@@ -325,7 +325,7 @@ look like so:
 In the next example, we instruct cubify to bin specific measures, Qty, Price and the TransactionDate. For TransactionDate, we pass in 'weekly' as the hint to cubify.
 We will call our new binned cube, 'purchases_autobinned_2'.
 
-    binnedCube = cubify.binCube('purchases', 'purchases_autobinned_2', ['TransactionDate','Qty','Price'], {'TransactionDate':'weekly'})
+    binnedCube = cubify.binCube(cube, 'purchases_autobinned_2', ['TransactionDate','Qty','Price'], {'TransactionDate':'weekly'})
 
 If you examine the dimensions in binned cube, you will see the following new ones, "PriceBin", "QtyBin", "TransactionDateBin". Note that TransactionDateBin now uses weekly bins; the label is in the format [yyyy][ww] where yyyy is the year and ww is the week number is 1 to 52:
 
@@ -363,7 +363,7 @@ Since, we are binning a continuous measure, the type is set to "range". The fall
 
     with open('qtyBinning.json') as binnings_file:
          binnings = json.load(binnings_file)
-    binnedCube1 = cubify.binCubeCustom(binnings, 'purchases', 'purchases_binned_1')
+    binnedCube1 = cubify.binCubeCustom(binnings, cube, 'purchases_binned_1')
 
 Now when you list the distinct dimension values of binnedCube1, you will see that a new dimension, QtyBin appears in the list with 12 occurrences of 0-5 bin and 2 occurrences of the 5+ bin.:
 
@@ -373,7 +373,7 @@ Now when you list the distinct dimension values of binnedCube1, you will see tha
 
 If you export purchases_binned_1 to csv, you should see a new column, QtyBin.
 
-    cubify.exportCubeToCsv('purchases_binned_1', '/tmp/exportedBinned1.csv')
+    cubify.exportCubeToCsv(binnedCube1, '/tmp/exportedBinned1.csv')
 
 |S:CustomerId|S:CustomerState|S:PackageSize|S:ProductCategory|S:ProductId|S:QtyBin|D:TransactionDate|N:Discount|N:Price|N:Qty|N:Revenue|
 |------------|---------------|-------------|-----------------|-----------|--------|-----------------|----------|-------|-----|---------|
@@ -452,11 +452,11 @@ Now, let's apply binnings.json to our purchases cube, as in the code snippet bel
 
     with open('binnings.json') as binnings_file:
         binnings = json.load(binnings_file)
-    binnedCube2 = cubify.binCubeCustom(binnings, 'purchases', 'purchases_binned_2')
+    binnedCube2 = cubify.binCubeCustom(binnings, cube, 'purchases_binned_2')
 
 Now when you export the binned cube, you will see the new columns, QtyBin, PriceBin, YearMonth and Region.
 
-    cubify.exportCubeToCsv('purchases_binned_2', '/tmp/exportedBinned2.csv')
+    cubify.exportCubeToCsv(binnedCube2, '/tmp/exportedBinned2.csv')
 
 The binned cube's contents:
 
@@ -500,7 +500,7 @@ Note that every aggregated cube will have a Count column showing the number of o
 
 Going back to our tutorial, we will aggregate the cube, "purchases_binned_2" as described above. To do this, simply invoke cubify's aggregateCube method like so:
 
-    aggCube = cubify.aggregateCube('purchases_binned_2', ['CustomerId'], ['Qty', 'Price'])
+    aggCube = cubify.aggregateCube(binnedCube2, ['CustomerId'], ['Qty', 'Price'])
 
 Note that we did not pass in the aggregation formulae for the measures. Cubify uses the default aggregation formulae, 'Average' and 'Sum'.
 (In later examples, we will see how to use custom formulae for our aggregations.)
@@ -508,7 +508,7 @@ Note that we did not pass in the aggregation formulae for the measures. Cubify u
 The aggregateCube method returns an aggregated cube. cubify will automatically name the cube by appending the group-by dimensions to the name of the original cube.
 In our example, the aggregated cube will be called 'purchases_binned_2_CustomerId'. If we export the aggregated cube:
 
-    cubify.exportCubeToCsv(aggCube['name'], '/tmp/aggregatedCubeByCustomerId.csv')
+    cubify.exportCubeToCsv(aggCube, '/tmp/aggregatedCubeByCustomerId.csv')
 
 We get the following csv output:
 
@@ -521,7 +521,7 @@ We get the following csv output:
 In our next example, we aggregate our cube using the group-by dimensions, CustomerState and ProductCategory. We will aggregate all measures in the cube using the
 default formulae, 'Average' and 'Sum'.
 
-    aggCube = cubify.aggregateCube('purchases_binned_2', ['CustomerState', 'ProductCategory'])
+    aggCube = cubify.aggregateCube(binnedCube2, ['CustomerState', 'ProductCategory'])
 
 Note that we are omitting the 3rd argument for measures in our call to aggregateCube above. cubify interprets this as aggregating all measures.
 The name of the aggregated cube is 'purchases_binned_2_CustomerState-ProductCategory'.
@@ -538,7 +538,7 @@ The output of the aggregated cube now contains the average and total of all meas
 In the third simple, example, we will perform multiple aggregations on our cube. The first uses the group-by dimension, ProductId and the second uses TransactionDate.
 We will aggregate on all measures using Average and Sum.
 
-    aggCubes = cubify.aggregateCubeComplex('purchases_binned_2', [['ProductId'], ['ProductId','TransactionDate']])
+    aggCubes = cubify.aggregateCubeComplex(binnedCube2, [['ProductId'], ['ProductId','TransactionDate']])
 
 The returned aggCubes list now contains 2 aggregated cubes. The first one is called "purchases_binned_2_ProductId" and the looks like:
 
@@ -584,7 +584,7 @@ Now let's load the aggregation DSL file, agg1.json and call the aggregateCube me
 
     with open('agg1.json') as agg_file:
         agg = json.load(agg_file)
-    aggCubes = cubify.aggregateCube('purchases_binned_2', agg)
+    aggCubes = cubify.aggregateCube(binnedCube2, agg)
     aggCube = aggCubes[0]
 
 The aggregateCube method returns a list of aggregated cubes, but since we only have one aggregation definition in our DSL, the returned list contains one result cube.
@@ -632,7 +632,7 @@ Now let's load the aggregation DSL file, agg2.json and call the aggregateCube me
 
     with open('agg2.json') as agg_file:
         agg = json.load(agg_file)
-    aggCubes = cubify.aggregateCube('purchases_binned_2', agg)
+    aggCubes = cubify.aggregateCube(binnedCube2, agg)
     aggCube = aggCubes[0]
 
 Now when we list the cube rows for the aggregated cube we get our two new measures, AverageRevenue and TotalQty and cube now contains only 2 rows, one per product.
@@ -677,35 +677,35 @@ The third argument is the name of the CSV file that contains our data.
 In our tutorial, once createCubeSet returns successfully, our purchasesCubeSet contains a "source" cube reflecting the original data imported from purchases.csv.
 To get the source cube rows, call getSourceCubeRows like so:
 
-    cubeRows = cubify.getSourceCubeRows('purchasesCubeSet')
+    cubeRows = cubify.getSourceCubeRows(cubeSet)
 
 Our cube set also contains a binned cube - with the binnings automatically determined by cubify.
 To get the binned cube rows, call getBinnedCubeRows like so:
 
-    binnedCubeRows = cubify.getBinnedCubeRows('purchasesCubeSet')
+    binnedCubeRows = cubify.getBinnedCubeRows(cubeSet)
 
 We can export the binned cube from our cubeset like so:
 
-    cubify.exportBinnedCubeToCsv('purchasesCubeSet', '/tmp/purchasesCubeSetBinnedCube.csv')
+    cubify.exportBinnedCubeToCsv(cubeSet, '/tmp/purchasesCubeSetBinnedCube.csv')
 
 2. Aggregating a cube set (simple)
 ----------------------------------
 Now let's aggregate our cube set with the following dimensions, ['CustomerState', 'ProductId']:
     
-    aggCubes = cubify.performAggregation('purchasesCubeSet', ['CustomerState', 'ProductId'])
+    aggCubes = cubify.performAggregation(cubeSet, ['CustomerState', 'ProductId'])
 
 The above method will perform 2 aggregations on the binned cube in our cube set to produce 2 aggregated cubes. The first aggregation will group by 'CustomerState' and 'ProductId' and the second aggregation will group by 'CustomerState'. Now to get the cube rows of the first aggregated cube, we simple call the method getAggregatedCubeRows passing in the
 name of our cube set and the reference to the aggregated cube, 'CustomerState-ProductId' like so:
 
-    agg1CubeRows = cubify.getAggregatedCubeRows('purchasesCubeSet', 'CustomerState-ProductId')
+    agg1CubeRows = cubify.getAggregatedCubeRows(cubeSet, 'CustomerState-ProductId')
 
 Note that the reference name of an aggregated cube is a concatenation of the group-by dimension names. In the example above it is, 'CustomerState-ProductId'.
 The reference name of the second aggregated cube is simply 'CustomerState'.
 
 We can export the aggreated cubes by calling the exportAggregateCubeToCsv method like so.
 
-    cubify.exportAggCubeToCsv('purchasesCubeSet', '/tmp/purchasesCubeSet-aggregated-by-CustomerState-ProductId.csv', 'CustomerState-ProductId')
-    cubify.exportAggCubeToCsv('purchasesCubeSet', '/tmp/purchasesCubeSet-aggregated-by-CustomerState.csv, 'CustomerState')
+    cubify.exportAggCubeToCsv(cubeSet, '/tmp/purchasesCubeSet-aggregated-by-CustomerState-ProductId.csv', 'CustomerState-ProductId')
+    cubify.exportAggCubeToCsv(cubeSet, '/tmp/purchasesCubeSet-aggregated-by-CustomerState.csv, 'CustomerState')
 
 The exported cubes would look like:
 
@@ -771,15 +771,15 @@ To refresh your memory, here is aggs.json:
 
 You can retrieve the cube rows of the aggregated cubes by referring to the aggregation names like so:
 
-    agg1CubeRows = cubify.getAggregatedCubeRows('purchasesCubeSet2', 'agg1')
-    agg2CubeRows = cubify.getAggregatedCubeRows('purchasesCubeSet2', 'agg2')
+    agg1CubeRows = cubify.getAggregatedCubeRows(cubeSet, 'agg1')
+    agg2CubeRows = cubify.getAggregatedCubeRows(cubeSet, 'agg2')
 
 4. Adding cube rows to cube set
 -------------------------------
 All is well with our cube set thus far. But now let's say we are in a new month and we have more purchases data to add to our cube set.
 Let's assume the new purchases data is in a file called "morePurchases.csv". To add the rows to our source cube in our cube set, simply call:
 
-    cubify.addRowsToSourceCube('purchasesCubeSet2', 'morePurchases.csv')
+    cubify.addRowsToSourceCube(cubeSet, 'morePurchases.csv')
 
 This method adds the new rows to our source cube, as well as updates the binned cube and aggregated cubes. Thus our binned and aggregated cubes are kept in synch with 
 the data in our source cube. You can verify that this is so by examining the rows of the binned cube and aggregated cubes (left as an exercise).

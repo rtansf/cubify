@@ -119,7 +119,7 @@ class CubeService:
     #  Get number of rows in cube
     #
     def __getCubeRowCount__(self, cubeName):
-        cubeRows = self.getCubeRows(cubeName)
+        cubeRows = self.getCubeRowsForCube(cubeName)
 
         if isinstance(cubeRows, list):
             return len(cubeRows)
@@ -226,7 +226,7 @@ class CubeService:
             raise ValueError("Cube does not exist: " + fromCubeName)
         if fromCubeName in self.inMemoryCubes:
             raise ValueError("Cannot create cube from an in-memory cube. This feature is not yet supoorted.")
-        cubeRows = self.queryCubeRows(fromCubeName, filter)
+        cubeRows = self.queryCubeRows(fromCube, filter)
         if self.__getCubeRowCount__(fromCubeName) == 0:
             raise ValueError("Cube not created because number of rows returned by filter = 0")
             return
@@ -253,15 +253,18 @@ class CubeService:
     #
     # Append to cube from csv file
     #
-    def appendToCubeFromCsv(self, csvFilePath, cubeName):
-        cube = self.getCube(cubeName)
-        if (cube == None):
-            raise ValueError("Cube does not exist: " + cubeName)
+    # Returns cube
+    #
+    def appendToCubeFromCsv(self, csvFilePath, cube):
+        if cube == None:
+            return
+        cubeName = cube['name']
+
+        inMemory = cubeName in self.inMemoryCubes
 
         result = self.createCubeRowsFromCsv(csvFilePath)
 
         # Adjust ids # TODO use max(id) from cube instead of numCurrentCubeRows
-        currentCubeRows = self.getCubeRows(cubeName)
         numCurrentCubeRows = self.__getCubeRowCount__(cubeName)
 
         cubeRows = result['cubeRows']
@@ -271,7 +274,8 @@ class CubeService:
             id += 1
 
         # Save the cube rows
-        self.db[cubeName].insert_many(cubeRows)
+        if not inMemory:
+            self.db[cubeName].insert_many(cubeRows)
 
         # Merge the distincts
         existingDistincts = cube['distincts']
@@ -279,12 +283,19 @@ class CubeService:
         for dc in dcs:
             if dc not in existingDistincts:
                 existingDistincts.append(dc)
-        self.__updateCubeProperty__(cubeName, { "$set": {"distincts" : existingDistincts}})
+        cube['distincts'] = existingDistincts
+        if not inMemory:
+            self.__updateCubeProperty__(cubeName, { "$set": {"distincts" : existingDistincts}})
 
         # Redo the stats
-        allCubeRows = self.getCubeRows(cubeName)
+        allCubeRows = self.getCubeRowsForCube(cubeName)
         stats = self.getStats(allCubeRows)
-        self.__updateCubeProperty__(cubeName, { "$set": {"stats" : stats}})
+        cube['stats'] = stats
+
+        if not inMemory:
+            self.__updateCubeProperty__(cubeName, { "$set": {"stats" : stats}})
+
+        return cube
 
     #
     # Delete cube rows from a cube
@@ -296,7 +307,7 @@ class CubeService:
 
         self.db[cubeName].remove(filter)
 
-        allCubeRows = self.getCubeRows(cubeName)
+        allCubeRows = self.getCubeRowsForCube(cubeName)
 
         # Redo distincts
         distincts =  {}
@@ -380,17 +391,30 @@ class CubeService:
     #
     #  Query cube rows
     #
-    def queryCubeRows(self, cubeName, filter):
+    def queryCubeRows(self, cube, filter):
+        if cube == None:
+            return []
+        cubeName = cube['name']
         return self.db[cubeName].find(filter)
 
     #
-    #  Get all cube rows
+    #  Get all cube rows for a cubeName
     #
-    def getCubeRows(self, cubeName):
+    def getCubeRowsForCube(self, cubeName):
         if cubeName in self.inMemoryCubeRows:
             return self.inMemoryCubeRows[cubeName]
         else:
-            return self.queryCubeRows(cubeName, {}).sort("dimensionKey", pymongo.ASCENDING)
+            cube = self.getCube(cubeName)
+            return self.queryCubeRows(cube, {}).sort("dimensionKey", pymongo.ASCENDING)
+
+    #
+    #  Get all cube rows for a cube
+    #
+    def getCubeRows(self, cube):
+        if cube == None:
+            return []
+        cubeName = cube['name']
+        return self.getCubeRowsForCube(cubeName)
 
     #
     # Compute stats on cube
@@ -515,7 +539,7 @@ class CubeService:
     #
     def __isMeasureDate__(self, cubeName, measure):
        # Get a cube row
-       cubeRows = self.getCubeRows(cubeName)
+       cubeRows = self.getCubeRowsForCube(cubeName)
        cubeRow = cubeRows[0];
        for dateCol in cubeRow['dates']:
            if dateCol == measure:
@@ -594,7 +618,7 @@ class CubeService:
     #
     def __getAllMeasuresForBinning__(self, cubeName):
         measuresToBeBinned = []
-        cubeRows = self.getCubeRows(cubeName)
+        cubeRows = self.getCubeRowsForCube(cubeName)
         cubeRow = cubeRows[0];
         for measure in cubeRow['measures']:
             measuresToBeBinned.append(measure)
@@ -605,18 +629,26 @@ class CubeService:
     #
     # Automatically bin a cube
     #
-    def binCube(self, sourceCubeName, binnedCubeName, measuresToBeBinned=None, hints={}):
+    def binCube(self, sourceCube, binnedCubeName, measuresToBeBinned=None, hints={}):
+        if sourceCube == None:
+            return
+
+        sourceCubeName = sourceCube['name']
         if measuresToBeBinned == None:
             measuresToBeBinned = self.__getAllMeasuresForBinning__(sourceCubeName)
 
         binnings = self.__generateBinnings__(sourceCubeName, measuresToBeBinned, hints)
-        return self.binCubeCustom(binnings, sourceCubeName, binnedCubeName)
+        return self.binCubeCustom(binnings, sourceCube, binnedCubeName)
 
     #
     # Automatically re-bin a cube
     #
-    def rebinCube(self, sourceCubeName, binnedCubeName):
+    def rebinCube(self, sourceCube, binnedCubeName):
 
+        if sourceCube == None:
+            return None
+
+        sourceCubeName = sourceCube['name']
         measuresToBeBinned = []
 
         # Get existing binning definition, if any - and get the measures to be binned from this
@@ -631,14 +663,18 @@ class CubeService:
             measuresToBeBinned = self.__getAllMeasuresForBinning__(sourceCubeName)
 
         binnings = self.__generateBinnings__(sourceCubeName, measuresToBeBinned, {})
-        return self.rebinCubeCustom(binnings, sourceCubeName, binnedCubeName)
+        return self.rebinCubeCustom(binnings, cube, binnedCubeName)
 
     #
     # Bin cube with custom binnings  - Returns the binned cube
     #
-    def binCubeCustom(self, binnings, sourceCubeName, binnedCubeName):
+    def binCubeCustom(self, binnings, sourceCube, binnedCubeName):
+        if sourceCube == None:
+            return None
+
+        sourceCubeName = sourceCube['name']
         binnedCubeRows = []
-        cubeRows = self.getCubeRows(sourceCubeName)
+        cubeRows = self.getCubeRowsForCube(sourceCubeName)
         distincts = {}
         for cubeRow in cubeRows:
             #print cubeRow
@@ -657,9 +693,13 @@ class CubeService:
     #
     # Re-bin cube using custom binnings
     #
-    def rebinCubeCustom(self, binnings, sourceCubeName, binnedCubeName):
+    def rebinCubeCustom(self, binnings, sourceCube, binnedCubeName):
+        if sourceCube == None:
+            return None
+
+        sourceCubeName = sourceCube['name']
         binnedCubeRows = []
-        cubeRows = self.getCubeRows(sourceCubeName)
+        cubeRows = self.getCubeRowsForCube(sourceCubeName)
         distincts = {}
         for cubeRow in cubeRows:
             #print cubeRow
@@ -755,7 +795,7 @@ class CubeService:
     def aggregateCubeComplexOld(self, cubeName, groupByDimensionsList, measures=None):
         if measures == None:
             allMeasures = []
-            cubeRows = self.getCubeRows(cubeName)
+            cubeRows = self.getCubeRowsForCube(cubeName)
             cubeRow = cubeRows[0];
             for measure in cubeRow['measures']:
                 allMeasures.append(measure)
@@ -768,17 +808,20 @@ class CubeService:
     #
     #  Aggregate a cube on a single group-by dimensions list
     #
-    def aggregateCube(self, cubeName, groupByDimensions, measures=None):
-        aggCubes = self.aggregateCubeComplex(cubeName, [groupByDimensions], measures)
+    def aggregateCube(self, cube, groupByDimensions, measures=None):
+        aggCubes = self.aggregateCubeComplex(cube, [groupByDimensions], measures)
         return aggCubes[0]
 
     #
     # Aggregate cube with multiple group-by dimensions list
     #
-    def aggregateCubeComplex(self, cubeName, groupByDimensionsList, measures=None):
+    def aggregateCubeComplex(self, cube, groupByDimensionsList, measures=None):
+        if cube == None:
+            return []
+        cubeName = cube['name']
         if measures == None:
             allMeasures = []
-            cubeRows = self.getCubeRows(cubeName)
+            cubeRows = self.getCubeRowsForCube(cubeName)
             cubeRow = cubeRows[0];
             for measure in cubeRow['measures']:
                 allMeasures.append(measure)
@@ -786,13 +829,13 @@ class CubeService:
         else:
             aggs = self.__generateAggs__(cubeName, groupByDimensionsList, measures)
 
-        return self.aggregateCubeCustom(cubeName, aggs)
+        return self.aggregateCubeCustom(cube, aggs)
 
     #
     #  Is a group-by dimension a date?
     #
     def __isDateDimension__(self, cubeName, dimension):
-        cubeRows = self.getCubeRows(cubeName)
+        cubeRows = self.getCubeRowsForCube(cubeName)
         cubeRow = cubeRows[0]
         for date in cubeRow['dates']:
             if dimension == date:
@@ -816,8 +859,12 @@ class CubeService:
     #
     # Aggregate cube using custom aggregation definitions
     #
-    def aggregateCubeCustom(self, cubeName, aggs):
-        cubeRows = self.getCubeRows(cubeName)
+    def aggregateCubeCustom(self, cube, aggs):
+        if cube == None:
+            return []
+
+        cubeName = cube['name']
+        cubeRows = self.getCubeRowsForCube(cubeName)
         results = {}
         nameToAggMap = {}
 
@@ -1100,7 +1147,7 @@ class CubeService:
 
         return resultCubes
 
-    def addColumn(self, cubeName, newColumnName, type, expression=None, func=None):
+    def addColumn(self, cube, newColumnName, type, expression=None, func=None):
         if type != 'numeric' and type != 'string':
             raise ValueError("type must be one of numeric, string")
 
@@ -1113,11 +1160,11 @@ class CubeService:
             elif type == 'string':
                expression = expression.replace('$', "cubeRow['dimensions']")
 
-        cube = self.getCube(cubeName)
         if (cube == None):
-           raise ValueError("Cube does not exist:" + cubeName)
+            return
 
-        cubeRows = self.getCubeRows(cubeName)
+        cubeName = cube['name']
+        cubeRows = self.getCubeRowsForCube(cubeName)
         tempMap = {}
 
         for cubeRow in cubeRows:
@@ -1131,7 +1178,7 @@ class CubeService:
             except SyntaxError:
                 raise SyntaxError("Expression contains syntax error.")
 
-        cubeRows = self.getCubeRows(cubeName)
+        cubeRows = self.getCubeRowsForCube(cubeName)
         for cubeRow in cubeRows:
             cubeId = cubeRow['id']
             value = tempMap[cubeId]
@@ -1150,7 +1197,7 @@ class CubeService:
 
         if type == 'numeric':
             # Recompute stats
-            cubeRows = self.getCubeRows(cubeName)
+            cubeRows = self.getCubeRowsForCube(cubeName)
             stats = self.getStats(cubeRows)
             self.__updateCubeProperty__(cubeName, { "$set": {"stats" : stats}})
         elif type == 'string':
@@ -1168,14 +1215,15 @@ class CubeService:
     #
     # Export cube rows to csv
     #
-    def exportCubeToCsv(self, cubeName,csvFilePath):
+    def exportCubeToCsv(self, cube, csvFilePath):
 
-        cube = self.getCube(cubeName)
         if (cube == None):
-            raise ValueError("Cube does not exist:" + cubeName)
+            raise ValueError("Cube is null")
+
+        cubeName = cube['name']
 
         csvfile = open(csvFilePath, 'w')
-        cubeRows = self.getCubeRows(cubeName)
+        cubeRows = self.getCubeRowsForCube(cubeName)
         fieldNames = []
         for cubeRow in cubeRows:
             if len(fieldNames) == 0:
