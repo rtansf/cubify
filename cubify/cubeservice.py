@@ -690,7 +690,9 @@ class CubeService:
         if sourceCubeName in self.inMemoryCubes:
             inMemory = True
         self.createCube('binned', binnedCubeName, binnedCubeRows, distincts, stats, binnings, None, inMemory)
-        self.__updateCubeProperty__(binnedCubeName, { "$set": {"lastBinnedOn" : datetime.utcnow()}})
+
+        if not inMemory:
+            self.__updateCubeProperty__(binnedCubeName, { "$set": {"lastBinnedOn" : datetime.utcnow()}})
 
         return self.getCube(binnedCubeName)
 

@@ -586,8 +586,11 @@ class cubeSetServiceTests(unittest.TestCase):
         cs = CubeSetService('testdb')
         cubeSet = cs.createCubeSet("testOwner", cubeSetName, csvFilePath, binnings, aggs)
 
-        cs.exportAggCubeToCsv(cubeSet, "cubeSetAgg" + aggs[0]['name'] + "Exported.csv", aggs[0]['name'])
-        with open("cubeSetAgg" + aggs[0]['name'] + "Exported.csv") as csvfile:
+        cs.exportAggCubesToCsv(cubeSet, ".")
+
+        print cubeSetName + "_binned_agg1.csv"
+
+        with open(cubeSetName + "_agg_" + cubeSetName + "_binned_agg1.csv") as csvfile:
             reader = csv.DictReader(csvfile)
             fieldNames = reader.fieldnames
             self.assertTrue(fieldNames == ['S:ProductId', 'S:Region', 'N:AveragePrice', 'N:AverageQty', 'N:Count'])
@@ -596,9 +599,7 @@ class cubeSetServiceTests(unittest.TestCase):
                 rowNum += 1
             self.assertTrue (rowNum == 4)
 
-
-        cs.exportAggCubeToCsv(cubeSet, "cubeSetAgg" + aggs[1]['name'] + "Exported.csv", aggs[1]['name'])
-        with open("cubeSetAgg" + aggs[1]['name'] + "Exported.csv") as csvfile:
+        with open(cubeSetName + "_agg_" + cubeSetName + "_binned_agg2.csv") as csvfile:
             reader = csv.DictReader(csvfile)
             fieldNames = reader.fieldnames
             self.assertTrue(fieldNames == ['S:ProductId', 'N:Count', 'N:TotalQty'])
@@ -607,8 +608,7 @@ class cubeSetServiceTests(unittest.TestCase):
                 rowNum += 1
             self.assertTrue (rowNum == 2)
 
-        cs.exportAggCubeToCsv(cubeSet, "cubeSetAgg" + aggs[2]['name'] + "Exported.csv", aggs[2]['name'])
-        with open("cubeSetAgg" + aggs[2]['name'] + "Exported.csv") as csvfile:
+        with open(cubeSetName + "_agg_" + cubeSetName + "_binned_agg3.csv") as csvfile:
             reader = csv.DictReader(csvfile)
             fieldNames = reader.fieldnames
             self.assertTrue(fieldNames == ['S:ProductId', 'N:AverageRevenue', 'N:Count'])
@@ -618,6 +618,6 @@ class cubeSetServiceTests(unittest.TestCase):
             self.assertTrue (rowNum == 2)
 
         os.remove(cubeSetName + '.csv')
-        os.remove("cubeSetAgg" + aggs[0]['name'] + "Exported.csv")
-        os.remove("cubeSetAgg" + aggs[1]['name'] + "Exported.csv")
-        os.remove("cubeSetAgg" + aggs[2]['name'] + "Exported.csv")
+        os.remove(cubeSetName + "_agg_" + cubeSetName + "_binned_agg1.csv")
+        os.remove(cubeSetName + "_agg_" + cubeSetName + "_binned_agg2.csv")
+        os.remove(cubeSetName + "_agg_" + cubeSetName + "_binned_agg3.csv")

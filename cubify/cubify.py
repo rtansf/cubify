@@ -10,7 +10,7 @@ class Cubify:
     ### Cubes
 
     def createCubeFromCsv(self, csvFilePath, cubeName, inMemory=False):
-        return self.cubeService.createCubeFromCsv(csvFilePath, cubeName)
+        return self.cubeService.createCubeFromCsv(csvFilePath, cubeName, inMemory)
 
     def createCubeFromCube(self, fromCube, filter, toCubeName):
         return self.cubeService.createCubeFromCube(fromCube, filter, toCubeName)
@@ -72,13 +72,13 @@ class Cubify:
         return self.cubeSetService.removeRowsFromSourceCube(cubeSet, filter)
 
     def performBinning(self, cubeSet, binnings):
-        self.cubeSetService.performBinning(cubeSet, binnings)
+        return self.cubeSetService.performBinning(cubeSet, binnings)
 
     def performAggregation(self, cubeSetName, dimensions):
-        self.cubeSetService.performAggregation(cubeSetName, dimensions)
+        return self.cubeSetService.performAggregation(cubeSetName, dimensions)
 
     def performAggregationCustom(self, cubeSetName, aggs):
-        self.cubeSetService.performAggregationCustom(cubeSetName, aggs)
+        return self.cubeSetService.performAggregationCustom(cubeSetName, aggs)
 
     def getSourceCubeRows(self, cubeSet):
         return self.cubeSetService.getSourceCubeRows(cubeSet)
@@ -95,8 +95,8 @@ class Cubify:
     def exportBinnedCubeToCsv(self, cubeSet, csvFilePath):
         self.cubeSetService.exportBinnedCubeToCsv(cubeSet, csvFilePath)
 
-    def exportAggCubeToCsv(self, cubeSet, csvFilePath, aggName):
-        self.cubeSetService.exportAggCubeToCsv(cubeSet, csvFilePath, aggName)
+    def exportAggCubesToCsv(self, cubeSet, directoryPath):
+        self.cubeSetService.exportAggCubesToCsv(cubeSet, directoryPath)
 
     def exportToCsv(self, cubeSet, directoryPath):
         self.cubeSetService.exportToCsv(cubeSet, directoryPath)

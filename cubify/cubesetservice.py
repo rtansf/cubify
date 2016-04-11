@@ -202,9 +202,9 @@ class CubeSetService:
         self.cubeService.exportCubeToCsv(binnedCube, csvFilePath)
         
     #
-    # Export agg cube to csv.
+    # Export agg cubes to csv.
     #
-    def exportAggCubeToCsv(self, cubeSet, csvFilePath, aggName):
+    def exportAggCubesToCsv(self, cubeSet, directoryPath):
         if cubeSet == None:
             return
 
@@ -213,9 +213,9 @@ class CubeSetService:
 
         if 'aggCubes' in cubeSet:
             for aggCubeName in cubeSet['aggCubes']:
-               if cubeSet['binnedCube'] + "_" + aggName == aggCubeName:
-                   aggCube = self.cubeService.getCube(aggCubeName)
-                   self.cubeService.exportCubeToCsv(aggCube, csvFilePath)
+                aggCube = self.cubeService.getCube(aggCubeName)
+                csvFilePath = directoryPath + "/" + cubeSet['name'] + "_agg_" + aggCube['name'] + '.csv'
+                self.cubeService.exportCubeToCsv(aggCube, csvFilePath)
 
     #
     # Export all component cubes of cube set to csv
@@ -224,13 +224,13 @@ class CubeSetService:
         if cubeSet == None:
             return
         cubeSetName = cubeSet['name']
-        cubeSet = self.cubeService.getCube(cubeSetName) # Refresh
+        cubeSet = self.getCubeSet(cubeSetName) # Refresh
 
-        self.exportSourceCubeToCsv(cubeSet, directoryPath + "/" + cubeSetName + "_source")
-        self.exportSourceCubeToCsv(cubeSet, directoryPath + "/" + cubeSetName + "_binned")
+        self.exportSourceCubeToCsv(cubeSet, directoryPath + "/" + cubeSetName + "_source" + ".csv")
+        self.exportSourceCubeToCsv(cubeSet, directoryPath + "/" + cubeSetName + "_binned" + ".csv")
         for aggCubeName in cubeSet['aggCubes']:
             aggCube = self.cubeService.getCube(aggCubeName)
-            self.cubeService.exportCubeToCsv(aggCube, directoryPath + "/" + cubeSetName + "_agg_" + aggCube['name'])
+            self.cubeService.exportCubeToCsv(aggCube, directoryPath + "/" + cubeSetName + "_agg_" + aggCube['name'] + '.csv')
 
     #
     # Perform binning on source cube
@@ -243,6 +243,7 @@ class CubeSetService:
 
         # Are we rebinning?
         if cubeSet['binnedCube'] != None:
+            binnedCubeName = cubeSet['binnedCube']
             if binnings != None:
                 self.cubeService.rebinCubeCustom(binnings, sourceCube, cubeSet['binnedCube'])
             else:
@@ -255,6 +256,8 @@ class CubeSetService:
             else:
                 self.cubeService.binCube(sourceCube, binnedCubeName, [])
             self.__updateCubeSetProperty__(cubeSetName, { "$set": {"binnedCube" : binnedCubeName}})
+
+        return self.cubeService.getCube(binnedCubeName)
 
     #
     #  Given a list of dimensions, return a list of n lists of dimensions, each a unique combination of the original list
