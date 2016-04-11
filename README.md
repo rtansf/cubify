@@ -181,7 +181,7 @@ cube above we can call the method like so:
 The first argument is the name of the cube we are querying, followed by the filter, and then the name of the new cube.
 The above will result in a cube called 'nyPurchases'.
 
-For more details about filters, refer to the Cubify Reference documentation.
+For more details about filters, refer to the <a href="http://pluralconcepts.com/cubify_reference.html">Cubify Reference documentation</a>
 
 2. Exporting a cube
 -------------------
