@@ -66,10 +66,9 @@ class cubeServiceTests(unittest.TestCase):
         except Exception:
             shutil.copyfile('./testdata.csv', cubeName + '.csv')
         cs = CubeService('testdb')
-        cs.createCubeFromCsv(cubeName + '.csv', cubeName)
-        cs.createCubeFromCube(cubeName, {"dimensions.State": "NY"}, toCubeName)
+        cube = cs.createCubeFromCsv(cubeName + '.csv', cubeName)
+        toCube = cs.createCubeFromCube(cube, {"dimensions.State": "NY"}, toCubeName)
 
-        toCube = cs.getCube(toCubeName)
         self.assertTrue (toCube != None)
         distincts = toCube['distincts']
         self.assertTrue (distincts['State'] == {'NY' : 6})

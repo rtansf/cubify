@@ -45,6 +45,15 @@ print ""
 print "Measure Statistics in purchase cube:"
 print cube['stats']
 
+# Create a cube from another cube
+nyPurchasesCube = cubify.createCubeFromCube(cube, { 'dimensions.CustomerState' : 'NY' }, 'nyPurchases')
+print ""
+print "Dimensions in ny purchases cube:"
+print nyPurchasesCube['distincts']
+print ""
+print "Measure Statistics in ny purchases cube:"
+print nyPurchasesCube['stats']
+
 #
 # Section 2. Export a cube
 #

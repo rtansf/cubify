@@ -176,7 +176,7 @@ You can also create a cube from another cube by applying a filter to the source 
 The method is called "createCubeFromCube". For example to create a cube containing only cube rows where the CustomerState is "NY" from the 'purchases'
 cube above we can call the method like so:
 
-    cube = cubify.createCubeFromCube('purchases', { 'dimensions.CustomerState' : 'NY' }, 'nyPurchases')
+    nyPurchasesCube = cubify.createCubeFromCube(cube, { 'dimensions.CustomerState' : 'NY' }, 'nyPurchases')
 
 The first argument is the name of the cube we are querying, followed by the filter, and then the name of the new cube.
 The above will result in a cube called 'nyPurchases'.

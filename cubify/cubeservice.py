@@ -220,16 +220,18 @@ class CubeService:
     #
     # Create a cube by applying a filter on another cube
     #
-    def createCubeFromCube(self, fromCubeName, filter, toCubeName):
-        fromCube = self.getCube(fromCubeName)
+    def createCubeFromCube(self, fromCube, filter, toCubeName):
+
         if fromCube == None:
-            raise ValueError("Cube does not exist: " + fromCubeName)
+            return None
+
+        fromCubeName = fromCube['name']
         if fromCubeName in self.inMemoryCubes:
             raise ValueError("Cannot create cube from an in-memory cube. This feature is not yet supoorted.")
         cubeRows = self.queryCubeRows(fromCube, filter)
         if self.__getCubeRowCount__(fromCubeName) == 0:
             raise ValueError("Cube not created because number of rows returned by filter = 0")
-            return
+            return None
 
         # TODO - see about not bringing all  cubeRows into memory for insertion
         rows = []
@@ -248,6 +250,8 @@ class CubeService:
 
         # Create the cube
         self.createCube('source', toCubeName, rows, distincts, stats, None, None)
+
+        return self.getCube(toCubeName)
 
 
     #

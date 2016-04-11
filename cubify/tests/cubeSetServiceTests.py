@@ -289,7 +289,7 @@ class cubeSetServiceTests(unittest.TestCase):
 
         cs = CubeSetService('testdb')
         cubeSet = cs.createCubeSet("testOwner", cubeSetName, csvFilePath, None, None)
-        aggCubes = cs.performAggregation(cubeSetName, ['State','ProductId'])
+        aggCubes = cs.performAggregation(cubeSet, ['State','ProductId'])
         self.assertTrue (len(aggCubes) == 2)
 
         aggCubeRows = cs.getAggregatedCubeRows(cubeSet, 'State-ProductId')
@@ -332,7 +332,7 @@ class cubeSetServiceTests(unittest.TestCase):
 
         cs = CubeSetService('testdb')
         cubeSet = cs.createCubeSet("testOwner", cubeSetName, csvFilePath, binnings, None)
-        cs.performAggregationCustom(cubeSetName, aggs)
+        cs.performAggregationCustom(cubeSet, aggs)
 
         agg = aggs[0]
         aggCubeRows = cs.getAggregatedCubeRows(cubeSet, agg['name'])
@@ -597,7 +597,7 @@ class cubeSetServiceTests(unittest.TestCase):
             self.assertTrue (rowNum == 4)
 
 
-        cs.exportAggCubeToCsv(cubeSetName, "cubeSetAgg" + aggs[1]['name'] + "Exported.csv", aggs[1]['name'])
+        cs.exportAggCubeToCsv(cubeSet, "cubeSetAgg" + aggs[1]['name'] + "Exported.csv", aggs[1]['name'])
         with open("cubeSetAgg" + aggs[1]['name'] + "Exported.csv") as csvfile:
             reader = csv.DictReader(csvfile)
             fieldNames = reader.fieldnames
@@ -607,7 +607,7 @@ class cubeSetServiceTests(unittest.TestCase):
                 rowNum += 1
             self.assertTrue (rowNum == 2)
 
-        cs.exportAggCubeToCsv(cubeSetName, "cubeSetAgg" + aggs[2]['name'] + "Exported.csv", aggs[2]['name'])
+        cs.exportAggCubeToCsv(cubeSet, "cubeSetAgg" + aggs[2]['name'] + "Exported.csv", aggs[2]['name'])
         with open("cubeSetAgg" + aggs[2]['name'] + "Exported.csv") as csvfile:
             reader = csv.DictReader(csvfile)
             fieldNames = reader.fieldnames
