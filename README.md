@@ -181,7 +181,7 @@ cube above we can call the method like so:
 The first argument is the name of the cube we are querying, followed by the filter, and then the name of the new cube.
 The above will result in a cube called 'nyPurchases'.
 
-For more details about filters, refer to the <a href="http://pluralconcepts.com/cubify_reference.html">Cubify Reference documentation</a>
+For more details about filters, refer to the <a href="http://pluralconcepts.com/cubify_reference.html">Cubify Reference documentation.</a>
 
 2. Exporting a cube
 -------------------
@@ -215,7 +215,7 @@ Other query examples:
     cubeRows = cubify.queryCubeRows(cube, { '$and' : [ { 'measures.Price' : { '$gt' : 21 }},  { 'dimensions.ProductId' : 'P2' } ]})
     
 
-For details about query syntax, refer to the Cubify Reference documentation.
+For details about query syntax, refer to the <a href="http://pluralconcepts.com/cubify_reference.html">Cubify Reference documentation.</a>
 
 4. Adding columns
 -----------------
@@ -578,7 +578,7 @@ The aggregation definition (in the file agg1.json) is show below:
 
 In the definition above, we specify our group-by dimensions, ProductId and Region. Then we define one or more measures which we wish to aggregate - in this case we are aggregating one measure, Price.
 In the outputField, we specify "AveragePrice" as the name of the new column which will hold the aggregated values. Then we define the aggregation formula.
-An aggregation formula contains a numerator and denominator. For now, in our simple example, we will only define the numerator as taking the "avg" aggregation operator and applying it to the expression, "Price". The denominator is empty. Is used for more complex aggregations such as computing weighted average as we shall see later. (For details of the formula syntax, refer to the Cubify Reference).
+An aggregation formula contains a numerator and denominator. For now, in our simple example, we will only define the numerator as taking the "avg" aggregation operator and applying it to the expression, "Price". The denominator is empty. Is used for more complex aggregations such as computing weighted average as we shall see later. (For details of the formula syntax, refer to the <a href="http://pluralconcepts.com/cubify_reference.html">Cubify Reference documentation.</a>)
 
 Now let's load the aggregation DSL file, agg1.json and call the aggregateCube method to aggregate "purchases_binned_2".
 
