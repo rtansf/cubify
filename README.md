@@ -673,7 +673,9 @@ name of our cube set and the reference to the aggregated cube, 'CustomerState-Pr
     agg1CubeRows = cubify.getAggregatedCubeRows(cubeSet, 'CustomerState-ProductId')
 
 Note that the reference name of an aggregated cube is a concatenation of the group-by dimension names. In the example above it is, 'CustomerState-ProductId'.
-The reference name of the second aggregated cube is simply 'CustomerState'.
+The reference name of the second aggregated cube is simply 'CustomerState'. To get the cube rows for this cube:
+
+    agg2CubeRows = cubify.getAggregatedCubeRows(cubeSet, 'CustomerState')
 
 We can export the aggreated cubes by calling the exportAggregateCubeToCsv method like so.
 
