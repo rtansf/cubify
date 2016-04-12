@@ -667,8 +667,7 @@ Now let's aggregate our cube set with the following dimensions, ['CustomerState'
     
     aggCubes = cubify.performAggregation(cubeSet, ['CustomerState', 'ProductId'])
 
-The above method will perform 2 aggregations on the binned cube in our cube set to produce 2 aggregated cubes. The first aggregation will group by 'CustomerState' and 'ProductId' and the second aggregation will group by 'CustomerState'. Now to get the cube rows of the first aggregated cube, we simple call the method getAggregatedCubeRows passing in the
-name of our cube set and the reference to the aggregated cube, 'CustomerState-ProductId' like so:
+The above method will perform 2 aggregations on the binned cube in our cube set to produce 2 aggregated cubes. The first aggregation will group by 'CustomerState' and 'ProductId' and the second aggregation will group by 'CustomerState'. Now to get the cube rows of the first aggregated cube, we simple call the method getAggregatedCubeRows passing in the name of our cube set and the reference to the aggregated cube, 'CustomerState-ProductId' like so:
 
     agg1CubeRows = cubify.getAggregatedCubeRows(cubeSet, 'CustomerState-ProductId')
 
@@ -676,6 +675,10 @@ Note that the reference name of an aggregated cube is a concatenation of the gro
 The reference name of the second aggregated cube is simply 'CustomerState'. To get the cube rows for this cube:
 
     agg2CubeRows = cubify.getAggregatedCubeRows(cubeSet, 'CustomerState')
+
+To get all aggregated rows, pass in  'ALL' as the second argument:
+
+    aggRows = cubify.getAggregatedCubeRows(cubeSet, 'ALL')
 
 We can export the aggreated cubes by calling the exportAggregateCubeToCsv method like so.
 

@@ -229,6 +229,36 @@ class cubeSetServiceTests(unittest.TestCase):
 
         os.remove(csvFilePath)
 
+    def testGetAggregatedCubeRowsAll(self):
+        cubeSetName = 'test-' + str(uuid.uuid4())
+        csvFilePath =  cubeSetName + '.csv'
+        try:
+            shutil.copyfile('cubify/tests/testdata.csv', cubeSetName + '.csv')
+        except Exception:
+            shutil.copyfile('./testdata.csv', cubeSetName + '.csv')
+
+        cs = CubeSetService('testdb')
+        cubeSet = cs.createCubeSet("testOwner", cubeSetName, csvFilePath, None, None)
+        cs.performAggregation(cubeSet, ['State', 'ProductId'])
+
+        aggCubeRows = cs.getAggregatedCubeRows(cubeSet, 'ALL')
+
+        dimkeys = []
+        for aggCubeRow in aggCubeRows:
+            dimkeys.append(aggCubeRow['dimensionKey'])
+        dimkeys.sort()
+
+        self.assertEquals(dimkeys[0], '#ProductId:P1#State:CA')
+        self.assertEquals(dimkeys[1], '#ProductId:P1#State:MA')
+        self.assertEquals(dimkeys[2], '#ProductId:P1#State:NY')
+        self.assertEquals(dimkeys[3], '#ProductId:P2#State:CA')
+        self.assertEquals(dimkeys[4], '#ProductId:P2#State:NY')
+        self.assertEquals(dimkeys[5], '#State:CA')
+        self.assertEquals(dimkeys[6], '#State:MA')
+        self.assertEquals(dimkeys[7], '#State:NY')
+
+        os.remove(csvFilePath)
+
     def testPerformBinning(self):
         cubeSetName = 'test-' + str(uuid.uuid4())
         csvFilePath =  cubeSetName + '.csv'

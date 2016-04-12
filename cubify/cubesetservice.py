@@ -163,7 +163,7 @@ class CubeSetService:
             return []
 
     # 
-    # Get aggregated cube rows. Iterator to cube rows is returned.
+    # Get aggregated cube rows. List of cube row is returned
     # 
     def getAggregatedCubeRows(self, cubeSet, aggName):
         if cubeSet == None:
@@ -173,9 +173,17 @@ class CubeSetService:
         cubeSet = self.getCubeSet(cubeSet['name'])
 
         if 'aggCubes' in cubeSet:
-            for aggCube in cubeSet['aggCubes']:
-               if cubeSet['binnedCube'] + "_" + aggName == aggCube:
-                   return self.cubeService.getCubeRowsForCube(aggCube)
+            if aggName == 'ALL':
+                rows = []
+                for aggCube in cubeSet['aggCubes']:
+                    aggRows = self.cubeService.getCubeRowsForCube(aggCube)
+                    for aggRow in aggRows:
+                        rows.append(aggRow)
+                return rows
+            else:
+               for aggCube in cubeSet['aggCubes']:
+                  if cubeSet['binnedCube'] + "_" + aggName == aggCube:
+                      return self.cubeService.getCubeRowsForCube(aggCube)
 
         return []
 
