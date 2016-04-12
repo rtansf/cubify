@@ -48,9 +48,6 @@ class Cubify:
     def aggregateCube(self, cube, groupByDimensions, measures=None):
         return self.cubeService.aggregateCube(cube, groupByDimensions, measures)
 
-    def aggregateCubeComplex(self, cube, groupByDimensionsList, measures=None):
-        return self.cubeService.aggregateCubeComplex(cube, groupByDimensionsList, measures)
-
     def aggregateCubeCustom(self, cube, aggs):
         return self.cubeService.aggregateCubeCustom(cube, aggs)
 

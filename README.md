@@ -535,33 +535,6 @@ The output of the aggregated cube now contains the average and total of all meas
 |NY|Category1|3.0|20.875|2.0|41.75|4|12.0|83.5|8.0|167.0|
 |NY|Category2|3.0|16.5|4.0|66.0|2|6.0|33.0|8.0|132.0|
 
-In the third simple, example, we will perform multiple aggregations on our cube. The first uses the group-by dimension, ProductId and the second uses TransactionDate.
-We will aggregate on all measures using Average and Sum.
-
-    aggCubes = cubify.aggregateCubeComplex(binnedCube2, [['ProductId'], ['ProductId','TransactionDate']])
-
-The returned aggCubes list now contains 2 aggregated cubes. The first one is called "purchases_binned_2_ProductId" and the looks like:
-
-|S:ProductId|N:Average_Discount|N:Average_Price|N:Average_Qty|N:Average_Revenue|N:Count|N:Total_Discount|N:Total_Price|N:Total_Qty|N:Total_Revenue|
-|-----------|------------------|---------------|-------------|-----------------|-------|----------------|-------------|-----------|---------------|
-|P1|3.2|20.65|3.4|69.0|10|32.0|206.5|34.0|690.0|
-|P2|3.25|17.625|2.5|42.375|4|13.0|70.5|10.0|169.5|
-
-The second one is called "purchases_binned_2_ProductId-TransactionDate" and looks like:
-
-|D:TransactionDate|N:Average_Discount|N:Average_Price|N:Average_Qty|N:Average_Revenue|N:Count|N:Total_Discount|N:Total_Price|N:Total_Qty|N:Total_Revenue|
-|-----------------|------------------|---------------|-------------|-----------------|-------|----------------|-------------|-----------|---------------|
-|P1|2015-10-10|3.3333333333333335|20.333333333333332|2.6666666666666665|54.333333333333336|3|10.0|61.0|8.0|163.0|
-|P1|2015-10-11|3.0|19.0|4.5|84.25|2|6.0|38.0|9.0|168.5|
-|P1|2015-11-03|3.5|21.5|3.0|64.5|1|3.5|21.5|3.0|64.5|
-|P1|2015-11-10|3.5|22.0|3.0|66.0|1|3.5|22.0|3.0|66.0|
-|P1|2015-11-12|3.0|22.0|2.0|44.0|1|3.0|22.0|2.0|44.0|
-|P1|2015-11-13|3.0|21.0|4.5|92.0|2|6.0|42.0|9.0|184.0|
-|P2|2015-10-10|3.25|15.75|2.5|39.75|2|6.5|31.5|5.0|79.5|
-|P2|2015-11-12|3.5|22.0|1.0|22.0|1|3.5|22.0|1.0|22.0|
-|P2|2015-11-13|3.0|17.0|4.0|68.0|1|3.0|17.0|4.0|68.0|
-
-
 Now let's turn to more complex aggregations using custom formulae. This is done with cubify's aggregation DSL.
 For example, let's say we want a cube containing the average price grouped by Product and Region.  
 The aggregation definition (in the file agg1.json) is show below:

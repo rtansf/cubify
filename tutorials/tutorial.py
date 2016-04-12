@@ -226,26 +226,6 @@ for aggCubeRow in aggCubeRows:
    print aggCubeRow
 cubify.exportCubeToCsv(aggCube, '/tmp/aggregatedCubeByCustomerStateAndProductCategory.csv')
 
-# Aggregate cube - simple example 3
-#   Group-by dimensions are: [['ProductId'],['ProductId','TransactionDate']]
-#   Use cubify aggregation operators sum and average over all measures
-aggCubes = cubify.aggregateCubeComplex(binnedCube2, [['ProductId'], ['ProductId','TransactionDate']])
-aggCube = aggCubes[0]
-print ""
-print "Cube rows of aggregated cube: " + aggCube['name']
-aggCubeRows = cubify.getCubeRows(aggCube)
-for aggCubeRow in aggCubeRows:
-   print aggCubeRow
-cubify.exportCubeToCsv(aggCube, '/tmp/aggregatedCubeByProductId.csv')
-
-aggCube = aggCubes[1]
-print ""
-print "Cube rows of aggregated cube: " + aggCube['name']
-aggCubeRows = cubify.getCubeRows(aggCube)
-for aggCubeRow in aggCubeRows:
-   print aggCubeRow
-cubify.exportCubeToCsv(aggCube, '/tmp/aggregatedCubeByProductIdTransactionDate.csv')
-
 
 # Aggregate cube - example 1 using custom aggregation definitions
 with open('agg1.json') as agg_file:
