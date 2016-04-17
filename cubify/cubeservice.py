@@ -964,6 +964,7 @@ class CubeService:
         for aggName in results:
             result = results[aggName]
             agg = nameToAggMap[aggName]
+
             #print aggName
 
             aggCubeRows = []
@@ -1028,11 +1029,12 @@ class CubeService:
                     aggCubeRow['measures'][outputFieldName] = finalMeasureValue
                     aggCubeRow['measures']['Count'] = numOutput['count']
 
-                    # Re-create dimensionkey
+                    # Re-create dimensionkey - N.B. need to preserve the order of the agg dimensions
+                    groupByDims = agg['dimensions']
                     dimensionKey = ''
-                    for dim in sorted(aggCubeRow['dimensions']):
-                        dimensionKey += '#' + dim + ':' + aggCubeRow['dimensions'][dim]
-                        self.__addToDistincts__(distincts, dim, aggCubeRow['dimensions'][dim])
+                    for groupByDim in groupByDims:
+                        dimensionKey += '#' + groupByDim + ':' + aggCubeRow['dimensions'][groupByDim]
+                        self.__addToDistincts__(distincts, groupByDim, aggCubeRow['dimensions'][groupByDim])
 
                     aggCubeRow['dimensionKey'] = dimensionKey
 
