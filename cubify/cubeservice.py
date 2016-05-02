@@ -105,6 +105,7 @@ class CubeService:
                         if self.__is_number__(value):
                             fieldTypes[cleanedFieldName] = 'number'
                         elif self.__is_date__(value):
+                            value = self.__removeMicroSeconds__(value)
                             fieldTypes[cleanedFieldName] = 'date'
                             dateFormats[cleanedFieldName] = self.__getDateFormat__(value)
                         else: 
@@ -114,6 +115,14 @@ class CubeService:
         result['fieldTypes'] = fieldTypes
         result['dateFormats'] = dateFormats
         return result
+
+    def __removeMicroSeconds__(self,value):
+        # Remove millseconds from value if any
+        if ":" in value and "." in value:
+            idx = value.find(".");
+            if idx > -1:
+                value = value[0:idx - 1]
+        return value
 
     #
     #  Get number of rows in cube
@@ -159,13 +168,13 @@ class CubeService:
                     # Check for null or empty value and handle appropriately
                     if value == None or value == '':
                         if fieldType == 'string':
-                            value = ''
+                            value = 'null'
                         elif fieldType == 'number':
                             value = 0
                         elif fieldType == 'date':
                             value = '1970-01-01'
                         else:
-                            value = ''
+                            value = 'null'
 
                     if fieldType == 'number':
                         if self.__is_number__(value):
@@ -176,9 +185,10 @@ class CubeService:
                     elif fieldType == 'date':
                         # Treat date value as dimension
                         try:
+                           value = self.__removeMicroSeconds__(value)
                            d = Date(value)
                         except ValueError:
-                           print "Invalid date: " + value + " Replaced with 1990-01-01"
+                           print "Invalid date: " + value + " in row " + num + ". Replaced with 1990-01-01"
                            d = Date('1990-01-01')
                         date = datetime(d.year, d.month, d.day)
                         cubeRow['dates'][fieldName] = date

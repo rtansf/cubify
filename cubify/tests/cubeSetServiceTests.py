@@ -248,14 +248,17 @@ class cubeSetServiceTests(unittest.TestCase):
             dimkeys.append(aggCubeRow['dimensionKey'])
         dimkeys.sort()
 
-        self.assertEquals(dimkeys[0], '#ProductId:P1#State:CA')
-        self.assertEquals(dimkeys[1], '#ProductId:P1#State:MA')
-        self.assertEquals(dimkeys[2], '#ProductId:P1#State:NY')
-        self.assertEquals(dimkeys[3], '#ProductId:P2#State:CA')
-        self.assertEquals(dimkeys[4], '#ProductId:P2#State:NY')
-        self.assertEquals(dimkeys[5], '#State:CA')
-        self.assertEquals(dimkeys[6], '#State:MA')
-        self.assertEquals(dimkeys[7], '#State:NY')
+        for dimkey in dimkeys:
+            print dimkey
+
+        self.assertEquals(dimkeys[0], '#State:CA')
+        self.assertEquals(dimkeys[1], '#State:CA#ProductId:P1')
+        self.assertEquals(dimkeys[2], '#State:CA#ProductId:P2')
+        self.assertEquals(dimkeys[3], '#State:MA')
+        self.assertEquals(dimkeys[4], '#State:MA#ProductId:P1')
+        self.assertEquals(dimkeys[5], '#State:NY')
+        self.assertEquals(dimkeys[6], '#State:NY#ProductId:P1')
+        self.assertEquals(dimkeys[7], '#State:NY#ProductId:P2')
 
         os.remove(csvFilePath)
 
