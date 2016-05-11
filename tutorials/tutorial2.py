@@ -59,8 +59,7 @@ for cubeRow in agg2CubeRows:
 print ""
 
 # Export the aggregated cubes above
-cubify.exportAggCubeToCsv(cubeSet, '/tmp/purchasesCubeSet-aggregated-by-CustomerState-ProductId.csv', 'CustomerState-ProductId')
-cubify.exportAggCubeToCsv(cubeSet, '/tmp/purchasesCubeSet-aggregated-by-CustomerState.csv', 'CustomerState')
+cubify.exportAggCubesToCsv(cubeSet, '/tmp')
 
 # Create a cube set called 'purchasesCubeSet2' with custom binnings defined in binning.json and aggregations defined in aggs.json
 
