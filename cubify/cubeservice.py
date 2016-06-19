@@ -81,7 +81,7 @@ class CubeService:
         fieldTypes = {}
         dateFormats = {}
 
-        with open(csvFilePath) as csvfile:
+        with open(csvFilePath, 'rU') as csvfile:
             reader = csv.DictReader(csvfile)
             rawFieldNames = reader.fieldnames
             for rawFieldName in rawFieldNames:
@@ -150,7 +150,7 @@ class CubeService:
 
         numFields = len(fieldNames)
 
-        with open(csvFilePath) as csvfile:
+        with open(csvFilePath, 'rU') as csvfile:
             reader = csv.DictReader(csvfile)
             num = 1
             for row in reader:
