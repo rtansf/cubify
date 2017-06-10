@@ -1,0 +1,2245 @@
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+
+<style>
+.cubify {
+   color: brown;
+}
+body { 
+   background-color: rgb(211,236,245);
+   font-family: helvetica;
+   padding: 15px;
+   color: rgb(63,65,66);  
+}
+.noshow {
+   display: none;
+}
+.methods li:hover { color : brown; }
+.methods li { 
+   list-style-type: none;
+   cursor: pointer; 
+   margin-left: -10px;
+   padding-bottom: 2px;
+   font-size: 15px;
+}
+.selected {
+   color: brown;
+}
+.methodSignature {
+   font-size: 16px;
+}
+.verticalLine {
+   width: 0px;
+   height: 2000px;
+   float: left;
+   border: 1px solid white;
+}
+#leftPane {
+   float: left;
+   width: 280px;
+   height: 1000px;
+}
+#rightPane {
+   float: left;
+   margin-left: 20px;
+}
+.title { font-size: 18px; }
+.mname {
+   font-size: 22px;
+   font-style: bold;
+   color: brown;
+}
+.def {
+   margin-top: 20px;
+   font-style: italic;
+}
+.behavior {
+   margin-top: 20px;
+   font-style: italic;
+}
+.example {
+   margin-top: 20px;
+   font-style: italic;
+}
+.blockBody {
+   padding: 15px;
+   font-style: normal;
+   font-family: helvetica;
+   font-size: 15px;
+   width: 900px;
+}
+.argTable {
+   font-size: 14px;
+}
+table, th, td {
+   border: 1px solid black;
+   padding: 5px;
+}
+table {
+   table-layout: fixed;
+   width: 900px;;
+   border-collapse: collapse;
+}
+th {
+   height: 30px;
+   font-weight: bold;
+}
+.argumentTh {
+   width: 20%;
+}
+.typeTh {
+   width: 20%;
+}
+.descriptionTh {
+   width: 40%;
+}
+.optionalTh{
+   width: 20%;
+}
+.sectionTitle {
+   font-size: 18px;
+}
+</style>
+
+<script>
+$(document).ready(function() {
+   $('.methods li').click(function() {
+      $('.methods li').removeClass('selected');
+      var id = $(this).attr('id');
+      $('.docBlock').hide();
+      $('#'+id).addClass('selected');
+      $('#'+id+'Doc').show();
+   });
+});
+</script>
+
+</head>
+<body>
+<h1 class="cubify">Cubify Reference</h1>
+<div id="leftPane">
+<p class="title">Cube Methods</p>
+<ul class="methods">
+<li id="addColumn" class="selected">addColumn</li>
+<li id="aggregateCube">aggregateCube</li>
+<li id="aggregateCubeCustom">aggregateCubeCustom</li>
+<li id="binCube">binCube</li>
+<li id="binCubeCustom">binCubeCustom</li>
+<li id="createCubeFromCsv">createCubeFromCsv</li>
+<li id="createCubeFromCube">createCubeFromCube</li>
+<li id="deleteCube">deleteCube</li>
+<li id="exportCubeToCsv">exportCubeToCsv</li>
+<li id="getCube">getCube</li>
+<li id="getCubeRows">getCubeRows</li>
+<li id="queryCubeRows">queryCubeRows</li>
+</ul>
+<p class="title">Cube Set Methods</p>
+<ul class="methods">
+<li id="addRowsToSourceCube">addRowsToSourceCube</li>
+<li id="createCubeSet">createCubeSet</li>
+<li id="deleteCubeSet">deleteCubeSet</li>
+<li id="exportToCsv">exportToCsv</li>
+<li id="exportAggCubesToCsv">exportAggCubesToCsv</li>
+<li id="exportBinnedCubeToCsv">exportBinnedCubeToCsv</li>
+<li id="exportSourceCubeToCsv">exportSourceCubeToCsv</li>
+<li id="getAggregatedCubeRows">getAggregatedCubeRows</li>
+<li id="getBinnedCubeRows">getBinnedCubeRows</li>
+<li id="getSourceCubeRows">getSourceCubeRows</li>
+<li id="getCubeSet">getCubeSet</li>
+<li id="performAggregation">performAggregation</li>
+<li id="performAggregationCustom">performAggregationCustom</li>
+<li id="performBinning">performBinning</li>
+<li id="removeRowsFromSourceCube">removeRowsFromSourceCube</li>
+</ul>
+<p class="title">Object Schema</p>
+<ul class="methods">
+<li id="agg">agg</li>
+<li id="binning">binning</li>
+<li id="cube">cube</li>
+<li id="cubeRow">cubeRow</li>
+<li id="cubeSet">cubeSet</li>
+</ul>
+</div> <!-- left pane -->
+
+<div class="verticalLine"></div>
+
+<div id="rightPane">
+
+<div id="addColumnDoc" class="docBlock">
+   <div class="blk mname">addColumn</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+          <span class="methodSignature"><b>addColumn</b> (cube, newColumnName, type, expression, function) returns: void</span>
+          <br/>
+          <br/>
+          <br/>
+          <table class="argTable">
+          <tr class="argTableHeading">
+              <th class="argumentTh">Argument</th>
+              <th class="typeTh">Type</th>
+              <th class="descriptionTh">Description</th>
+              <th class="optionalTh">Optional</th>
+          </tr>
+          <tr>
+              <td>cube</td>
+              <td>dictionary</td>
+              <td>The cube to which to add a column</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>newColumnName</td>
+              <td>string</td>
+              <td>The name of the new column to be added</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>type</td>
+              <td>one of 'numeric' or 'string'</td>
+              <td>The data type of the column to be added. Currently only numeric and string data types are supported</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>expression</td>
+              <td>string</td>
+              <td>an expression to produce the value of the new column</td>
+              <td>Yes, but either expression or function must be provided</td>
+          </tr>
+          <tr>
+              <td>function</td>
+              <td>string</td>
+              <td>a function to produce the value of the new column</td>
+              <td>Yes, but either expression or function must be provided</td>
+          </tr>
+          </table>
+      </div>
+   </div>
+   <div class="blk behavior">
+      <p class="sectionTitle">Behavior</p>
+      <div class="blockBody">
+         This method will mutate a cube by adding a column to it. The values of the new column are computed either by the passed-in expression or function.
+         If using an expression, the expression may reference other measures in the cube, using the notation, $['measureName'].
+         <br/>
+         <br/>
+         For example, if the cube contains 
+         the measures "Price" and "Quantity", you can use the expression, $['Price']*$['Quantity'] to compute the value for the "Revenue" column. The result of the
+         expression must have the data type of the type argument ("numeric" or "string") passed in to the method. If a column is a numeric type, it becomes a new measure 
+         in the cube. If it is of string type, it becomes a new dimension in the cube.
+         <br/>
+         <br/>
+         When using a function to compute the new column's value, the function must have one argument called "cubeRow" which contains the state of the row being processed.
+         You can refer to other dimensions, dates and measures of the cubeRow in your function since these are all key-value maps contained in the cubeRow.
+         To refer to a dimension called "CustomerState" in the cubeRow, simply refer to cubeRow['dimensions']['CustomerState'].  To refer to a date called "TransactionDate" 
+         in the cubeRow, cubeRow['dates']['TransactionDate'] and to refer to a measure called "Price", cubeRow['measures']['Price'] 
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Example</p>
+      <div class="blockBody"> 
+         To add a column called "Revenue" (of numeric type) to the cube called "purchases" using an expression:
+         <br/>
+         <pre>
+         cube = cubify.getCube("purchases")
+         cubify.addColumn(cube, "Revenue", "numeric", "$['Price'] * $['Qty']", None)
+         </pre>
+         To add a column called "Discount" (of numeric type) to the cube called "purchases" using a function called "computeDiscount":
+         <br/>
+         <pre>
+         def computeDiscount(cubeRow):
+             if cubeRow['dimensions']['CustomerState'] == 'CA':
+                 return 3.5
+             else:
+                 return 3.0
+
+         cubify.addColumn(cube, "Discount", "numeric", None, computeDiscount)
+         </pre>
+      </div>
+  </div>    
+</div>
+
+<!--  -->
+
+<div id="aggregateCubeDoc" class="docBlock noshow">
+   <div class="blk mname">aggregateCube</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+          <span class="methodSignature"><b>aggregateCube</b> (cube, groupByDimensions, measures) returns: cube</span>
+          <br/>
+          <br/>
+          <br/>
+          <table class="argTable">
+          <tr class="argTableHeading">
+              <th class="argumentTh">Argument</th>
+              <th class="typeTh">Type</th>
+              <th class="descriptionTh">Description</th>
+              <th class="optionalTh">Optional</th>
+          </tr>
+          <tr>
+              <td>cube</td>
+              <td>dictionary</td>
+              <td>The cube to aggregate</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>groupByDimensions</td>
+              <td>List of string</td>
+              <td>A list of one or more dimensions for performing the group-by</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>measures</td>
+              <td>List of string</td>
+              <td>A list of one or more measures to be aggregated</td>
+              <td>Yes. If not given, all measures in the cube will be aggregated.</td>
+          </tr>
+          </table>
+      </div>
+   </div>
+   <div class="blk behavior">
+      <p class="sectionTitle">Behavior</p>
+      <div class="blockBody">
+          This method will aggregate the cube with the given cube name to produce a new aggregated cube. The original cube remains unchanged. 
+          The dimensions to group by are passed in as a list - these dimensions must be present in the original cube. 
+          Measures define the measures you want to aggregate. If not given, all measures will be aggregated. Again, measures you define must be present in the original 
+          cube. The aggregation formulae used by cubify for aggregation are: Count, Sum and Average (Simple). If you need to specify other formulae, use the 
+          aggregateCubeCustom method. 
+          <br/>
+          <br/>
+          The returned cube will be named by concatenating the name of the original cube with the group-by dimensions. For example, if you aggregate a cube named 
+          "purchases" using the group-by dimensions, "CustomerId", "ProductId", the resulting aggregated cube will be named, "purchases_CustomerId-ProductId".
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Examples</p>
+      <div class="blockBody">
+         To aggregate a cube called "purchases" with a single group-by dimension, "CustomerId" on the measures 'Qty' and 'Price',
+         <pre>
+           cube = cubify.getCube('purchases')
+           aggCube = cubify.aggregateCube(cube, ['CustomerId'], ['Qty', 'Price'])
+         </pre>
+         To aggregate a cube called "purchases" with the group-by dimensions, "CustomerId", "ProductId"  on all measures,
+         <pre>
+           aggCube = cubify.aggregateCube(cube, ['CustomerId','ProductId'])
+         </pre>
+       </div>
+  </div>    
+</div>
+
+<!-- -->
+
+<div id="aggregateCubeComplexDoc" class="docBlock noshow">
+   <div class="blk mname">aggregateCubeComplex</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+          <span class="methodSignature"><b>aggregateCubeComplex</b> (cube, groupByDimensionList, measures) returns: list of cube</span>
+          <br/>
+          <br/>
+          <br/>
+          <table class="argTable">
+          <tr class="argTableHeading">
+              <th class="argumentTh">Argument</th>
+              <th class="typeTh">Type</th>
+              <th class="descriptionTh">Description</th>
+              <th class="optionalTh">Optional</th>
+          </tr>
+          <tr>
+              <td>cube</td>
+              <td>dictionary</td>
+              <td>The cube to aggregate</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>groupByDimensionList</td>
+              <td>List of list of string</td>
+              <td>A list of group-by dimension lists</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>measures</td>
+              <td>List of string</td>
+              <td>A list of one or more measures to be aggregated</td>
+              <td>Yes. If not given, all measures in the cube will be aggregated.</td>
+          </tr>
+          </table>
+      </div>
+   </div>
+   <div class="blk behavior">
+      <p class="sectionTitle">Behavior</p>
+      <div class="blockBody">
+          This method performs multiple aggregations on a cube, one aggregation for each group-by dimension list passed in. 
+          It will produce one or more aggregated cubes. Measures define the measures you want to aggregate. If not given, all measures will be aggregated. 
+          Measures you define must be present in the original cube. The aggregation formulae used by cubify for aggregation are: Count, Sum and Average (Simple). If you need to specify other formulae, use the aggregateCubeCustom method.  
+          <br/>
+          <br/>
+          The returned cubes will be named by concatenating the name of the original cube with the group-by dimensions. For example, if you aggregate a 
+          cube named "purchases" using the these 2 group-by dimension lists, ["CustomerId", "ProductId"],["ProductId", "TransactionDate"], 
+          the resulting aggregated cubes will be named, "purchases_CustomerId-ProductId" and "purchases_ProductId-TransactionDate" respectively.      
+       </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Examples</p>
+      <div class="blockBody"> 
+      To aggregate a cube using multiple group-by dimensions lists for all measures:
+      <pre>
+           cube = cubify.getCube('purchases')
+           aggregatedCubes = cubify.aggregateCubeComplex(cube, [['Region','CustomerId','ProductId'],['Region','CustomerId'],['Region']])
+      </pre>
+      To aggregate a cube using multiple group-by dimensions lists for the Qty measure:
+      <pre>
+           aggregatedCubes = cubify.aggregateCubeComplex(cube, [['Region','CustomerId','ProductId'],['Region','CustomerId'],['Region']], ['Qty']))
+      </pre>
+      </div>
+  </div>    
+</div>
+
+<!-- -->
+
+<div id="aggregateCubeCustomDoc" class="docBlock noshow">
+   <div class="blk mname">aggregateCubeCustom</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+          <span class="methodSignature"><b>aggregateCubeCustom</b> (cube, aggregationDefinitions) returns: list of cube</span>
+          <br/>
+          <br/>
+          <br/>
+          <table class="argTable">
+          <tr class="argTableHeading">
+              <th class="argumentTh">Argument</th>
+              <th class="typeTh">Type</th>
+              <th class="descriptionTh">Description</th>
+              <th class="optionalTh">Optional</th>
+          </tr>
+          <tr>
+              <td>cube</td>
+              <td>dictionary</td>
+              <td>The cube to aggregate</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>aggregationDefinitions</td>
+              <td>List of agg</td>
+              <td>An aggregation definition describes how aggregation should be performed on a cube. See agg in Object Schema section.</td>
+              <td>No</td>
+          </tr>
+          </table>
+      </div>
+   </div>
+   <div class="blk behavior">
+      <p class="sectionTitle">Behavior</p>
+      <div class="blockBody">
+      This method aggregates a cube using custom formula expressed in an agg DSL. The agg DSL supports the aggregation formulae: avg, sum, min, max
+      as well as a numerator and denominator for ratios. See examples below: 
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Examples</p>
+      <div class="blockBody"> 
+      To aggregate the "purchases" cube on Price measure, using avg, sum, min and max and the group-by dimensions, "ProductId" and "Region":
+      <pre>
+          aggDefinitions = [{
+             "name" : "agg1",
+             "dimensions": ["ProductId", "Region"],
+             "measures" : [
+                 { "outputField" : {"name":"AveragePrice", "displayName": "Average Price"},
+                  "formula" : { "numerator" : { "aggOperator" : "avg", "expression" : "Price" }, "denominator" : {} }
+                 },
+                 { "outputField" : {"name":"TotalPrice", "displayName": "Total Price"},
+                  "formula" : { "numerator" : { "aggOperator" : "sum", "expression" : "Price" }, "denominator" : {} }
+                 },
+                 { "outputField" : {"name":"MinPrice", "displayName": "Minimum Price"},
+                  "formula" : { "numerator" : { "aggOperator" : "min", "expression" : "Price" }, "denominator" : {} }
+                 },
+                 { "outputField" : {"name":"MaxPrice", "displayName": "Maximum Price"},
+                  "formula" : { "numerator" : { "aggOperator" : "max", "expression" : "Price" }, "denominator" : {} }
+                 }
+             ]
+          }]
+
+          cube = cubify.getCube('purchases')
+          aggregatedCubes = cubify.aggregateCubeCustom(cube, aggDefinitions)
+      </pre>
+      To aggregate the "purchases" cube using the group-by dimensions, "ProductId", "Region" and ratio to obtain the AverageRevenue:
+      <pre>
+          aggDefinitions = [{
+             "name" : "agg2",
+             "dimensions": ["ProductId", "Region"],
+             "measures" : [
+                 { "outputField" : {"name":"AverageRevenue", "displayName": "Average Revenue"},
+                   "formula" : { "numerator"   : { "aggOperator" : "sum", "expression" : "Qty * Price" }, 
+                                 "denominator" : { "aggOperator" : "sum", "expression" : "Qty" }
+                               }
+                 }
+             ]
+          }]
+
+          cube = cubify.getCube('purchases')
+          aggregatedCubes = cubify.aggregateCubeCustom(cube, aggDefinitions)
+      </pre>
+      </div>
+  </div>    
+</div>
+
+<!-- -->
+
+<div id="binCubeDoc" class="docBlock noshow">
+   <div class="blk mname">binCube</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+          <span class="methodSignature"><b>binCube</b> (sourceCube, binnedCubeName, toBeBinned, hints) returns: cube</span>
+          <br/>
+          <br/>
+          <br/>
+          <table class="argTable">
+          <tr class="argTableHeading">
+              <th class="argumentTh">Argument</th>
+              <th class="typeTh">Type</th>
+              <th class="descriptionTh">Description</th>
+              <th class="optionalTh">Optional</th>
+          </tr>
+          <tr>
+              <td>sourceCube</td>
+              <td>dictionary</td>
+              <td>The input source cube to be binned</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>binnedCubeName</td>
+              <td>string</td>
+              <td>The name of the output binned cube</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>toBeBinned</td>
+              <td>List of string</td>
+              <td>One or more measures or dates to be binned</td>
+              <td>Yes</td>
+          </tr>
+          <tr>
+              <td>hints</td>
+              <td>dictionary</td>
+              <td>Hints to inform the binning process. See examples below.</td>
+              <td>Yes</td>
+          </tr>
+          </table>
+      </div>
+   </div>
+   <div class="blk behavior">
+      <p class="sectionTitle">Behavior</p>
+      <div class="blockBody">
+      This method performs binning on the source cube to produce a binned cube. The argument "toBeBinned" contains one or more measures or dates 
+      to be binned. It not supplied, all measures and dates in the source cube will be binned. The process of binning creates new dimensions in the 
+      binned cube. 
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Examples</p>
+      <div class="blockBody"> 
+      To bin all measures and dates in a cube called "purchases" to produce a binned cube called, "purchases_binned" using system defaults:
+      <pre>
+      cube = cubify.getCube('purchases')
+      binnedCube = cubify.binCube(cube, 'purchases_binned')
+      </pre>
+      To bin only "Price" and "TransactionDate" in a cube called "purchases" passing in a hint to bin "TransactionDate" into weekly bins:
+      <pre>
+      binnedCube = cubify.binCube(cube, 'purchases_binned', ['Price', 'TransactionDate'], { "TransactionDate" : "weekly" })
+      </pre>
+      To bin all measures and dates in a cube called "purchases" to produce a binned cube called, "purchases_binned" passing in a hint to bin 
+      "TransactionDate" into monthly bins:
+      <pre>
+      binnedCube = cubify.binCube(cube, 'purchases_binned', None, { "TransactionDate" : "monthly" })
+      </pre>
+      </div>
+  </div>    
+</div>
+
+
+<!-- -->
+
+<div id="binCubeCustomDoc" class="docBlock noshow">
+   <div class="blk mname">binCubeCustom</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+          <span class="methodSignature"><b>binCubeCustom</b> (binningsDefinition, sourceCube, binnedCubeName) returns: cube</span>
+          <br/>
+          <br/>
+          <br/>
+          <table class="argTable">
+          <tr class="argTableHeading">
+              <th class="argumentTh">Argument</th>
+              <th class="typeTh">Type</th>
+              <th class="descriptionTh">Description</th>
+              <th class="optionalTh">Optional</th>
+          </tr>
+          <tr>
+              <td>binningsDefinition</td>
+              <td>List of binning (See binning in Object Schema section)</td>
+              <td>The binning definitions that inform cubify on how to bin a cube</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>sourceCube</td>
+              <td>dictionary</td>
+              <td>The input source cube</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>binnedCubeName</td>
+              <td>string</td>
+              <td>The name of the output binned cube</td>
+              <td>No</td>
+          </tr>
+          </table>
+      </div>
+   </div>
+   <div class="blk behavior">
+      <p class="sectionTitle">Behavior</p>
+      <div class="blockBody">
+      This method bins a cube using custom binning definitions. The binning DSL is described under the Object Schema section. 
+      There are three types of binnings: "range", "date", "enum". See examples below for each binning type.
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Examples</p>
+      <div class="blockBody"> 
+      For example, if a cube called "purchases" contains a measure called "Qty", to bin the "Qty" measure in the cube, use the following binning definition.
+      Note the sourceField refers to the measure we're binning and the outputField to the "QtyBin" dimension. The type is "range" and we
+      have defined 2 bins. If the value to be binned falls outside of the defined bins, it will take on the fallback label, "None". 
+      <pre>
+      binningDef = [{ "binningName" : "QtyBinning",
+                      "outputField" : { "name": "QtyBin", "displayName": "Qty Bin" },
+                      "sourceField" : "Qty",
+                      "type" : "range",
+                      "bins" : [
+                          { "label" : "0-5",         "min": 0,       "max": 5 },
+                          { "label" : "5+",          "min": 6,       "max": 999999999 }
+                      ],
+                      "fallbackLabel" : "None"
+                   }]
+
+      cube = cubify.getCube('purchases')      
+      binnedCube = cubify.binCubeCustom(binningDef, cube, 'purchasesBinned')
+      </pre>
+      If our cube contains a TransactionDate, and we wish to bin this into monthly bins, use the following:
+      <pre>
+      binningDef = [{ "binningName" : "TransctionDateBinning",
+                      "outputField" : { "name": "TransactionDateBin", "displayName": "Transaction Year/Month" },
+                      "sourceField" : "TransactionDate",
+                      "type" : "date",
+                      "period" : "monthly"
+                    }]
+      binnedCube = cubify.binCubeCustom(binningDef, cube, 'purchasesBinned')
+      </pre>
+      If our cube contains a dimension called "CustomerState" and we wish to bin this into "Region", use the following "enum" type binning definition:
+      <pre>
+      binningDef = [{ "binningName" : "RegionBinning",
+                      "outputField" : { "name": "Region", "displayName": "Region" },
+                      "sourceField" : "CustomerState",
+                      "type" : "enum",
+                      "bins" : [
+                         { "label" : "West",      "value" : "CA" },
+                         { "label" : "West",      "value" : "WA" },
+                         { "label" : "Mountain",  "value" : "ID" },
+                         { "label" : "SouthWest", "value" : "NM" },
+                         { "label" : "MidWest",   "value" : "ND" },
+                         { "label" : "MidWest",   "value" : "SD" },
+                         { "label" : "NorthEast", "value" : "ME" },
+                         { "label" : "NorthEast", "value" : "NY" },
+                         { "label" : "South",     "value" : "GA" },
+                         { "label" : "South",     "value" : "LA" }
+                      ],
+                      "fallbackLabel" : "Other"
+                   }]
+
+      binnedCube = cubify.binCubeCustom(binningDef, cube, 'purchasesBinned')
+      </pre>
+      Note that you can combine several binning definitions into one list and pass that into the method to perform multiple binnings simultaneously.
+      </div>
+  </div>    
+</div>
+
+
+<!-- -->
+
+<div id="createCubeFromCsvDoc" class="docBlock noshow">
+   <div class="blk mname">createCubeFromCsv</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+          <span class="methodSignature"><b>createCubeFromCsv</b> (csvFilePath, cubeName, inMemory) returns: cube</span>
+          <br/>
+          <br/>
+          <br/>
+          <table class="argTable">
+          <tr class="argTableHeading">
+              <th class="argumentTh">Argument</th>
+              <th class="typeTh">Type</th>
+              <th class="descriptionTh">Description</th>
+              <th class="optionalTh">Optional</th>
+          </tr>
+          <tr>
+              <td>csvFilePath</td>
+              <td>string</td>
+              <td>The file path for the CSV file. For example, "/tmp/purchases.csv"</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>cubeName</td>
+              <td>string</td>
+              <td>The name of the output cube</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>inMemory</td>
+              <td>boolean</td>
+              <td>If true, this cube is created in-memory only and is not persisted.</td>
+              <td>Yes. If not given, the cube is persisted.</td>
+          </tr>
+          </table>
+      </div>
+   </div>
+   <div class="blk behavior">
+      <p class="sectionTitle">Behavior</p>
+      <div class="blockBody">
+      This method creates a cube from a CSV file. Every column in the CSV file is mapped into either a dimension, date or measure. In the absence of any hints, cubify applies
+      heuristics on the data values to perform this classification. In general, any column which contains strings is mapped to a dimension, any column that which contains 
+      date strings is mapped to a date and finally any column with numeric values is mapped to a measure. To give hints to cubify, simply annotate the CSV header column 
+      headers with "S:" for dimensions, "D:" for dates and "N:" for measures.    
+      <br/>
+      <br/>
+      It is advisable to annotate any column that you think may be helpful to cubify. For example, if there is a column which only contains numbers but should be interpreted
+      as a string, such as ProductId in the example below, it should be annotated with "S:". Otherwise, cubify would treat ProductId as a measure.
+      If a column contains Boolean values (1, 0), annotate it with "S:" - so that <i>cubify</i> will treat it as a dimension.
+      <br/>
+      <br/>
+      Here is an example CSV file wih annotated column headers. Note that the Price column does not have an annotation - that is OK, since cubify does not enforce annotation 
+      of all columns.
+      <br/>
+      <br/>
+      D:PurchaseDate,S:ProductId,N:Qty,Price<br/>
+      2015-11-03,938482,3,12.00<br/>
+      2015-11-04,193948,1,15.40<br/>
+      2015-11-04,876482,3,16.20<br/>
+      2015-11-05,098482,3,11.00<br/>
+      </div>
+   </div>
+   <div class="blk example"> 
+      <p class="sectionTitle">Examples</p>
+      <div class="blockBody"> 
+      <pre>
+      cube = cubify.createCubeFromCsv('/tmp/purchases/csv', 'purchases')
+
+      cube = cubify.createCubeFromCsv('/tmp/purchases/csv', 'purchases', 'November Purchases')
+      </pre>
+      </div>
+  </div>    
+</div>
+
+<!-- -->
+
+<div id="createCubeFromCubeDoc" class="docBlock noshow">
+   <div class="blk mname">createCubeFromCube</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+          <span class="methodSignature"><b>createCubeFromCube</b> (fromCube, filter, toCubeName) returns: cube</span>
+          <br/>
+          <br/>
+          <br/>
+          <table class="argTable">
+          <tr class="argTableHeading">
+              <th class="argumentTh">Argument</th>
+              <th class="typeTh">Type</th>
+              <th class="descriptionTh">Description</th>
+              <th class="optionalTh">Optional</th>
+          </tr>
+          <tr>
+              <td>fromCube</td>
+              <td>dictionary</td>
+              <td>The "from" cube</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>filter</td>
+              <td>dictionary</td>
+              <td>A structure that defines the filter query. See example</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>toCubeName</td>
+              <td>string</td>
+              <td>The name of the output "to" cube </td>
+              <td>No</td>
+          </tr>
+          </table>
+      </div>
+   </div>
+   <div class="blk behavior">
+      <p class="sectionTitle">Behavior</p>
+      <div class="blockBody">
+      This method is valid only for persistent cubes.
+      This method creates a new cube by extracting cubeRows from another cube using a query filter. The syntax for query filters is modeled after MongoDb's find().
+      See <a href="https://docs.mongodb.org/manual/tutorial/query-documents">reference documentation.</a>
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Examples</p>
+      <div class="blockBody"> 
+      To create a cube by extracting all cube rows where CustomerState is equal to 'NY':
+      <pre>
+      fromCube = cubify.getCube('purchases')
+      cube = cubify.createCubeFromCube(fromCube, { 'dimensions.CustomerState' : 'NY' }, 'NY-Purchases')
+      </pre>
+      To create a cube by extracting all cube rows where CustomerState is not equal to 'NY':
+      <pre>
+      cube = cubify.createCubeFromCube(fromCube, { 'dimensions.CustomerState' : { '$ne' : 'NY' }}, 'Not-NY-Purchases')
+      </pre>
+      To create a cube by extracting all cube rows where Price is greater than 100:
+      <pre>
+      cube = cubify.createCubeFromCube(fromCube, { 'measures.Price' : { '$gt' : 100 }}, 'expensive-Purchases')
+      </pre>
+      To create a cube by extracting all cube rows where CustomeState is equal to 'NY' <b>AND</b> Price is less than 100:
+      <pre>
+      cube = cubify.createCubeFromCube(fromCube, { 'dimensions.CustomerState' : 'NY', 'measures.Price': { '$lt' : 100 }}, 'inexpensive-NY-Purchases')
+      </pre>
+      To create a cube by extracting all cube rows where CustomeState is equal to 'NY' <b>OR</b> customerState is equal to 'CA':
+      <pre>
+      cube = cubify.createCubeFromCube(fromCube, { $or : [{'dimensions.CustomerState' : 'NY'}, {'dimensions.CustomerState' : 'CA'} ]}, 'CA-NY-Purchases')
+      </pre>
+      To create a cube by extracting all cube rows where CustomerState is equal to 'NY' <b>AND</b> Price is >= than 100 <b>OR</b> Qty > 10:
+      <pre>
+      cube = cubify.createCubeFromCube(fromCube, { 'dimensions.CustomerState' : 'NY'}, 
+                                                      '$or' : [ { 'measures.Price' : { '$gte' : 100 }}, { 'measures.Qty' : { '$gt' : 10 }}], 'special-NY-Purchases')
+      </pr>
+      </div>
+  </div>    
+</div>
+
+<!-- -->
+
+<div id="deleteCubeDoc" class="docBlock noshow">
+   <div class="blk mname">deleteCube</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+          <span class="methodSignature"><b>deleteCube</b> (cubeName) returns: void</span>
+          <br/>
+          <br/>
+          <br/>
+          <table class="argTable">
+          <tr class="argTableHeading">
+              <th class="argumentTh">Argument</th>
+              <th class="typeTh">Type</th>
+              <th class="descriptionTh">Description</th>
+              <th class="optionalTh">Optional</th>
+          </tr>
+          <tr>
+              <td>cubeName</td>
+              <td>string</td>
+              <td>The name of the cube to be deleted</td>
+              <td>No</td>
+          </tr>
+          </table>
+      </div>
+   </div>
+   <div class="blk behavior">
+      <p class="sectionTitle">Behavior</p>
+      <div class="blockBody">
+      This method deletes a cube and all its cube rows.
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Example</p>
+      <div class="blockBody">
+      <pre>
+      cubify.deleteCube('purchases')
+      </pre>
+      </div>
+  </div>    
+</div>
+
+<!-- -->
+
+<div id="exportCubeToCsvDoc" class="docBlock noshow">
+   <div class="blk mname">exportCubeToCsv</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+          <span class="methodSignature"><b>exportCubeToCsv</b> (cube, csvFilePath) returns: void</span>
+          <br/>
+          <br/>
+          <br/>
+          <table class="argTable">
+          <tr class="argTableHeading">
+              <th class="argumentTh">Argument</th>
+              <th class="typeTh">Type</th>
+              <th class="descriptionTh">Description</th>
+              <th class="optionalTh">Optional</th>
+          </tr>
+          <tr>
+              <td>cube</td>
+              <td>dictionary</td>
+              <td>The cube to be exported</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>csvFilePath</td>
+              <td>string</td>
+              <td>The file path for the exported csv</td>
+              <td>No</td>
+          </tr>
+          </table>
+      </div>
+   </div>
+   <div class="blk behavior">
+      <p class="sectionTitle">Behavior</p>
+      <div class="blockBody">
+      This method exports all cube rows to a CSV file.
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Example</p>
+      <div class="blockBody">
+      <pre>
+      cube = cubify.getCube('purchases')
+      cubify.exportCubeToCsv(cube, './purchasesCube.csv')
+      </pre>
+      </div>
+  </div>    
+</div>
+
+<!-- -->
+
+<div id="getCubeDoc" class="docBlock noshow">
+   <div class="blk mname">getCube</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+          <span class="methodSignature"><b>getCube</b> (cubeName) returns: cube</span>
+          <br/>
+          <br/>
+          <br/>
+          <table class="argTable">
+          <tr class="argTableHeading">
+              <th class="argumentTh">Argument</th>
+              <th class="typeTh">Type</th>
+              <th class="descriptionTh">Description</th>
+              <th class="optionalTh">Optional</th>
+          </tr>
+          <tr>
+              <td>cubeName</td>
+              <td>string</td>
+              <td>The name of the cube to get</td>
+              <td>No</td>
+          </tr>
+          </table>
+      </div>
+   </div>
+   <div class="blk behavior">
+      <p class="sectionTitle">Behavior</p>
+      <div class="blockBody">
+      This method returns a cube object. The cube object provides useful summary information about a cube (see Object Schema) such as statistical information on measures
+      and counts of dimension values. To get the cube rows, see the getCubeRows method.
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Example</p>
+      <div class="blockBody"> 
+      <pre>
+      cube = cubify.getCube('purchases')
+      </pre>
+      </div>
+  </div>    
+</div>
+
+<!-- -->
+
+<div id="getCubeRowsDoc" class="docBlock noshow">
+   <div class="blk mname">getCubeRows</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+          <span class="methodSignature"><b>getCubeRows</b> (cube) returns: iterator over cubeRow</span>
+          <br/>
+          <br/>
+          <br/>
+          <table class="argTable">
+          <tr class="argTableHeading">
+              <th class="argumentTh">Argument</th>
+              <th class="typeTh">Type</th>
+              <th class="descriptionTh">Description</th>
+              <th class="optionalTh">Optional</th>
+          </tr>
+          <tr>
+              <td>cube</td>
+              <td>dictionary</td>
+              <td>The cube to get its cube rows</td>
+              <td>No</td>
+          </tr>
+          </table>
+      </div>
+   </div>
+   <div class="blk behavior">
+      <p class="sectionTitle">Behavior</p>
+      <div class="blockBody">
+      This method returns all cube rows in a cube as an iterator over the cubeRow object. (See Object Schema)
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Example</p>
+      <div class="blockBody"> 
+      <pre>
+      cube = cubify.getCube('purchases')
+      cubeRows = cubify.getCubeRows(cube)
+      for cubeRow in cubeRows:
+          print cubeRow
+      </pre>
+      </div>
+  </div>    
+</div>
+
+<!-- -->
+
+<div id="queryCubeRowsDoc" class="docBlock noshow">
+   <div class="blk mname">queryCubeRows</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+          <span class="methodSignature"><b>queryCubeRows</b> (cube, filter) returns: iterator over cubeRow</span>
+          <br/>
+          <br/>
+          <br/>
+          <table class="argTable">
+          <tr class="argTableHeading">
+              <th class="argumentTh">Argument</th>
+              <th class="typeTh">Type</th>
+              <th class="descriptionTh">Description</th>
+              <th class="optionalTh">Optional</th>
+          </tr>
+          <tr>
+              <td>cube</td>
+              <td>dictionary</td>
+              <td>The cube to query its cube rows</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>filter</td>
+              <td>dictionary</td>
+              <td>The query filter. See below for examples</td>
+              <td>No</td>
+          </tr>
+          </table>
+      </div>
+   </div>
+   <div class="blk behavior">
+      <p class="sectionTitle">Behavior</p>
+      <div class="blockBody">
+      This method is valid only for persistent cubes.
+      This method returns cube rows from a cube using a query filter. The result is an iterator over cubeRow. (See Object Schema)
+      <br/>
+      The syntax for query filters is modeled after MongoDb's find().
+      See <a href="https://docs.mongodb.org/manual/tutorial/query-documents">reference documentation.</a>
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Examples</p>
+      <div class="blockBody">
+      This returns all cube rows:
+      <pre>
+      cube = cubify.getCube('purchases')
+      cubeRows = cubify.queryCubeRows(cube, {})
+      </pre>
+      This returns cube rows where CustomerState is equal to 'NY':
+      <pre>
+      cubeRows = cubify.queryCubeRows(cube, { 'dimensions.CustomerState' : 'NY' }, 'NY-Purchases')
+      </pre>
+      This returns all cube rows where CustomerState is not equal to 'NY':
+      <pre>
+      cubeRows = cubify.queryCubeRows(cube, { 'dimensions.CustomerState' : { '$ne' : 'NY' }}, 'Not-NY-Purchases')
+      </pre>
+      This returns all cube rows where Price is greater than 100:
+      <pre>
+      cubeRows = cubify.queryCubeRows(cube, { 'measures.Price' : { '$gt' : 100 }}, 'expensive-Purchases')
+      </pre>
+      This returns all cube rows where CustomeState is equal to 'NY' <b>AND</b> Price is less than 100:
+      <pre>
+      cubeRows = cubify.queryCubeRows(cube, { 'dimensions.CustomerState' : 'NY', 'measures.Price': { '$lt' : 100 }}, 'inexpensive-NY-Purchases')
+      </pre>
+      This returns all cube rows where CustomeState is equal to 'NY' <b>OR</b> customerState is equal to 'CA':
+      <pre>
+      cubeRows = cubify.queryCubeRows(cube, { $or : [{'dimensions.CustomerState' : 'NY'}, {'dimensions.CustomerState' : 'CA'} ]}, 'CA-NY-Purchases')
+      </pre>
+      This returns all cube rows where CustomerState is equal to 'NY' <b>AND</b> Price is >= than 100 <b>OR</b> Qty > 10:
+      <pre>
+      cubeRows = cubify.queryCubeRows(cube, { 'dimensions.CustomerState' : 'NY'}, 
+                                              '$or' : [ { 'measures.Price' : { '$gte' : 100 }}, { 'measures.Qty' : { '$gt' : 10 }}], 'special-NY-Purchases')
+      </pr>
+      </div>
+  </div>    
+</div>
+
+<!-- -->
+
+<!-- CUBE SETS -->
+<!-- -->
+
+<div id="addRowsToSourceCubeDoc" class="docBlock noshow">
+   <div class="blk mname">addRowsToSourceCube</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+          <span class="methodSignature"><b>addRowsToSourceCube</b> (cubeSetName, csvFilePath) returns: void</span>
+          <br/>
+          <br/>
+          <br/>
+          <table class="argTable">
+          <tr class="argTableHeading">
+              <th class="argumentTh">Argument</th>
+              <th class="typeTh">Type</th>
+              <th class="descriptionTh">Description</th>
+              <th class="optionalTh">Optional</th>
+          </tr>
+          <tr>
+              <td>cubeSetName</td>
+              <td>string</td>
+              <td>The name of the cubeSet</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>csvFilePath</td>
+              <td>string</td>
+              <td>The file path for the CSV file. For example, "/tmp/purchases-jan-2016.csv"</td>
+              <td>No</td>
+          </tr>
+          </table>
+      </div>
+   </div>
+   <div class="blk behavior">
+      <p class="sectionTitle">Behavior</p>
+      <div class="blockBody">
+      This method will append cube rows from a CSV file to the source cube of an existing cube set. The columns of the new rows must match the schema of the original cube. 
+      <i>cubify</i> will re-bin the binned cube and re-aggregate all aggregated cubes in the cube set after appending the cube rows.
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Example</p>
+      <div class="blockBody"> 
+      <pre>
+      cubify.addRowsToSourceCube('purchasesCubeSet', 'morePurchases.csv')
+      </pre>
+      </div>
+  </div>    
+</div>
+
+<!-- -->
+
+<div id="createCubeSetDoc" class="docBlock noshow">
+   <div class="blk mname">createCubeSet</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+          <span class="methodSignature"><b>createCubeSet</b> (owner, cubeSetName, csvFilePath, binnings, aggs) returns: cubeSet</span>
+          <br/>
+          <br/>
+          <br/>
+          <table class="argTable">
+          <tr class="argTableHeading">
+              <th class="argumentTh">Argument</th>
+              <th class="typeTh">Type</th>
+              <th class="descriptionTh">Description</th>
+              <th class="optionalTh">Optional</th>
+          </tr>
+          <tr>
+              <td>owner</td>
+              <td>string</td>
+              <td>The owner of this cubeSet (short name of user)</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>cubeSetName</td>
+              <td>string</td>
+              <td>The name of the cubeSet</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>csvFilePath</td>
+              <td>string</td>
+              <td>The file path for the CSV file. For example, "/tmp/purchases.csv"</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>binnings</td>
+              <td>List of binning</td>
+              <td>The binning definitions</td>
+              <td>Yes. If not provided, uses system-generated binnings</td>
+          </tr>
+          <tr>
+              <td>aggs</td>
+              <td>List of agg</td>
+              <td>The aggregation definitions</td>
+              <td>Yes. If not provided, aggrgegation is not performed at time of cube set creation</td>
+          </tr>
+          </table>
+      </div>
+   </div>
+   <div class="blk behavior">
+      <p class="sectionTitle">Behavior</p>
+      <div class="blockBody">
+      This method creates a cube set from a CSV file. A cube set is a container for cubes which are linked together. There are 3 types of cubes in a cube set: 
+      "source", "binned" and "aggregated". A cube set consists of one and only one source cube, one and only one binned cube, and zero or more aggregated cubes. 
+      On initial creation, the cube set will have one source cube, one binned cube and zero or more aggregated cubes. If no aggregation definition is passed into 
+      this method, aggregation will not be performed, no aggregated cubes.
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Example</p>
+      <div class="blockBody"> 
+      This will create a cube set using default system-generated binning definitions. On successful creation, the cube set will have one source cube and one binned cube.
+      <pre>
+      cubeSet = cubify.createCubeSet('user123', 'purchasesCubeSet', 'purchases.csv')
+      </pre>
+      </div>
+  </div>    
+</div>
+
+<div id="deleteCubeSetDoc" class="docBlock noshow">
+   <div class="blk mname">deleteCubeSet</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+          <span class="methodSignature"><b>deleteCubeSet</b> (cubeSetName) returns: void</span>
+          <br/>
+          <br/>
+          <br/>
+          <table class="argTable">
+          <tr class="argTableHeading">
+              <th class="argumentTh">Argument</th>
+              <th class="typeTh">Type</th>
+              <th class="descriptionTh">Description</th>
+              <th class="optionalTh">Optional</th>
+          </tr>
+          <tr>
+              <td>cubeSetName</td>
+              <td>string</td>
+              <td>The name of the cubeSet</td>
+              <td>No</td>
+          </tr>
+          </table>
+      </div>
+   </div>
+   <div class="blk behavior">
+      <p class="sectionTitle">Behavior</p>
+      <div class="blockBody">
+      This method deletes a cube set and all its underlying cubes.
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Example</p>
+      <div class="blockBody"> 
+      <pre>
+      cubify.deleteCubeSet('purchasesCubeSet')
+      </pre>
+      </div>
+  </div>    
+</div>
+
+<!--  -->
+
+<div id="exportToCsvDoc" class="docBlock noshow">
+   <div class="blk mname">exportToCsv</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+          <span class="methodSignature"><b>exportToCsv</b> (cubeSet, directoryPath) returns: void</span>
+          <br/>
+          <br/>
+          <br/>
+          <table class="argTable">
+          <tr class="argTableHeading">
+              <th class="argumentTh">Argument</th>
+              <th class="typeTh">Type</th>
+              <th class="descriptionTh">Description</th>
+              <th class="optionalTh">Optional</th>
+          </tr>
+          <tr>
+              <td>cubeSet</td>
+              <td>dictionary</td>
+              <td>The cube set</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>directoryPath</td>
+              <td>string</td>
+              <td>The directory path for the output CSV files</td>
+              <td>No</td>
+          </tr>
+          </table>
+      </div>
+   </div>
+   <div class="blk behavior">
+      <p class="sectionTitle">Behavior</p>
+      <div class="blockBody">
+      This method will export all the underlying cubes of the cube set as CSV files. The files will be output in the specified directory.
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Examples</p>
+      <div class="blockBody"> 
+      <pre>
+      cubeSet = cubify.getCubeSet('purchasesCubeSet')
+      cubify.exportToCsv(cubeSet, '/tmp')
+      </pre>
+      </div>
+  </div>    
+</div>
+
+<!-- -->
+
+<div id="exportAggCubesToCsvDoc" class="docBlock noshow">
+   <div class="blk mname">exportAggCubeToCsv</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+          <span class="methodSignature"><b>exportAggCubesToCsv</b> (cubeSet, directoryPath) returns: void</span>
+          <br/>
+          <br/>
+          <br/>
+          <table class="argTable">
+          <tr class="argTableHeading">
+              <th class="argumentTh">Argument</th>
+              <th class="typeTh">Type</th>
+              <th class="descriptionTh">Description</th>
+              <th class="optionalTh">Optional</th>
+          </tr>
+          <tr>
+              <td>cubeSet</td>
+              <td>dictionary</td>
+              <td>The cube set</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>directoryPath</td>
+              <td>string</td>
+              <td>The directory path for the output CSV file(s)</td>
+              <td>No</td>
+          </tr>
+          </table>
+      </div>
+   </div>
+   <div class="blk behavior">
+      <p class="sectionTitle">Behavior</p>
+      <div class="blockBody">
+      This method will export all aggregated cubes contained within a cube set. The aggregated cubes are referenced by its group-by dimensions, concatenated by hyphen.
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Examples</p>
+      <div class="blockBody"> 
+      This will export all aggregated cubes as CSV files. The files are output in the directory specified.
+      <pre>
+      cubeSet = cubify.getCubeSet('purchasesCubeSet')
+      cubify.exportAggCubesToCsv(cubeSet, '/tmp')
+      </pre>
+      </div>
+  </div>    
+</div>
+
+<!-- -->
+
+<div id="exportBinnedCubeToCsvDoc" class="docBlock noshow">
+   <div class="blk mname">exportBinnedCubeToCsv</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+          <span class="methodSignature"><b>exportBinnedCubeToCsv</b> (cubeSet, csvFilePath) returns: void</span>
+          <br/>
+          <br/>
+          <br/>
+          <table class="argTable">
+          <tr class="argTableHeading">
+              <th class="argumentTh">Argument</th>
+              <th class="typeTh">Type</th>
+              <th class="descriptionTh">Description</th>
+              <th class="optionalTh">Optional</th>
+          </tr>
+          <tr>
+              <td>cubeSet</td>
+              <td>dictionary</td>
+              <td>The cube set</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>csvFilePath</td>
+              <td>string</td>
+              <td>The file path for the output CSV file</td>
+              <td>No</td>
+          </tr>
+          </table>
+      </div>
+   </div>
+   <div class="blk behavior">
+      <p class="sectionTitle">Behavior</p>
+      <div class="blockBody">
+      This will export the binned cube contained in a cube set to a CSV file.
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Example</p>
+      <div class="blockBody"> 
+      <pre>
+      cubeSet = cubify.getCubeSet('purchasesCubeSet')
+      cubify.exportBinnedCubeToCsv(cubeSet, '/tmp/purchasesCubeSetBinnedCube.csv')
+      </pre>
+      </div>
+  </div>    
+</div>
+
+<!-- -->
+
+<div id="exportSourceCubeToCsvDoc" class="docBlock noshow">
+   <div class="blk mname">exportSourceCubeToCsv</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+          <span class="methodSignature"><b>exportSourceCubeToCsv</b> (cubeSet, csvFilePath) returns: void</span>
+          <br/>
+          <br/>
+          <br/>
+          <table class="argTable">
+          <tr class="argTableHeading">
+              <th class="argumentTh">Argument</th>
+              <th class="typeTh">Type</th>
+              <th class="descriptionTh">Description</th>
+              <th class="optionalTh">Optional</th>
+          </tr>
+          <tr>
+              <td>cubeSet</td>
+              <td>dictionary</td>
+              <td>The  cube set</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>csvFilePath</td>
+              <td>string</td>
+              <td>The file path for the output CSV file</td>
+              <td>No</td>
+          </tr>
+          </table>
+      </div>
+   </div>
+   <div class="blk behavior">
+      <p class="sectionTitle">Behavior</p>
+      <div class="blockBody">
+      This will export the source cube contained in a cube set to a CSV file.
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Example</p>
+      <div class="blockBody"> 
+      <pre>
+      cubeSet = cubify.getCubeSet('purchasesCubeSet')
+      cubify.exportSourceCubeToCsv(cubeSet, '/tmp/purchasesCubeSetSourceCube.csv')
+      </pre>
+      </div>
+  </div>    
+</div>
+
+<!-- -->
+
+<div id="getAggregatedCubeRowsDoc" class="docBlock noshow">
+   <div class="blk mname">getAggregatedCubeRows</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+          <span class="methodSignature"><b>getAggregatedCubeRows</b> (cubeSet, aggName) returns: iterator over cubeRow</span>
+          <br/>
+          <br/>
+          <br/>
+          <table class="argTable">
+          <tr class="argTableHeading">
+              <th class="argumentTh">Argument</th>
+              <th class="typeTh">Type</th>
+              <th class="descriptionTh">Description</th>
+              <th class="optionalTh">Optional</th>
+          </tr>
+          <tr>
+              <td>cubeSet</td>
+              <td>string</td>
+              <td>The cube set</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>aggName</td>
+              <td>string</td>
+              <td>The aggregation name. This can have the value 'ALL' or the name of the group-by dimensions, separated by hyphen (e.g. ProductId-Region) or the aggregation name defined in a custom aggregation DSL</td>
+              <td>No</td>
+          </tr>
+          </table>
+      </div>
+   </div>
+   <div class="blk behavior">
+      <p class="sectionTitle">Behavior</p>
+      <div class="blockBody">
+      This method returns the cube rows of an aggregated cube within a cube set. The aggregated cube is referenced by its group-by dimensions or by the aggregation definition name in the custom definition. If 'ALL' is passed in as the second argument, rows for all underlying aggregated cubes will be consolidated and returned.
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Example</p>
+      <div class="blockBody"> 
+      This returns the cube rows of the aggregated cube group-by "CustomerState" and "ProductId":
+      <pre>
+      cubeSet = cubify.getCubeSet('purchasesCubeSet')
+      cubeRows = cubify.getAggregatedCubeRows(cubeSet, 'CustomerState-ProductId')
+      </pre>
+      This returns the cube rows of the aggregated cube group-by "CustomerState":
+      <pre>
+      cubeRows = cubify.getAggregatedCubeRows(cubeSet, 'CustomerState')
+      </pre>
+      This returns all cube rows of both cubes above.
+      <pre>
+      cubeRows = cubify.getAggregatedCubeRows(cubeSet, 'ALL')
+      </pre>
+      </div>
+  </div>    
+</div>
+
+<!-- -->
+
+<div id="getBinnedCubeRowsDoc" class="docBlock noshow">
+   <div class="blk mname">getBinnedCubeRows</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+          <span class="methodSignature"><b>getBinnedCubeRows</b> (cubeSet) returns: iterator over cubeRow</span>
+          <br/>
+          <br/>
+          <br/>
+          <table class="argTable">
+          <tr class="argTableHeading">
+              <th class="argumentTh">Argument</th>
+              <th class="typeTh">Type</th>
+              <th class="descriptionTh">Description</th>
+              <th class="optionalTh">Optional</th>
+          </tr>
+          <tr>
+              <td>cubeSet</td>
+              <td>dictionary</td>
+              <td>The cube set</td>
+              <td>No</td>
+          </tr>
+          </table>
+      </div>
+   </div>
+   <div class="blk behavior">
+      <p class="sectionTitle">Behavior</p>
+      <div class="blockBody">
+      This returns the cube rows of the binned cube contained in a cube set.
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Example</p>
+      <div class="blockBody"> 
+      <pre>
+      cubeSet = cubify.getCubeSet('purchasesCubeSet')
+      cubeRows = cubify.getBinnedCubeRows(cubeSet)
+
+      for cubeRow in cubeRows:
+          print cubeRow
+      </pre>
+      </div>
+  </div>    
+</div>
+
+<!-- -->
+
+<div id="getSourceCubeRowsDoc" class="docBlock noshow">
+   <div class="blk mname">getSourceCubeRows</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+          <span class="methodSignature"><b>getSourceCubeRows</b> (cubeSet) returns: iterator over cubeRow</span>
+          <br/>
+          <br/>
+          <br/>
+          <table class="argTable">
+          <tr class="argTableHeading">
+              <th class="argumentTh">Argument</th>
+              <th class="typeTh">Type</th>
+              <th class="descriptionTh">Description</th>
+              <th class="optionalTh">Optional</th>
+          </tr>
+          <tr>
+              <td>cubeSet</td>
+              <td>dictionary</td>
+              <td>The cube set</td>
+              <td>No</td>
+          </tr>
+          </table>
+      </div>
+   </div>
+   <div class="blk behavior">
+      <p class="sectionTitle">Behavior</p>
+      <div class="blockBody">
+      This returns the cube rows of the source cube contained in a cube set.
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Example</p>
+      <div class="blockBody"> 
+      <pre>
+      cubeSet = cubify.getCubeSet('purchasesCubeSet')
+      cubeRows = cubify.getSourceCubeRows(cubeSet)
+
+      for cubeRow in cubeRows:
+          print cubeRow
+      </pre>
+      </div>
+  </div>    
+</div>
+
+<!-- -->
+
+<div id="getCubeSetDoc" class="docBlock noshow">
+   <div class="blk mname">getCubeSet</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+          <span class="methodSignature"><b>getCubeSet</b> (cubeSetName) returns: cubeSet</span>
+          <br/>
+          <br/>
+          <br/>
+          <table class="argTable">
+          <tr class="argTableHeading">
+              <th class="argumentTh">Argument</th>
+              <th class="typeTh">Type</th>
+              <th class="descriptionTh">Description</th>
+              <th class="optionalTh">Optional</th>
+          </tr>
+          <tr>
+              <td>cubeSetName</td>
+              <td>string</td>
+              <td>The name of the cubeSet</td>
+              <td>No</td>
+          </tr>
+          </table>
+      </div>
+   </div>
+   <div class="blk behavior">
+      <p class="sectionTitle">Behavior</p>
+      <div class="blockBody">
+      This method returns a cubeSet (See Object Schema cubeSet). 
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Example</p>
+      <div class="blockBody">
+      <pre> 
+      cubeSet = cubify.getCubeSet('purchasesCubeSet')
+      </div>
+  </div>    
+</div>
+
+<!-- -->
+
+<div id="performAggregationDoc" class="docBlock noshow">
+   <div class="blk mname">performAggregation</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+          <span class="methodSignature"><b>performAggregation</b> (cubeSet, dimensions) returns: list of cube</span>
+          <br/>
+          <br/>
+          <br/>
+          <table class="argTable">
+          <tr class="argTableHeading">
+              <th class="argumentTh">Argument</th>
+              <th class="typeTh">Type</th>
+              <th class="descriptionTh">Description</th>
+              <th class="optionalTh">Optional</th>
+          </tr>
+          <tr>
+              <td>cubeSet</td>
+              <td>string</td>
+              <td>The cube set</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>dimensions</td>
+              <td>List of string</td>
+              <td>Ordered list of dimensions</td>
+              <td>No</td>
+          </tr>
+          </table>
+      </div>
+   </div>
+   <div class="blk behavior">
+      <p class="sectionTitle">Behavior</p>
+      <div class="blockBody">
+      Given an ordered list of dimensions such as [A, B, C], this method will perform 3 aggregations on the source cube to produce 3 aggregated cubes.
+      The aggregations will be performed using group-by dimensions, [A, B, C], [A, B] and [A] respectively.
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Example</p>
+      <div class="blockBody"> 
+      <pre>
+      cubeSet = cubify.getCubeSet('purchasesCubeSet')
+      aggCubes = cubify.performAggregation(cubeSet, ['Region', 'CustomerState', 'ProductId'])
+      </pre>
+      </div>
+  </div>    
+</div>
+
+<div id="performAggregationCustomDoc" class="docBlock noshow">
+   <div class="blk mname">performAggregationCustom</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+          <span class="methodSignature"><b>performAggregation</b> (cubeSet, aggregationDefinitions) returns: list of cube</span>
+          <br/>
+          <br/>
+          <br/>
+          <table class="argTable">
+          <tr class="argTableHeading">
+              <th class="argumentTh">Argument</th>
+              <th class="typeTh">Type</th>
+              <th class="descriptionTh">Description</th>
+              <th class="optionalTh">Optional</th>
+          </tr>
+          <tr>
+              <td>cubeSet</td>
+              <td>dictionary</td>
+              <td>The cube set</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>aggregationDefinitions</td>
+              <td>List of agg</td>
+              <td>Custom aggregation definitions. See Object Schema agg</td>
+              <td>No</td>
+          </tr>
+          </table>
+      </div>
+   </div>
+   <div class="blk behavior">
+      <p class="sectionTitle">Behavior</p>
+      <div class="blockBody">
+      This method will perform custom aggregations on the source cube of a given cube set. Custom aggregation definitions are expressed as a list of agg objects.
+      See Object Schema agg.
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Example</p>
+      <div class="blockBody">
+      <pre>
+      aggs = [{
+                "name" : "ProductId-Region",
+                "dimensions": ["ProductId", "Region"],
+                "measures" : [
+                    { "outputField" : {"name":"AveragePrice", "displayName": "Average Price"},
+                      "formula" : { "numerator" : { "aggOperator" : "avg", "expression" : "Price" }, 
+                                    "denominator" : {}
+                                  }
+                    }
+                ]
+              }]
+      cubeSet = cubify.getCubeSet('purchasesCubeSet')
+      aggCubes = cubify.performAggregationCustom(cubeSet, aggs)
+      </pre> 
+      </div>
+  </div>    
+</div>
+
+<div id="performBinningDoc" class="docBlock noshow">
+   <div class="blk mname">performBinning</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+          <span class="methodSignature"><b>performBinning</b> (cubeSet, binningDefinitions) returns: cube</span>
+          <br/>
+          <br/>
+          <br/>
+          <table class="argTable">
+          <tr class="argTableHeading">
+              <th class="argumentTh">Argument</th>
+              <th class="typeTh">Type</th>
+              <th class="descriptionTh">Description</th>
+              <th class="optionalTh">Optional</th>
+          </tr>
+          <tr>
+              <td>cubeSet</td>
+              <td>dictionary</td>
+              <td>The cube set</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>binningnDefinitions</td>
+              <td>List of binning</td>
+              <td>Custom binning definitions. See Object Schema binning</td>
+              <td>Yes. If not provided, the source cube will be binned using system-generated bins.</td>
+          </tr>
+          </table>
+      </div>
+   </div>
+   <div class="blk behavior">
+      <p class="sectionTitle">Behavior</p>
+      <div class="blockBody">
+      This method performs custom binning on the cube set's source cube. 
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Example</p>
+      <div class="blockBody"> 
+      For example, if a cubeSet's source cube contains a measure called "Qty", to bin the "Qty" measure in the cube, use the following binning definition.
+      Note the sourceField refers to the measure we're binning and the outputField to the "QtyBin" dimension. The type is "range" and we
+      have defined 2 bins. If the value to be binned falls outside of the defined bins, it will take on the fallback label, "None". 
+      <pre>
+      binningDef = [{ "binningName" : "QtyBinning",
+                      "outputField" : { "name": "QtyBin", "displayName": "Qty Bin" },
+                      "sourceField" : "Qty",
+                      "type" : "range",
+                      "bins" : [
+                          { "label" : "0-5",         "min": 0,       "max": 5 },
+                          { "label" : "5+",          "min": 6,       "max": 999999999 }
+                      ],
+                      "fallbackLabel" : "None"
+                   }]
+
+      cubeSet = cubify.getCubeSet('purchasesCubeSet')      
+      binnedCube = cubify.performBinning(cubeSet, binningDef)
+      </pre>
+      If our source cube contains a TransactionDate, and we wish to bin this into monthly bins, use the following:
+      <pre>
+      binningDef = [{ "binningName" : "TransctionDateBinning",
+                      "outputField" : { "name": "TransactionDateBin", "displayName": "Transaction Year/Month" },
+                      "sourceField" : "TransactionDate",
+                      "type" : "date",
+                      "period" : "monthly"
+                    }]
+
+      </pre>
+      If our cube contains a dimension called "CustomerState" and we wish to bin this into "Region", use the following "enum" type binning definition:
+      <pre>
+      binningDef = [{ "binningName" : "RegionBinning",
+                      "outputField" : { "name": "Region", "displayName": "Region" },
+                      "sourceField" : "CustomerState",
+                      "type" : "enum",
+                      "bins" : [
+                         { "label" : "West",      "value" : "CA" },
+                         { "label" : "West",      "value" : "WA" },
+                         { "label" : "Mountain",  "value" : "ID" },
+                         { "label" : "SouthWest", "value" : "NM" },
+                         { "label" : "MidWest",   "value" : "ND" },
+                         { "label" : "MidWest",   "value" : "SD" },
+                         { "label" : "NorthEast", "value" : "ME" },
+                         { "label" : "NorthEast", "value" : "NY" },
+                         { "label" : "South",     "value" : "GA" },
+                         { "label" : "South",     "value" : "LA" }
+                      ],
+                      "fallbackLabel" : "Other"
+                   }]
+      </pre>
+      Note that you can combine several binning definitions into one list and pass that into the method to perform multiple binnings simultaneously.
+      </div>
+  </div>    
+</div>
+
+<div id="removeRowsFromSourceCubeDoc" class="docBlock noshow">
+   <div class="blk mname">performBinning</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+          <span class="methodSignature"><b>removeRowsFromSourceCube</b> (cubeSet, filter) returns: void</span>
+          <br/>
+          <br/>
+          <br/>
+          <table class="argTable">
+          <tr class="argTableHeading">
+              <th class="argumentTh">Argument</th>
+              <th class="typeTh">Type</th>
+              <th class="descriptionTh">Description</th>
+              <th class="optionalTh">Optional</th>
+          </tr>
+          <tr>
+              <td>cubeSet</td>
+              <td>dictionary</td>
+              <td>The cube set</td>
+              <td>No</td>
+          </tr>
+          <tr>
+              <td>filter</td>
+              <td>dictionary</td>
+              <td>Query filter for retrieving cube rows for deletion</td>
+              <td>No</td>
+          </tr>
+          </table>
+      </div>
+   </div>
+   <div class="blk behavior">
+      <p class="sectionTitle">Behavior</p>
+      <div class="blockBody">
+      This method removes rows from the underlying source cube. The cube set is automatically re-binned and re-aggregated when rows are removed.
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Example</p>
+      <div class="blockBody"> 
+      This example removes all rows where customerState == 'NY'
+      <pre>
+      cubeSet = cubify.getCubeSet('purchasesCubeSet')
+      cubify.removeRowsFromSourceCube(cubeSet, { 'dimensions.CustomerState' : 'NY' })
+      </pre>
+      </div>
+  </div>    
+</div>
+
+<!-- OBJECT SCHEMA -->
+<!-- -->
+
+<div id="aggDoc" class="docBlock noshow">
+   <div class="blk mname">agg</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+      <pre>
+    {
+       "name" : string,
+       "dimensions": list of string, -- these are the group-by dimensions,
+       "measures" : [
+           { "outputField" : { "name" : string, "displayName" : string },
+             "formula" : { "numerator"   : { "aggOperator" : one of |"sum"|"avg"|"min"|"max"|, "expression" : string }, 
+                           "denominator" : { "aggOperator" : one of |"sum"|"avg"|"min"|"max"|, "expression" : string }   
+                         }
+           }
+           ...
+       ]
+    }
+      </pre>
+      The formula denominator is optional.<br/>
+      Expression is a mathematical expression which references to measures. The simplest expression is simply the measure name.
+      Expression examples:  Price, Price * Qty, 0.2 * Price * Qty
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Example</p>
+      <div class="blockBody"> 
+      Example aggregation on measure, "Price" using formula "avg", and group by ProductId and Region.
+      Produces a new measure called "AveragePrice".
+      <pre>
+    {
+       "name" : "agg1",
+       "dimensions": ["ProductId", "Region"],
+       "measures" : [
+           { "outputField" : {"name":"AveragePrice", "displayName": "Average Price"},
+             "formula" : { "numerator"   : { "aggOperator" : "avg", "expression" : "Price" }, 
+                           "denominator" : {}
+                         }
+           }
+       ]
+    } 
+     </pre>
+      Example showing 2 aggregations. 
+      <br/>
+      <br/>
+      The first one aggregates on measure, "Qty" using formula, "Sum" and group by ProductId. This produces a new measure called "TotalQty".
+      <br/>
+      <br/>
+      The second one aggregates using a ratio where numerator is the sum of Qty * Price and the denominator is the sum of Qty. This produces a new measure called, "TotalRevenue". Another way to think about this is that we are getting the weighted average of Price using Qty as the weight.
+      <pre>
+    {
+       "name" : "agg2",
+       "dimensions": ["ProductId"],
+       "measures" : [
+           { "outputField" : {"name":"TotalQty", "displayName": "Total Qty"},
+             "formula" : { "numerator" : { "aggOperator" : "sum", "expression" : "Qty" }, 
+                           "denominator" : {}
+                         }
+           },
+           { "outputField" : { "name":"AverageRevenue", "displayName": "Average Revenue"},
+             "formula" : { "numerator"   : { "aggOperator" : "sum", "expression" : "Qty * Price" }, 
+                           "denominator" : { "aggOperator" : "sum", "expression" : "Qty" }
+                         }
+           }
+       ]
+    }
+      </pre>      
+      </div>
+  </div>    
+</div>
+
+<div id="binningDoc" class="docBlock noshow">
+   <div class="blk mname">binning</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+      <pre>
+{ 
+   "binningName" : string,
+   "outputField" : { "name": string, "displayName": string },
+   "sourceField" : string,
+   "type" : one of "range", "enum", "date"
+   if type is "range"
+      "bins" : [
+           { "label" : string,  "min": numeric, "max": numeric },
+           { "label" : string,  "min": numeric, "max": numeric },
+           ...
+      ],
+   if type is "enum"
+      "bins" : [
+           { "label" : string,   "value" : string },
+           { "label" : string,   "value" : string },
+           ...
+   if type is "date"
+       "period" : one of: "weekly", "monthly", "yearly"
+
+   "fallbackLabel" : string
+}
+      </pre>
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Example</p>
+      <div class="blockBody"> 
+      Range binning example. This produces a new dimension called "QtyBin":
+      <pre>
+{ 
+   "binningName" : "QtyBinning",
+   "outputField" : { "name": "QtyBin", "displayName": "Qty Bin" },
+   "sourceField" : "Qty",
+   "type" : "range",
+   "bins" : [
+        { "label" : "0-5",         "min": 0,       "max": 5 },
+        { "label" : "5+",          "min": 6,       "max": 999999999 }
+   ],
+   "fallbackLabel" : "None"
+ }
+      </pre>
+      Enum binning example. This produces a new dimension called, "Region":
+      <pre>
+ {
+   "binningName" : "RegionBinning",
+   "outputField" : { "name": "Region", "displayName": "Region" },
+   "sourceField" : "CustomerState",
+   "type" : "enum",
+   "bins" : [
+        { "label" : "West",   "value" : "CA" },
+        { "label" : "West",   "value" : "WA" },
+        { "label" : "Mountain",  "value" : "ID" },
+        { "label" : "SouthWest", "value" : "NM" },
+        { "label" : "MidWest", "value" : "ND" },
+        { "label" : "MidWest", "value" : "SD" },
+        { "label" : "NorthEast", "value" : "ME" },
+        { "label" : "NorthEast", "value" : "NY" },
+        { "label" : "South", "value" : "GA" },
+        { "label" : "South", "value" : "LA" }
+   ],
+   "fallbackLabel" : "Other"
+ }
+      </pre>
+      Date binning example. This produces a new dimension called "TransactionYearMonth":
+      <pre>
+ { 
+   "binningName" : "DateBinning",
+   "outputField" : { "name": "TransactionYearMonth", "displayName": "Transaction Year-Month" },
+   "sourceField" : "TransactionDate",
+   "type" : "date",
+   "period" : "monthly",
+   "fallbackLabel" : "Other"
+ }
+      </pre>
+      </div>
+  </div>    
+</div>
+
+<div id="cubeDoc" class="docBlock noshow">
+   <div class="blk mname">cube</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+      <pre>
+{ 
+    "name" : string,
+    "type" : one of "source", "binned", "aggregated",
+    "createdOn" : date,
+    "lastBinnedOn" : date -- only present if type is "binned"
+    "stats" : {
+        binName : {
+            "std" : numeric,
+            "min" : numeric, 
+            "max" : numeric, 
+            "median" : numeric, 
+            "total" : numeric,
+            "mean" : numeric
+        }, 
+        ...
+    }, 
+    "distincts" : {
+        dimensionName : {
+            dimensionValue : numeric,
+            dimensionValue : numeric,
+            ....
+        }, 
+        ...
+    }, 
+    "binnings" : list of binning, may be null,
+    "agg" : list of agg, may be null,
+}
+      </pre>
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Example</p>
+      <div class="blockBody"> 
+      <pre>
+{ 
+    "name" : "purchases", 
+    "type" : "source"
+    "createdOn" : "2016-03-11",
+    "stats" : {
+        "Price" : {
+            "std" : 6.419040553903135, 
+            "min" : 1.5, 
+            "max" : 20.5, 
+            "median" : 12.5, 
+            "total" : 164.0, 
+            "mean" : 11.714285714285714
+        }, 
+        "Qty" : {
+            "std" : 1.8070158058105026, 
+            "min" : 1.0, 
+            "max" : 7.0, 
+            "median" : 3.0, 
+            "total" : 44.0, 
+            "mean" : 3.142857142857143
+        }, 
+    }, 
+    "distincts" : {
+        "Date" : {
+            "2015-10-11" : 4, 
+            "2015-10-10" : 3, 
+            "2014-10-11" : 4, 
+            "2014-10-10" : 3
+        }, 
+        "State" : {
+            "NY" : 6, 
+            "CA" : 6, 
+            "MA" : 2
+        }, 
+        "CustomerId" : {
+            "C3" : 2, 
+            "C2" : 6, 
+            "C1" : 6
+        }, 
+        "ProductId" : {
+            "P2" : 4, 
+            "P1" : 10
+        }
+    }, 
+    "binnings" : null, 
+    "agg" : null, 
+}
+      </pre>
+      </div>
+  </div>    
+</div>
+
+<div id="cubeRowDoc" class="docBlock noshow">
+   <div class="blk mname">cubeRow</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+      <pre>
+{ 
+    "dates" : {
+        dateName : date,
+        dateName : date,
+        ...
+    }, 
+    "dimensions" : {
+        dimensionName : string,
+        dimensionName : string
+        ...
+    }, 
+    "measures" : {
+        measureName : numeric,
+        measureName : numeric,
+        ...
+    }, 
+    "dimensionKey" : string -- this is the natural key
+    "id" : numeric -- this is the primary key
+}
+      </pre>
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Example</p>
+      <div class="blockBody"> 
+      <pre>
+{ 
+    "dates" : {
+        "TransactionDate" : "2014-10-10"
+    }, 
+    "dimensions" : {
+        "State" : "CA", 
+        "CustomerId" : "C1", 
+        "ProductId" : "P1"
+    }, 
+    "measures" : {
+        "Price" : 20.5, 
+        "Qty" : 3.0
+    }, 
+    "dimensionKey" : "#CustomerId:C1#ProductId:P1#State:CA#TransactionDate:2014-10-10", 
+    "id" : 1
+}
+      </pre>
+      </div>
+  </div>    
+</div>
+
+<div id="cubeSetDoc" class="docBlock noshow">
+   <div class="blk mname">cubeSet</div>
+   <div class="blk def">
+      <p class="sectionTitle">Definition</p>
+      <div class="blockBody">
+      <pre>
+    {
+       "name" : string,                  -- name of cube set
+       "sourceCube" : string,            -- name of source cube
+       "binnedCube" : string,            -- name of binned cube
+       "aggCubes" : list of string,      -- names of aggregated cubes
+       "createdOn" : date,               -- date created
+       "owner" : string,                 -- the owner
+       "csvFilePath" : string            -- the csv file path used to create the cube set
+    }
+      </pre>
+      </div>
+   </div>
+   <div class="blk example">
+      <p class="sectionTitle">Example</p>
+      <div class="blockBody"> 
+      <pre>
+    {
+       "name" : "purchasesCubeSet",
+       "sourceCube" : "purchases",
+       "binnedCube" : "purchases_binned",
+       "aggCubes" : [
+           "purchases_binned-CustomerId-CustomerState",
+           "purchases_binned-CustomerId"
+       ], 
+       "createdOn" : "2016-03-11",
+       "owner" : "testOwner", 
+       "csvFilePath" : "purchases.csv"
+    }
+      </pre>
+      </div>
+  </div>    
+</div>
+
+</div><!-- rightPane -->
+
+</body>
+</html>
